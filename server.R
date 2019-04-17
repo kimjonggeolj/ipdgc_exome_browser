@@ -6,12 +6,10 @@ server <- function(input, output, session) {
   #rememberedPage <- list()
   
   # ==== Sets up the "initial main page" (search page)
-  initmainPage <- renderUI(tagList(fluidRow(img(src = "ipdgc_vb.png", class = "mainlogo"),
-                            div(textInput("searchBar",
-                                          label = NULL,
-                                          placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000",
-                                          width = "100%"), class = "searchbar"),
-                            div(actionButton("submit", "Search"), style = "text-align:center;", onclick = '"aboutClick"'))#,
+  initmainPage <- renderUI(tagList(fluidRow(img(src = "ipdgc_gb.png", class = "mainlogo"),
+                            mainSearchBar,
+                            div(actionButton("submit", "Search"), style = "text-align:center;", id = "aboutClick")
+                            )#,
                             ))
   
   output$mainPage <- initmainPage
@@ -34,9 +32,26 @@ server <- function(input, output, session) {
   
   observeEvent(input$wrapperlogo, {
     output$mainPage <- initmainPage
+    pageState <<- 1
     hide(id = "wrapperlogo")
     hide(id = "mainPageLink")
+    hide(id = "miniSearchBar")
+    hide(id = "minisubmit")
   })
+  
+  observeEvent(input$darktheme, {
+                 if (input$darktheme == T) {
+                 output$darktheme <<- renderUI({
+                   tags$head(tags$link(rel = "stylesheet", type = "text/css", 
+                                       href = shinytheme("cyborg")))
+                 })
+               } else {
+                 output$darktheme <<- renderUI({tags$head(tags$link(rel = "stylesheet", type = "text/css", 
+                                                                    href = shinytheme("simplex")#"shiny/inst/www/shared/bootstrap/css/bootstrap-theme.min.css"
+                                                                    ))})
+               }
+               }
+  )
   
   #====initial data loading file
   source("datatables.R", local = T)
@@ -52,4 +67,5 @@ server <- function(input, output, session) {
   
   #====Google sample of sign in API server side
   source("googlelogin-server.R", local = T)
+
 }

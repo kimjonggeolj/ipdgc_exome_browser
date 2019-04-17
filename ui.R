@@ -13,23 +13,38 @@ ui <- tagList(
   
   #============================================================
   
-  fluidPage(title = "IPDGC Variant Browser",
+  fluidPage(title = "IPDGC Genome Browser",
             # activate javascript package
-                useShinyjs(),
-                theme = "theme.css",
-                fluidRow(
-                  column(width = 6,
-                         # start hidden, show when search is performed
-                         hidden(actionLink("wrapperlogo", img(src = "ipdgc_vb_small.png", id = "wrapperlogo")),
-                                span(#actionLink("main", "Main"),
-                           actionLink("returnResults", "Return to results"), id = "mainPageLink"))),
-                  column(width = 6,
-                         div(actionLink("about", "About"), id = "top-row")),
-                  hr()),
+            useShinyjs(),
+            #theme = shinytheme("cyborg"),
+            includeCSS("www/theme.css"),
+            fluidRow(
+              column(width = 10,
+                     # start hidden, show when search is performed
+                     hidden(actionLink("wrapperlogo", img(src = "ipdgc_gb_small.png", id = "wrapperlogo")),
+                            #actionLink("main", "Main"),
+                            span(
+                              actionLink("returnResults", "Return to results"), id = "mainPageLink")),
+                     hidden(miniSearchBar, miniSubmitButton)),
+              #hidden(span(miniSearchBar, miniSubmitButton, id = "minisubmit"))),
+              column(width = 2,
+                     #====Potential Dark Theme toggle button
+                     dropdownButton(
+                       materialSwitch(
+                         inputId = "darktheme",
+                         label = "Dark Theme",
+                         value = F,
+                         status = "primary"
+                       ),
+                       circle = F,
+                       icon = icon("gear")),
+                     div(actionLink("about", "About"), id = "top-row")),
+              hr()),
             # This uiOutput allows rendering of UI inside this initial wrapper UI
             # When you want to render a UI inside the wrapper, define a "mainpage" variable
             # with renderUI() + whatever UI elements you want.
-                uiOutput("mainPage")
+            uiOutput("mainPage"),
+            uiOutput("darktheme")
             
             #========Below is part II of sample Google login API==========
             # , div(id="signin", class="g-signin2", "data-onsuccess"="onSignIn"),
@@ -38,6 +53,6 @@ ui <- tagList(
             #               dt("Email"), dd(textOutput("g.email")),
             #               dt("Image"), dd(uiOutput("g.image")) ))
             #=============================================================
-                )
+  )
 )
 #uiOutput("wrapUI")
