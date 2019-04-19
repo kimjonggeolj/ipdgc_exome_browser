@@ -68,22 +68,26 @@ runSearchPage <- function() {
     res$id[i] <- paste0('<a id="res', i, '" href="#" class="action-button shiny-bound-input" onclick="resClick(this.id)">', res$id[i], '</a>')
     restoreInput(id = paste0("res", i), default = NULL)
   }
+  #====Dark Theme table color detection====
+  # if (input$darktheme == T) {
+  #   tablebgcolor <- '#282828'
+  #   tablecolor <- "white"
+  # } else {
+  #   tablebgcolor <- '#FFFFFF'
+  #   tablecolor <- "black"
+  # }
+  #========================================
   
-  if (input$darktheme == T) {
-    tablebgcolor <- '#282828'
-    tablecolor <- "white"
-  } else {
-    tablebgcolor <- '#FFFFFF'
-    tablecolor <- "black"
-  }
+  resultTable <<- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
+      formatStyle(columns=colnames(res)
+                  #, backgroundColor = tablebgcolor, color = tablecolor
+                  )})
   
   colnames(res) <- c("Gene ID", "Gene Name", "Chromosome", "BP-Start", "BP-End")
   # UI rending of serach results
   resultPage <<- renderUI(tagList(
     fluidRow(
-      renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
-          formatStyle(columns=colnames(res),
-                      backgroundColor = tablebgcolor, color = tablecolor)})
+      resultTable
     ),
     # load the javascript
     tags$script(src = "clickdetect.js")
@@ -109,6 +113,30 @@ observeEvent(
     input$minisubmit,
     runSearchPage()
   )
+
+# observeEvent(
+#   input$darktheme, {
+#     if (input$darktheme == T) {
+#       tablebgcolor <- '#282828'
+#       tablecolor <- "white"
+#     } else {
+#       tablebgcolor <- '#FFFFFF'
+#       tablecolor <- "black"
+#     }
+#     resultTable <<- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
+#         formatStyle(columns=colnames(res),
+#                     backgroundColor = tablebgcolor, color = tablecolor)})
+#     output$mainPage <- renderUI(tagList(
+#       fluidRow(
+#         resultTable
+#       ),
+#       # load the javascript
+#       tags$script(src = "clickdetect.js")
+#     ))
+#   },
+#   ignoreInit = T
+#   
+# )
 
 
 

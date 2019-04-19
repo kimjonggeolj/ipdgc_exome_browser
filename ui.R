@@ -28,23 +28,26 @@ ui <- tagList(
                      hidden(miniSearchBar, miniSubmitButton)),
               #hidden(span(miniSearchBar, miniSubmitButton, id = "minisubmit"))),
               column(width = 2,
-                     #====Potential Dark Theme toggle button
-                     dropdownButton(
-                       materialSwitch(
-                         inputId = "darktheme",
-                         label = "Dark Theme",
-                         value = F,
-                         status = "primary"
-                       ),
-                       circle = F,
-                       icon = icon("gear")),
+                     #====Potential Dark Theme toggle button====
+                     # dropdownButton(
+                     #   materialSwitch(
+                     #     inputId = "darktheme",
+                     #     label = "Dark Theme",
+                     #     value = F,
+                     #     status = "primary"
+                     #   ),
+                     #   circle = F,
+                     #   icon = icon("gear"),
+                     #   size = "xs"),
+                     #===========================================
                      div(actionLink("about", "About"), id = "top-row")),
               hr()),
             # This uiOutput allows rendering of UI inside this initial wrapper UI
             # When you want to render a UI inside the wrapper, define a "mainpage" variable
             # with renderUI() + whatever UI elements you want.
-            uiOutput("mainPage"),
-            uiOutput("darktheme")
+            uiOutput("mainPage")
+            
+            #uiOutput("darktheme")
             
             #========Below is part II of sample Google login API==========
             # , div(id="signin", class="g-signin2", "data-onsuccess"="onSignIn"),

@@ -1,0 +1,2 @@
+Chr	Start	End	Ref	Alt	Func.refGene	ExonicFunc.refGene	AAChange.refGene	avsnp147	CLNDN	CLNSIG	EXOME_NAME_HG38	FREQ_ALL	FREQ_PD	FREQ_PD_parent	FREQ_AD	FREQ_AD_parent
+1	1	1	1	1	lol	lol	lol	lol	lol	lol	lol	lol	lol	lol	lol	lol

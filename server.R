@@ -38,23 +38,24 @@ server <- function(input, output, session) {
     hide(id = "miniSearchBar")
     hide(id = "minisubmit")
   })
+  #====Dark Mode observeEvent====
+  # observeEvent(input$darktheme, {
+  #                if (input$darktheme == T) {
+  #                output$darktheme <<- renderUI({
+  #                  tags$head(tags$link(rel = "stylesheet", type = "text/css", 
+  #                                      href = shinytheme("cyborg")))
+  #                })
+  #              } else {
+  #                output$darktheme <<- renderUI({tags$head(tags$link(rel = "stylesheet", type = "text/css", 
+  #                                                                   href = shinytheme("united")#"shiny/inst/www/shared/bootstrap/css/bootstrap-theme.min.css"
+  #                                                                   ))})
+  #              }
+  #              }
+  # )
+  #=============================
   
-  observeEvent(input$darktheme, {
-                 if (input$darktheme == T) {
-                 output$darktheme <<- renderUI({
-                   tags$head(tags$link(rel = "stylesheet", type = "text/css", 
-                                       href = shinytheme("cyborg")))
-                 })
-               } else {
-                 output$darktheme <<- renderUI({tags$head(tags$link(rel = "stylesheet", type = "text/css", 
-                                                                    href = shinytheme("simplex")#"shiny/inst/www/shared/bootstrap/css/bootstrap-theme.min.css"
-                                                                    ))})
-               }
-               }
-  )
-  
-  #====initial data loading file
-  source("datatables.R", local = T)
+  #====initial data loading file====Currently unnecessary
+  #source("datatables.R", local = T)
   
   #====search results
   source("result-page.R", local = T)
