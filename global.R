@@ -14,12 +14,16 @@ pageState <- 1
 
 mainSearchBar <- div(textInput("searchBar",
                                label = NULL,
-                               placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000",
+                               placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000, rs1422910994",
                                width = "100%"), class = "searchbar")
 
 miniSearchBar <- span(textInput("minisearchBar",
                                label = NULL,
-                               placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000",
+                               placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000, rs1422910994",
                                width = "400px"), id= "miniSearchBar", style = "display:inline-block;vertical-align:top;margin-top:2em")
 
 miniSubmitButton <- span(actionButton("minisubmit", "Search"), onclick = '"aboutClick"', id = "minisubmit", style = "display:inline-block;vertical-align:top;margin-top:2em")
+
+
+#====initial data loading file
+source("datatables.R", local = T)

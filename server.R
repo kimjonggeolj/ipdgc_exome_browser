@@ -53,15 +53,17 @@ server <- function(input, output, session) {
   #              }
   # )
   #=============================
-  
-  #====initial data loading file====Currently unnecessary
-  #source("datatables.R", local = T)
-  
+
   #====search results
   source("result-page.R", local = T)
   
-  #====result page for gene information
+  #====page for gene information
   source("geneinfo-page.R", local = T)
+  
+  #====page for variant information
+  # observeEvent(input$varClick, {
+  #   #EVENT HERE
+  # })
 
   #====about page
   source("about-page.R", local = T)

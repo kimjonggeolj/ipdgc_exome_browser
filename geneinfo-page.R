@@ -1,10 +1,14 @@
 #==event that triggers the gene info page
-# input$res1 and input$resPageId are activated by javascript
+# input$geneClick and input$resPageId are activated by javascript
 # function resClick() found in "clickdetect.js"
-observeEvent(input$res1, {
-  num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
-  gene <- storedRes[num]
-  variantTable <- fread(tolower(paste0("varTab/", gene$id, ".txt")))
+observeEvent(input$geneClick, {
+  #num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
+  gene <- geneList[geneList$id == toupper(input$resPageId)]#storedRes[num]
+  variantTable <- fread(tolower(paste0("varTab/", gene$id, ".txt")))[, c(1:8)]
+  for (i in 1:nrow(variantTable)) {
+    variantTable$`Position (Ref/Alt)`[i] <- paste0('<a id="',  variantTable$`Position (Ref/Alt)`[i], '" href="#" class="action-button shiny-bound-input" onclick="varClick(this.id)">', variantTable$`Position (Ref/Alt)`[i], '</a>')
+    #restoreInput(id = paste0("res", i), default = NULL)
+  }
   #aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
   aggregateVariantTable <- data.table(`Functional Consequence` = c("All SNVs",
                                                     "frameshift insertion",
@@ -44,7 +48,7 @@ observeEvent(input$res1, {
       column(width = 6,
              div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
     ),
-    fluidRow(div(renderDT(variantTable, rownames= FALSE), style = "margin: 12px 50px 50px 12px;"))
+    fluidRow(div(renderDT(variantTable, rownames= FALSE, escape = FALSE), style = "margin: 12px 50px 50px 12px;"))
   ))
   show(id = "mainPageLink")
   hide(id = "miniSearchBar")

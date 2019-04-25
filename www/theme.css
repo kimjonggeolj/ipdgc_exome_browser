@@ -64,6 +64,9 @@ hr {
 }
 
 #aggregateVariantTable {
-  display:block;
-  position:relative;
+  float:right;
+}
+
+.form-group .shiny-input-container {
+  padding-bottom:0px;
 }

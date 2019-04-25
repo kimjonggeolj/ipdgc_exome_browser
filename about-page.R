@@ -1,6 +1,9 @@
 observeEvent(input$about, {
   showModal(modalDialog(
-    "IPDGC Genome Browser is a database of sequencing variants related to neurodegenerative diseases that can be used by researchers all over the world."
+    "IPDGC Genome Browser is a database of sequencing variants related to neurodegenerative diseases that can be used by researchers all over the world.",
+    hr(),
+    h4("Current database statistics"),
+    renderTable(data.table(`Total Variant Events` = "Total Subjects", `11111` = 22222))
   ))
 })
 

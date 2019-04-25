@@ -45,7 +45,8 @@ ui <- tagList(
             # This uiOutput allows rendering of UI inside this initial wrapper UI
             # When you want to render a UI inside the wrapper, define a "mainpage" variable
             # with renderUI() + whatever UI elements you want.
-            uiOutput("mainPage")
+            uiOutput("mainPage"),
+            tags$script(src = "clickdetect.js")
             
             #uiOutput("darktheme")
             
