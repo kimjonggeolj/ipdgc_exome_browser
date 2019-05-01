@@ -17,38 +17,32 @@ ui <- tagList(
             # activate javascript package
             useShinyjs(),
             #theme = shinytheme("cyborg"),
-            includeCSS("www/theme.css"),
             fluidRow(
               column(width = 10,
                      # start hidden, show when search is performed
-                     hidden(actionLink("wrapperlogo", img(src = "ipdgc_gb_small.png", id = "wrapperlogo")),
+                     hidden(actionLink("wrapperlogo", uiOutput("wrapperlogo")),
                             #actionLink("main", "Main"),
                             span(
                               actionLink("returnResults", "Return to results"), id = "mainPageLink")),
                      hidden(miniSearchBar, miniSubmitButton)),
-              #hidden(span(miniSearchBar, miniSubmitButton, id = "minisubmit"))),
               column(width = 2,
-                     #====Potential Dark Theme toggle button====
-                     # dropdownButton(
-                     #   materialSwitch(
-                     #     inputId = "darktheme",
-                     #     label = "Dark Theme",
-                     #     value = F,
-                     #     status = "primary"
-                     #   ),
-                     #   circle = F,
-                     #   icon = icon("gear"),
-                     #   size = "xs"),
-                     #===========================================
                      div(actionLink("about", "About"), id = "top-row")),
               hr()),
+            materialSwitch(
+              inputId = "darktheme",
+              label = "Dark Theme",
+              value = F,
+              status = "warning",
+              width = "150px",
+              inline = T
+            ),
             # This uiOutput allows rendering of UI inside this initial wrapper UI
             # When you want to render a UI inside the wrapper, define a "mainpage" variable
             # with renderUI() + whatever UI elements you want.
             uiOutput("mainPage"),
-            tags$script(src = "clickdetect.js")
-            
-            #uiOutput("darktheme")
+            tags$script(src = "clickdetect.js"),
+            uiOutput("darktheme"),
+            includeCSS("www/theme.css")
             
             #========Below is part II of sample Google login API==========
             # , div(id="signin", class="g-signin2", "data-onsuccess"="onSignIn"),

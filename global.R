@@ -6,7 +6,7 @@ library(DT) # DT package provides interactive data table renders
 library(shinyWidgets)
 library(shinythemes) # may be used to add dark theme functionality
 
-pageState <- 1
+pageState <<- 1
 # 1 = initial main page
 # 2 = result page
 # 3 = gene page

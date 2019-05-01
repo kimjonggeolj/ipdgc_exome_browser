@@ -3,7 +3,8 @@ observeEvent(input$about, {
     "IPDGC Genome Browser is a database of sequencing variants related to neurodegenerative diseases that can be used by researchers all over the world.",
     hr(),
     h4("Current database statistics"),
-    renderTable(data.table(`Total Variant Events` = "Total Subjects", `11111` = 22222))
+    renderTable(data.table(`Total Variant Events` = 11111, `Total Subjects` = 22222)),
+    p(pageState)
   ))
 })
 

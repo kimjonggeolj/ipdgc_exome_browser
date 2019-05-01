@@ -68,49 +68,36 @@ runSearchPage <- function() {
     colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
     #storedRes <<- res
     for (i in 1:nrow(res)) {
-      res$id[i] <- paste0('<a id="', res$id[i], '" href="#" class="action-button shiny-bound-input" onclick="resClick(this.id)">', res$id[i], '</a>')
+      res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
     }
     colnames(res) <- c("Gene ID", "Gene Name", "Chromosome", "BP-Start", "BP-End")
   } else {
     #storedRes <<- res
     colnames(res) <- c("Position (Ref/Alt)", "rsID", "Gene ID")
     for (i in 1:nrow(res)) {
-      res$`Gene ID`[i] <- paste0('<a id="', res$`Gene ID`[i], '" href="#" class="action-button shiny-bound-input" onclick="resClick(this.id)">', res$`Gene ID`[i], '</a>')
-      res$`Position (Ref/Alt)`[i] <- paste0('<a id="', res$`Position (Ref/Alt)`[i], '" href="#" class="action-button shiny-bound-input" onclick="varClick(this.id)">', res$`Position (Ref/Alt)`[i], '</a>')
+      res$`Gene ID`[i] <- paste0('<a id="', res$`Gene ID`[i], '" href="#" onclick="resClick(this.id)">', res$`Gene ID`[i], '</a>')
+      res$`Position (Ref/Alt)`[i] <- paste0('<a id="', res$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', res$`Position (Ref/Alt)`[i], '</a>')
     }
   }
-  
   
   # prepping result page
   #   below segment specifically sets up the geneID elements to have
   #   a javascript function associated with it on click. On click, it
   #   should open the gene information page. "See clickdetect.js"
   #   for details.
-   #====Dark Theme table color detection====
-  # if (input$darktheme == T) {
-  #   tablebgcolor <- '#282828'
-  #   tablecolor <- "white"
-  # } else {
-  #   tablebgcolor <- '#FFFFFF'
-  #   tablecolor <- "black"
-  # }
-  #========================================
+
   
-  resultTable <<- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
+  resultTable <- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
       formatStyle(columns=colnames(res)
-                  #, backgroundColor = tablebgcolor, color = tablecolor
+                  , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor(), #style = tableCol
                   )})
   
-  # varResultTable <<- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
-  #     formatStyle(columns=colnames(res)
-  #     )})
-  
-  # UI rending of serach results
+
+  # UI rending of search results
   resultPage <<- renderUI(tagList(
     fluidRow(
       resultTable
     )
-    # load the javascript
   ))
   
   output$mainPage <- resultPage
@@ -121,6 +108,7 @@ runSearchPage <- function() {
   show(id = "minisubmit")
   pageState <<- 2
 }
+
 
 # initiates search function on hitting the submit button
 observeEvent(
@@ -133,30 +121,5 @@ observeEvent(
     input$minisubmit,
     runSearchPage()
   )
-
-# observeEvent(
-#   input$darktheme, {
-#     if (input$darktheme == T) {
-#       tablebgcolor <- '#282828'
-#       tablecolor <- "white"
-#     } else {
-#       tablebgcolor <- '#FFFFFF'
-#       tablecolor <- "black"
-#     }
-#     resultTable <<- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
-#         formatStyle(columns=colnames(res),
-#                     backgroundColor = tablebgcolor, color = tablecolor)})
-#     output$mainPage <- renderUI(tagList(
-#       fluidRow(
-#         resultTable
-#       ),
-#       # load the javascript
-#       tags$script(src = "clickdetect.js")
-#     ))
-#   },
-#   ignoreInit = T
-#   
-# )
-
 
 
