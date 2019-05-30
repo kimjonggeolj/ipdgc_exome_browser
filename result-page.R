@@ -106,6 +106,7 @@ runSearchPage <- function() {
   show(id = "wrapperlogo")
   show(id = "miniSearchBar")
   show(id = "minisubmit")
+  hide(id = "genePageLink")
   pageState <<- 2
 }
 

@@ -1,19 +1,19 @@
 # Server.R is where most of the heavy lifting happens.
 
 server <- function(input, output, session) {
-  if (pageState == 3) {
-    setBookmarkExclude(c("about", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults"))
-  } else {
-    setBookmarkExclude(c("about", "minisearchBar", "searchBar", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults", "resPageId"))
-  }
-  observe({
-    # Trigger this observer every time an input changes
-    reactiveValuesToList(input)
-    session$doBookmark()
-  })
-  onBookmarked(function(url) {
-    updateQueryString(url)
-  })
+  # if (pageState == 3) {
+  #   setBookmarkExclude(c("about", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults"))
+  # } else {
+  #   setBookmarkExclude(c("about", "minisearchBar", "searchBar", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults", "resPageId"))
+  # }
+  # observe({
+  #   # Trigger this observer every time an input changes
+  #   reactiveValuesToList(input)
+  #   session$doBookmark()
+  # })
+  # onBookmarked(function(url) {
+  #   updateQueryString(url)
+  # })
   
   # variable for remembering the selected result
   output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))
@@ -37,10 +37,11 @@ server <- function(input, output, session) {
   observeEvent(input$wrapperlogo, {
     output$mainPage <- initmainPage
     pageState <<- 1
-    hide(id = "wrapperlogo")
-    hide(id = "mainPageLink")
-    hide(id = "miniSearchBar")
-    hide(id = "minisubmit")
+    hide("wrapperlogo")
+    hide("mainPageLink")
+    hide("miniSearchBar")
+    hide("minisubmit")
+    hide("genePageLink")
   })
 
 

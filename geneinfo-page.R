@@ -4,7 +4,8 @@
 observeEvent(input$geneClick, {
   #num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
   gene <- geneList[geneList$id == toupper(input$resPageId)]#storedRes[num]
-  variantTable <- fread(tolower(paste0("varTab/", gene$id, ".txt")))[, c(1:9)]
+  variantTable.global <<- fread(tolower(paste0("varTab/", gene$id, ".txt")))
+  variantTable <- variantTable.global[, c(1:9)]
   colnames(variantTable) <- c("Position (Ref/Alt)",
                               "Region",
                               "Functional consequence",
