@@ -5,7 +5,8 @@ library(shinyjs) # shiny javascript package provides basic javascript functions
 library(DT) # DT package provides interactive data table renders
 library(shinyWidgets)
 library(shinythemes) # may be used to add dark theme functionality
-
+# enable bookmarking
+enableBookmarking(store = "url")
 pageState <<- 1
 # 1 = initial main page
 # 2 = result page

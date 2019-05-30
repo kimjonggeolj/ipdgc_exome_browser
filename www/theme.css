@@ -1,5 +1,5 @@
   .mainlogo {
-    display: block;
+    display:block;
     margin-top: 10%;
     margin-left: auto;
     margin-right: auto;
@@ -8,19 +8,24 @@
   }
   
   #wrapperlogo {
+    display:inline-block;
    height:70px;
-   margin:10px 5px 10px 5px;
+   width:162px;
+   margin:4px 5px 10px 0px;
   }
   
+  /div#wrapperlogo.shiny-html-output.shiny-bound-output{
+    width:170px;
+  }
   .searchbar {
-    display: block;
+    display:block;
     margin-left: auto;
     margin-right: auto;
     width:75%;
   }
   
   .center {
-    display: block;
+    display:block;
     margin-left: auto;
     margin-right: auto;
     width:50%;
