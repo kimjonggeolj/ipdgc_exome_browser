@@ -1,39 +1,76 @@
 simpleCap <- function(x) {
   s <- strsplit(x, " ")[[1]]
   paste0(toupper(substring(s, 1,1)), substring(s, 2),
-         collapse=" ")
+         collapse = " ")
 }
 
 
 observeEvent(input$varClick, {
-  var <- variantTable.global[variantTable.global$`Position (Ref/Alt)` == input$varPageId]
-  colnames(var) <- c("Position (Ref/Alt)",
+  var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
+  colnames(var) <- c("Exome name (hg19)",
+                     "Exome name (hg38)",
                      "Region",
                      "Functional consequence",
                      "Amino acid change",
                      "rsID",
                      "Conditions (ClinVar)",
                      "Clinical significance (ClinVar)",
-                     "Exome name",
-                     "Frequency (overall)",
-                     "Frequency (PD)",
-                     "Frequency (PD Parents)",
-                     "Frequency (AD)",
-                     "Frequency (AD Parents)")
-  output$freq.Table <- renderTable(var[,c(9:13)],
-                                   digits = -2)
+                     # IPDGC Genomes (hg38) Columns:
+                     "Genomes-Distribution (cases)",
+                     "Genomes-Distribution (control)",
+                     "Genomes-MAF (cases)",
+                     "Genomes-number of participants (cases)",
+                     "Genomes-MAF (control)",
+                     "Genomes-number of participants (control)",
+                     # IPDGC Exomes + ReSeq (hg19) Columns:
+                     "Exome-Distribution (cases)",
+                     "Exome-Distribution (control)",
+                     "Exome-MAF (cases)",
+                     "Exome-number of participants (cases)",
+                     "Exome-MAF (control)",
+                     "Exome-number of participants (control)",
+                     "Reseq-Distribution (cases)",
+                     "Reseq-Distribution (controls)",
+                     "Reseq-MAF (case)",
+                     "Reseq-number of participants (cases)",
+                     "Reseq-MAF (control)",
+                     "Reseq-number of participants (controls)",
+                     # gnomad (hg19) + UKBB (hg38) Columns:
+                     "gnomAD Genome Allele Frequency (AF)",
+                     "gnomAD Popmax Filtering AF",
+                     "gnomAD Popmax Filtering AF-Controls",
+                     "gnomAD AF-male",
+                     "gnomAD AF-female",
+                     "gnomAD AF-African",
+                     "gnomAD AF-South Asian",
+                     "gnomAD AF-Latino",
+                     "gnomAD AF-East Asian",
+                     "gnomAD AF-European (non-Finnish)",
+                     "gnomAD AF-Finnish",
+                     "gnomAD AF-Ashkenazi Jewish",
+                     "gnomAD AF-Other")
+  output$ipdgc.freq.Table <- renderTable(var[, c(9:26)],
+                                         digits = -2)
+  output$others.freq.Table <- renderTable(var[, c(27:39)],
+                                          digits = -2)
   search.Term <- gsub("(\\d+):(\\d+)-\\d+ \\((\\w+)/(\\w*)\\)", "\\1-\\2-\\3-\\4", var[1,1])
   var$rsID <- ifelse(var$rsID == ".", "", var$rsID)
   output$mainPage <- renderUI(tagList(
     fluidRow(
+      column(width = 2,
+             h1(tags$b("Variant:"))
+      ),
+      column(width = 10,
+             h1(var$`Exome name (hg19)`, "(hg19)"),
+             h1(" ", var$`Exome name (hg38)`, "(hg38)")
+             ),
       column(width = 12,
-             h1(tags$b("Variant:"), var$`Position (Ref/Alt)`),
              h2(var$rsID,
                 tags$i(paste0("(", toupper(input$resPageId), ")")),
                 tags$sup(
                   a(href = paste0(
                     "https://www.ai-omni.com/search=",
-                    gsub("(\\d+:\\d+)-\\d+ .*", "chr\\1", var$`Position (Ref/Alt)`),
+                    gsub("(\\d+:\\d+)-\\d+ .*", "chr\\1", var$`Exome name (hg19)`),
                     "/page=1"),
                     target = "_blank",
                     "omni"),
@@ -58,17 +95,34 @@ observeEvent(input$varClick, {
                     tagList(div(tags$b("ClinVar (Conditions):"), var$`Conditions (ClinVar)`))),
              ifelse(var$`Clinical significance (ClinVar)` == ".", "",
                     tagList(div(tags$b("ClinVar (Clinical Significance): "), var$`Clinical significance (ClinVar)`,
-                                                                          style = "margin-bottom:50px;"))),
-                            
+                                style = "margin-bottom:50px;"))),
+             
              h3("Frequency Table")
       )
     ),
-    fluidRow(column(width = 12,
-                    fluidRow(div(tableOutput("freq.Table"))))
+    fluidRow(
+      column(
+        width = 12,
+          h4("IPDGC"),
+          div(
+            tableOutput("ipdgc.freq.Table")
+          )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 12,
+          h4("Other Resources"),
+          div(
+            tableOutput("others.freq.Table")
+          )
+      )
     )
   )
   )
   hide("mainPageLink")
+  hide("miniSearchBar")
+  hide("minisubmit")
   show("genePageLink")
   pageState <<- 4
 })
@@ -76,19 +130,94 @@ observeEvent(input$varClick, {
 observeEvent(input$returnGene, {
   #num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
   gene <- geneList[geneList$id == toupper(input$resPageId)]#storedRes[num]
-  variantTable.global <<- fread(tolower(paste0("varTab/", gene$id, ".txt")))
-  variantTable <- variantTable.global[, c(1:9)]
-  colnames(variantTable) <- c("Position (Ref/Alt)",
+  variantTable.global <<- fread(tolower(paste0("varTab/", gene$id, ".txt")))[, c("HG19_ID",
+                                                                                 "HG38_ID",
+                                                                                 "Func.refGene",
+                                                                                 "ExonicFunc.refGene",
+                                                                                 "AAChange.refGene",
+                                                                                 "avsnp150",
+                                                                                 "CLNDBN",
+                                                                                 "CLINSIG",
+                                                                                 # IPDGC Genomes (hg38) Columns:
+                                                                                 "genomes_cases",
+                                                                                 "genomes_controls",
+                                                                                 "MAF_genomes_case",
+                                                                                 "genomes_cases_N",
+                                                                                 "MAF_genomes_control",
+                                                                                 "genomes_controls_N",
+                                                                                 # IPDGC Exomes + ReSeq (hg19) Columns:
+                                                                                 "exome_cases",
+                                                                                 "exome_controls",
+                                                                                 "MAF_exome_case",
+                                                                                 "exome_cases_N",
+                                                                                 "MAF_exome_control",
+                                                                                 "exome_controls_N",
+                                                                                 "reseq_cases",
+                                                                                 "reseq_controls",
+                                                                                 "MAF_reseq_case",
+                                                                                 "reseq_cases_N",
+                                                                                 "MAF_reseq_control",
+                                                                                 "reseq_controls_N",
+                                                                                 # gnomad (hg19) + UKBB (hg38) Columns:
+                                                                                 "AF",
+                                                                                 "AF_popmax",
+                                                                                 "controls_AF_popmax",
+                                                                                 "AF_male",
+                                                                                 "AF_female",
+                                                                                 "AF_afr",
+                                                                                 "AF_sas",
+                                                                                 "AF_amr",
+                                                                                 "AF_eas",
+                                                                                 "AF_nfe",
+                                                                                 "AF_fin",
+                                                                                 "AF_asj",
+                                                                                 "AF_oth"
+  )]
+  variantTable <- variantTable.global
+  colnames(variantTable) <- c("Exome name (hg19)",
+                              "Exome name (hg38)",
                               "Region",
                               "Functional consequence",
                               "Amino acid change",
                               "rsID",
                               "Conditions (ClinVar)",
                               "Clinical significance (ClinVar)",
-                              "Exome name",
-                              "Frequency (overall)")
+                              # IPDGC Genomes (hg38) Columns:
+                              "Genomes-Distribution (cases)",
+                              "Genomes-Distribution (control)",
+                              "Genomes-MAF (cases)",
+                              "Genomes-number of participants (cases)",
+                              "Genomes-MAF (control)",
+                              "Genomes-number of participants (control)",
+                              # IPDGC Exomes + ReSeq (hg19) Columns:
+                              "Exome-Distribution (cases)",
+                              "Exome-Distribution (control)",
+                              "Exome-MAF (cases)",
+                              "Exome-number of participants (cases)",
+                              "Exome-MAF (control)",
+                              "Exome-number of participants (control)",
+                              "Reseq-Distribution (cases)",
+                              "Reseq-Distribution (controls)",
+                              "Reseq-MAF (case)",
+                              "Reseq-number of participants (cases)",
+                              "Reseq-MAF (control)",
+                              "Reseq-number of participants (controls)",
+                              # gnomad (hg19) + UKBB (hg38) Columns:
+                              "gnomAD Genome Allele Frequency (AF)",
+                              "gnomAD Popmax Filtering AF",
+                              "gnomAD Popmax Filtering AF-Controls",
+                              "gnomAD AF-male",
+                              "gnomAD AF-female",
+                              "gnomAD AF-African",
+                              "gnomAD AF-South Asian",
+                              "gnomAD AF-Latino",
+                              "gnomAD AF-East Asian",
+                              "gnomAD AF-European (non-Finnish)",
+                              "gnomAD AF-Finnish",
+                              "gnomAD AF-Ashkenazi Jewish",
+                              "gnomAD AF-Other")
   for (i in 1:nrow(variantTable)) {
-    variantTable$`Position (Ref/Alt)`[i] <- paste0('<a id="',  variantTable$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', variantTable$`Position (Ref/Alt)`[i], '</a>')
+    variantTable$`Exome name (hg19)`[i] <- paste0('<a id="',  variantTable$`Exome name (hg19)`[i], '" href="#" onclick="varClick(this.id)">', variantTable$`Exome name (hg19)`[i], '</a>')
     #restoreInput(id = paste0("res", i), default = NULL)
   }
   #aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
@@ -130,8 +259,8 @@ observeEvent(input$returnGene, {
       column(width = 6,
              div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
     ),
-    fluidRow(div(renderDT({datatable(variantTable, rownames= FALSE, escape = FALSE) %>% formatStyle(columns=colnames(variantTable)
-                                                                                                    , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
+    fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
+                                                                                                                                        , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
     )}), style = "margin: 12px 50px 50px 12px;"))
   ))
   show(id = "mainPageLink")

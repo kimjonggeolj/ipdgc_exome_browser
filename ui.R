@@ -26,7 +26,7 @@ ui <- tagList(
                               actionLink("returnResults", "Return to results"), id = "mainPageLink")),
                      hidden(miniSearchBar, miniSubmitButton),
                      hidden(span(
-                       actionLink("returnGene", "Return to gene page"), id = "genePageLink"))
+                       actionLink("returnGene", "Go to gene page"), id = "genePageLink"))
                      ),
               column(width = 2,
                      div(actionLink("about", "About"), id = "top-row")),

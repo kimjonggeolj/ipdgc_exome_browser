@@ -87,7 +87,7 @@ runSearchPage <- function() {
   #   for details.
 
   
-  resultTable <- renderDT({datatable(res, escape = FALSE, rownames= FALSE) %>%
+  resultTable <- renderDT({datatable(res, escape = FALSE, rownames= FALSE, selection = 'none') %>%
       formatStyle(columns=colnames(res)
                   , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor(), #style = tableCol
                   )})
