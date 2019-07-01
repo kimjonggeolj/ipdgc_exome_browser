@@ -131,11 +131,34 @@ observeEvent(input$geneClick, {
              div("Region:", paste0("Chromosome ", gene$chr, ": ", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;")
       ),
       column(width = 6,
-             div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
+             div(
+               renderTable(
+                 aggregateVariantTable
+                 ),
+               id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
     ),
-    fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
-                                                                                                    , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
-    )}), style = "margin: 12px 50px 50px 12px;"))
+    fluidRow(
+      div(
+        renderDT({
+          datatable(
+            variantTable[, c(1:8,11,17)],
+            options = list(
+              autoWidth = TRUE,
+              scrollX = paste0(input$dimension, "px")
+              #columnDefs = list(list(width = '10%', targets = c(1, 3)))
+            ),
+            rownames= FALSE,
+            escape = FALSE,
+            selection = 'none'
+            ) %>% formatStyle(
+              columns = colnames(
+                variantTable[, c(1:8,11,17)]
+                ),
+              style="bootstrap",
+              backgroundColor = tablebgcolor(),
+              color = tablecolor()#, style = tableCol
+              )
+          }), style = "margin: 12px 50px 50px 12px;"))
   ))
 })
 

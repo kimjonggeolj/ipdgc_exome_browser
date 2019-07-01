@@ -56,6 +56,7 @@ ui <- tagList(
       boxPlus(
         title = "Gene",
         uiOutput("panel2"),
+        id = "genebox",
         closable = F
       ),
       boxPlus(

@@ -49,21 +49,39 @@ observeEvent(input$varClick, {
                      "gnomAD AF-Finnish",
                      "gnomAD AF-Ashkenazi Jewish",
                      "gnomAD AF-Other")
-  output$ipdgc.freq.Table <- renderTable(var[, c(9:26)],
-                                         digits = -2)
-  output$others.freq.Table <- renderTable(var[, c(27:39)],
-                                          digits = -2)
+  output$genome.freq.Table <- renderTable(
+    var[, c(9:14)],
+    digits = -2
+  )
+  
+  output$exome.freq.Table <- renderTable(
+    var[,c(15:20)],
+    digits = -2
+  )
+  
+  output$reseq.freq.Table <- renderTable(
+    var[,c(21:26)],
+    digits = -2
+  )
+  
+  output$others.freq.Table <- renderTable(
+    var[, c(27:39)],
+    digits = -2
+  )
+  
   search.Term <- gsub("(\\d+):(\\d+)-\\d+ \\((\\w+)/(\\w*)\\)", "\\1-\\2-\\3-\\4", var[1,1])
   var$rsID <- ifelse(var$rsID == ".", "", var$rsID)
   output$panel3 <- renderUI(tagList(
     fluidRow(
-      column(width = 2,
-             h1(tags$b("Variant:"))
+      column(width = 12,
+             h1(
+               tags$b("Variant:"),
+               var$`Exome name (hg19)`,
+               "(hg19)"),
+             h1(HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                var$`Exome name (hg38)`,
+                "(hg38)")
       ),
-      column(width = 10,
-             h1(var$`Exome name (hg19)`, "(hg19)"),
-             h1(" ", var$`Exome name (hg38)`, "(hg38)")
-             ),
       column(width = 12,
              h2(var$rsID,
                 tags$i(paste0("(", toupper(input$resPageId), ")")),
@@ -103,19 +121,29 @@ observeEvent(input$varClick, {
     fluidRow(
       column(
         width = 12,
-          h4("IPDGC"),
-          div(
-            tableOutput("ipdgc.freq.Table")
-          )
+        h4("IPDGC"),
+        h5("Genome"),
+        div(
+          tableOutput("genome.freq.Table")
+        ),
+        h5("Exome"),
+        div(
+          tableOutput("exome.freq.Table")
+        ),
+        h5("Reseq"),
+        div(
+          tableOutput("reseq.freq.Table ")
+        )
       )
     ),
+    hr(),
     fluidRow(
       column(
         width = 12,
-          h4("Other Resources"),
-          div(
-            tableOutput("others.freq.Table")
-          )
+        h4("Other Resources"),
+        div(
+          tableOutput("others.freq.Table")
+        )
       )
     )
   )

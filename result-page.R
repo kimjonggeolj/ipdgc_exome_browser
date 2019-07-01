@@ -83,7 +83,7 @@ runSearchPage <- function() {
   #   for details.
 
   
-  resultTable <- DT::renderDT(
+  resultTable <- renderDT(
     {
       datatable(
         res,
