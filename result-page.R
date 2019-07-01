@@ -42,11 +42,7 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
 runSearchPage <- function() {
   # if initial main page, then read from big search bar
   # else read from mini search bar
-  searchSelect <- if (pageState == 1) {
-    input$searchBar
-  } else if (pageState == 2 | 3 | 4) {
-    input$minisearchBar
-  }
+  searchSelect <- input$minisearchBar
   listSwitch <- !grepl("^rs\\d*", searchSelect, ignore.case = T)
   # detecting switch for the function
   if (grepl("^chr\\d+$", searchSelect, ignore.case = T)) {
@@ -87,35 +83,38 @@ runSearchPage <- function() {
   #   for details.
 
   
-  resultTable <- renderDT({datatable(res, escape = FALSE, rownames= FALSE, selection = 'none') %>%
-      formatStyle(columns=colnames(res)
-                  , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor(), #style = tableCol
-                  )})
+  resultTable <- DT::renderDT(
+    {
+      datatable(
+        res,
+        options = list(
+          autoWidth = TRUE,
+          columnDefs = list(list(width = '10%', targets = c(1, 3)))
+        ),
+        escape = FALSE,
+        rownames= FALSE,
+        selection = 'none'
+        ) %>%
+      formatStyle(
+        columns=colnames(res),
+        style="bootstrap",
+        backgroundColor = tablebgcolor(),
+        color = tablecolor()
+        )
+      }
+    )
   
 
   # UI rending of search results
-  resultPage <<- renderUI(tagList(
-    fluidRow(
-      resultTable
-    )
+  output$panel1 <<- renderUI(tagList(
+
+             resultTable
+    
   ))
-  
-  output$mainPage <- resultPage
-  
-  #show hidden logo
-  show(id = "wrapperlogo")
-  show(id = "miniSearchBar")
-  show(id = "minisubmit")
-  hide(id = "genePageLink")
-  pageState <<- 2
+
+
 }
 
-
-# initiates search function on hitting the submit button
-observeEvent(
-  input$submit,
-  runSearchPage()
-)
 
 # initiates search function on hitting the minisubmit button
 observeEvent(

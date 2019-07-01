@@ -55,7 +55,7 @@ observeEvent(input$varClick, {
                                           digits = -2)
   search.Term <- gsub("(\\d+):(\\d+)-\\d+ \\((\\w+)/(\\w*)\\)", "\\1-\\2-\\3-\\4", var[1,1])
   var$rsID <- ifelse(var$rsID == ".", "", var$rsID)
-  output$mainPage <- renderUI(tagList(
+  output$panel3 <- renderUI(tagList(
     fluidRow(
       column(width = 2,
              h1(tags$b("Variant:"))
@@ -120,11 +120,7 @@ observeEvent(input$varClick, {
     )
   )
   )
-  hide("mainPageLink")
-  hide("miniSearchBar")
-  hide("minisubmit")
   show("genePageLink")
-  pageState <<- 4
 })
 
 observeEvent(input$returnGene, {
@@ -249,7 +245,7 @@ observeEvent(input$returnGene, {
   #aggregateVariantTable$Count <-
   #colnames(aggregateVariantTable) <- c("Phenotype", "Frequency")
   #aggregateVariantTable <- fread(paste0("aggregate/", gene$id, ".txt"))
-  output$mainPage <- renderUI(tagList(
+  output$panel2 <- renderUI(tagList(
     fluidRow(
       column(width = 6,
              h1(gene$id),
@@ -263,11 +259,7 @@ observeEvent(input$returnGene, {
                                                                                                                                         , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
     )}), style = "margin: 12px 50px 50px 12px;"))
   ))
-  show(id = "mainPageLink")
-  hide(id = "miniSearchBar")
-  hide(id = "minisubmit")
   hide("genePageLink")
-  pageState <<- 3
 })
 
 output$mytable = renderTable({

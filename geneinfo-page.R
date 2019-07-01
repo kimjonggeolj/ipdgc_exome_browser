@@ -123,7 +123,7 @@ observeEvent(input$geneClick, {
   #aggregateVariantTable$Count <-
   #colnames(aggregateVariantTable) <- c("Phenotype", "Frequency")
   #aggregateVariantTable <- fread(paste0("aggregate/", gene$id, ".txt"))
-  output$mainPage <- renderUI(tagList(
+  output$panel2 <- renderUI(tagList(
     fluidRow(
       column(width = 6,
              h1(gene$id),
@@ -137,19 +137,10 @@ observeEvent(input$geneClick, {
                                                                                                     , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
     )}), style = "margin: 12px 50px 50px 12px;"))
   ))
-  show(id = "mainPageLink")
-  hide(id = "miniSearchBar")
-  hide(id = "minisubmit")
-  pageState <<- 3
 })
 
 #return to search results when clicking return to results
 observeEvent(input$returnResults, {
   output$mainPage <- resultPage
-  hide(id = "mainPageLink")
-  show(id = "miniSearchBar")
-  show(id = "minisubmit")
-  pageState <<- 2
-  #hide(id = "wrapperlogo")
 }
 )

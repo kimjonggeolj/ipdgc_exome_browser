@@ -5,18 +5,15 @@ library(shinyjs) # shiny javascript package provides basic javascript functions
 library(DT) # DT package provides interactive data table renders
 library(shinyWidgets)
 library(shinythemes) # may be used to add dark theme functionality
+#library(shinydashboard)
+#library(shinydashboardPlus)
 # enable bookmarking
 enableBookmarking(store = "url")
-pageState <<- 1
 # 1 = initial main page
 # 2 = result page
 # 3 = gene page
 # 4 = variant page
 
-mainSearchBar <- div(textInput("searchBar",
-                               label = NULL,
-                               placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000, rs1422910994",
-                               width = "100%"), class = "searchbar")
 
 miniSearchBar <- span(textInput("minisearchBar",
                                label = NULL,

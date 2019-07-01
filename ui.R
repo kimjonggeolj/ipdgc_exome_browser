@@ -1,6 +1,7 @@
 # This is the "UI file" of the app.
 # In reality, it only establishes the initial wrapper UI and a window for search results.
 ui <- tagList(
+
   
   #========Below is part I of sample Google login API==========
   
@@ -17,20 +18,19 @@ ui <- tagList(
             # activate javascript package
             useShinyjs(),
             #theme = shinytheme("cyborg"),
+            uiOutput("darktheme"),
+            includeCSS("www/theme.css"),
+            tags$script(src = "clickdetect.js"),
             fluidRow(
               column(width = 10,
                      # start hidden, show when search is performed
-                     hidden(actionLink("wrapperlogo", uiOutput("wrapperlogo")),
-                            #actionLink("main", "Main"),
-                            span(
-                              actionLink("returnResults", "Return to results"), id = "mainPageLink")),
-                     hidden(miniSearchBar, miniSubmitButton),
-                     hidden(span(
-                       actionLink("returnGene", "Go to gene page"), id = "genePageLink"))
+                     actionLink("wrapperlogo", uiOutput("wrapperlogo")),
+                     miniSearchBar,
+                     miniSubmitButton
                      ),
               column(width = 2,
                      div(actionLink("about", "About"), id = "top-row")),
-              hr()),
+              hr(),
             materialSwitch(
               inputId = "darktheme",
               label = "Dark Theme",
@@ -39,13 +39,33 @@ ui <- tagList(
               width = "150px",
               inline = T
             ),
+            fluidRow(
+              div(
+                h4("Search Result"),
+                uiOutput("panel1")
+              )
+            ),
+            splitLayout(
+              div(
+                h4("Gene"),
+                uiOutput("panel2")
+                ),
+              div(
+                h4("Variant"),
+                uiOutput("panel3")
+              )
+            )
+  )
+)
+)
+
+
             # This uiOutput allows rendering of UI inside this initial wrapper UI
             # When you want to render a UI inside the wrapper, define a "mainpage" variable
             # with renderUI() + whatever UI elements you want.
-            uiOutput("mainPage"),
-            tags$script(src = "clickdetect.js"),
-            uiOutput("darktheme"),
-            includeCSS("www/theme.css")
+            #uiOutput("mainPage"),
+            
+            
             
             #========Below is part II of sample Google login API==========
             # , div(id="signin", class="g-signin2", "data-onsuccess"="onSignIn"),
@@ -54,6 +74,5 @@ ui <- tagList(
             #               dt("Email"), dd(textOutput("g.email")),
             #               dt("Image"), dd(uiOutput("g.image")) ))
             #=============================================================
-  )
-)
+
 #uiOutput("wrapUI")
