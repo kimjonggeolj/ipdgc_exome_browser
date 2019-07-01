@@ -3,7 +3,7 @@ observeEvent(input$darktheme, {
   if (input$darktheme == T) {
     output$darktheme <<- renderUI({
       tags$head(tags$link(rel = "stylesheet", type = "text/css",
-                          href = "darkly.min.css"#shinytheme("darkly")
+                          href = "darktheme.css"#shinytheme("darkly")
       ))
     })
     
@@ -13,7 +13,7 @@ observeEvent(input$darktheme, {
   } else {
     output$darktheme <<- renderUI({
       tags$head(tags$link(rel = "stylesheet", type = "text/css",
-                                                       href = "yeti.min.css" #shinytheme("yeti")
+                                                       href = "theme.css" #shinytheme("yeti")
                           ))
     })
     output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))
@@ -34,7 +34,8 @@ tablecolor <- reactive({
 
 tablebgcolor <- reactive({
   if (input$darktheme == T) {
-    '#282828'
+    'rgba(56, 56, 56)'
+    #'#282828'
   } else {
     '#FFFFFF'
   }

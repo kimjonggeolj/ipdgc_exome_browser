@@ -1,70 +1,68 @@
 /* Shiny-Dashboard Overrides*/
 .skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
-  background-color:#ecf0f5;
+  background-color:#121212;
 }
 
-.skin-black .main-header .logo {
-    background-color: #fff;
+.skin-black .main-header>.logo {
+    background-color: rgba(56, 56, 56);
 }
 
 .skin-black .main-header .navbar {
-    background-color: #fff;
+    background-color: rgba(56, 56, 56);
 }
 
 .box {
-    background-color:#fff;
+    background-color: rgba(255, 255, 255, 0.16);
+    color: white;
+}
+
+.box-header>.box-title {
+    color: white;
+  }
+
+.dataTables_length > label {
+    color: white;
+}
+
+.dataTables_length > label > select {
     color: black;
 }
 
-.box-header .box-title {
-  color: black;
-}
-
-.dataTables_length label {
-  color: black;
-}
-
-.dataTables_length label select {
-  color: black;
-}
-
 label[for=minisearchBar] {
-  color: black;
+    color: white;
 }
 
 .dataTables_filter label {
-  color: black;
-}
+    color: white;
+  }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button {
-  color:#333!important
-}
+    color:rgb(169, 169, 169)!important
+  }
 
 .ellipsis {
-  color:#333;
+    color:rgb(169, 169, 169);
 }
 
 input[type=search] {
-  background-color:#fff;
-  color:black;
-}
+    background-color:rgba(56, 56, 56);
+    color: white;
+  }
 
 input#minisearchBar_Text {
-  background-color: #fff;
-  color:black;
-}
-
+    background-color: rgba(56, 56, 56);
+    color:white;
+  }
 a {
-  color: #3c8dbc;
-}
+    color: #97d9ff;
+  }
 
 .wrapper .main-header .logo {
   height: 87.5px;
-  background-color:#fff
 }
-
+ 
 .content-wrapper, .right-side {
-  background-color: #ecf0f5
+    background-color: #121212
 }
 
 /* Rest */

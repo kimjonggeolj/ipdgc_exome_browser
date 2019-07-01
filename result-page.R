@@ -87,10 +87,10 @@ runSearchPage <- function() {
     {
       datatable(
         res,
-        options = list(
-          autoWidth = TRUE,
-          columnDefs = list(list(width = '10%', targets = c(1, 3)))
-        ),
+        # options = list(
+        #   autoWidth = TRUE,
+        #   columnDefs = list(list(width = '10%', targets = c(1, 3)))
+        # ),
         escape = FALSE,
         rownames= FALSE,
         selection = 'none'
@@ -107,9 +107,7 @@ runSearchPage <- function() {
 
   # UI rending of search results
   output$panel1 <<- renderUI(tagList(
-
              resultTable
-    
   ))
 
 
@@ -118,7 +116,7 @@ runSearchPage <- function() {
 
 # initiates search function on hitting the minisubmit button
 observeEvent(
-    input$minisubmit,
+    input$minisearchBar,
     runSearchPage()
   )
 
