@@ -13,7 +13,7 @@ observeEvent(input$darktheme, {
   } else {
     output$darktheme <<- renderUI({
       tags$head(tags$link(rel = "stylesheet", type = "text/css",
-                                                       href = "theme.css" #shinytheme("yeti")
+                                                       href = "lighttheme.css" #shinytheme("yeti")
                           ))
     })
     output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))

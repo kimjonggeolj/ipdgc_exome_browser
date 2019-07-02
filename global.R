@@ -7,8 +7,9 @@ library(shinyWidgets)
 library(shinythemes) # may be used to add dark theme functionality
 library(shinydashboard)
 library(shinydashboardPlus)
+library(shinyanimate)
 # enable bookmarking
-enableBookmarking(store = "url")
+# enableBookmarking(store = "url")
 # 1 = initial main page
 # 2 = result page
 # 3 = gene page

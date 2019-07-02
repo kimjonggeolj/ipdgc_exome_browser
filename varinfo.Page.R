@@ -69,7 +69,6 @@ observeEvent(input$varClick, {
     digits = -2
   )
   
-  search.Term <- gsub("(\\d+):(\\d+)-\\d+ \\((\\w+)/(\\w*)\\)", "\\1-\\2-\\3-\\4", var[1,1])
   var$rsID <- ifelse(var$rsID == ".", "", var$rsID)
   output$panel3 <- renderUI(tagList(
     fluidRow(
@@ -88,17 +87,19 @@ observeEvent(input$varClick, {
                 tags$sup(
                   a(href = paste0(
                     "https://www.ai-omni.com/search=",
-                    gsub("(\\d+:\\d+)-\\d+ .*", "chr\\1", var$`Exome name (hg19)`),
+                    gsub("(\\d+:\\d+).+", "chr\\1", var[1,1]),
                     "/page=1"),
                     target = "_blank",
                     "omni"),
-                  a(href = paste0("https://gnomad.broadinstitute.org/variant/", search.Term),
+                  a(href = paste0("https://gnomad.broadinstitute.org/variant/", var[1,1]),
                     target = "_blank",
                     "gnomad"),
-                  a(href = paste0("https://bravo.sph.umich.edu/freeze3a/hg19/variant/", search.Term),
+                  a(href = paste0("https://bravo.sph.umich.edu/freeze5/hg38/variant/",
+                                  gsub("(\\d+):(\\d+):(.*):(.*)", "\\1-\\2-\\3-\\4", var[1,2])
+                                       ),
                     target = "_blank",
                     "bravo"),
-                  a(href = paste0("https://www.ncbi.nlm.nih.gov/snp/", var$rsID),
+                  a(href = paste0("https://www.ncbi.nlm.nih.gov/snp/", var$rsID[1]),
                     target = "_blank",
                     ifelse(var$rsID == "", "", "dbSNP"))
                 )),

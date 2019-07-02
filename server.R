@@ -6,6 +6,9 @@ server <- function(input, output, session) {
   # } else {
   #   setBookmarkExclude(c("about", "minisearchBar", "searchBar", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults", "resPageId"))
   # }
+  
+  
+  
   # observe({
   #   # Trigger this observer every time an input changes
   #   reactiveValuesToList(input)
@@ -14,8 +17,21 @@ server <- function(input, output, session) {
   # onBookmarked(function(url) {
   #   updateQueryString(url)
   # })
-  
 
+  
+  show("startLogo")
+  
+  startAnim(session,
+            id = "startLogo",
+            type = "fadeIn")
+  
+  delay(2000,
+        {
+          show("uiPage")
+          hide("loadingPage")
+        }
+  )
+  
   source("darktheme.R", local = T)
 
 
@@ -38,5 +54,4 @@ server <- function(input, output, session) {
   source("googlelogin-server.R", local = T)
   
   source('varinfo.Page.R', local = T)
-  pageState <<- 1
 }

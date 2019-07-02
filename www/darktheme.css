@@ -54,7 +54,7 @@ input#minisearchBar_Text {
     color:white;
   }
 a {
-    color: #97d9ff;
+    color: #ffaf24;
   }
 
 .wrapper .main-header .logo {
@@ -65,81 +65,7 @@ a {
     background-color: #121212
 }
 
-/* Rest */
-.mainlogo {
-  display:block;
-  margin-top: 10%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 12px;
-  width: 500px;
-}
-
- #wrapperlogo {
-   display:inline-block;
-  height:70px;
-  width:162px;
-  margin:4px 5px 10px 0px;
- }
- 
- /div#wrapperlogo.shiny-html-output.shiny-bound-output{
-   width:170px;
- }
- .searchbar {
-   display:block;
-   margin-left: auto;
-   margin-right: auto;
-   width:75%;
- }
- 
- .center {
-   display:block;
-   margin-left: auto;
-   margin-right: auto;
-   width:50%;
- }
- 
- #top-row {
-   text-align:right;
-   margin-right:1%;
-   margin-top:1%;
-   margin-bottom:1%;
-   font-weight:bold;
- }
- 
- #mainPageLink {
-   text-align:left;
-   margin:auto;
-   //margin-left:1%;
-   //margin-top:1%;
-   //margin-bottom:1%;
- }
- 
-hr {
-      display: block;
-      position: relative;
-      padding: 0;
-      margin: 8px auto;
-      height: 0;
-      width: 100%;
-      max-height: 0;
-      font-size: 1px;
-      line-height: 0;
-      clear: both;
-      border: none;
-      border-top: 1px solid #ffffff;
-      border-bottom: 1px solid #e0e0e0;
-}
-
-.paddedrow {
- padding-top:30px;
- padding-bottom:30px;
-}
-
-#aggregateVariantTable {
- float:right;
-}
-
-.form-group .shiny-input-container {
- padding-bottom:0px;
+/* Dark theme switch label*/
+.state label span {
+    color:#fff;
 }

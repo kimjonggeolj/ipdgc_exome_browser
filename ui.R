@@ -14,60 +14,84 @@ ui <- tagList(
   
   #============================================================
   useShinyjs(),
-  #includeCSS("www/theme.css"),
+  withAnim(),
+  includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
   uiOutput("darktheme"),
-  dashboardPagePlus(
-    header = dashboardHeaderPlus(
-      title = uiOutput("wrapperlogo"),
-      #title = img(src = "ipdgc_gb_small.png", id = "wrapperlogo"),
-      left_menu = tagList(
-        # uiOutput("wrapperlogo"),
-        div(
-          column(
-            width = 9,
-            miniSearchBar
-          ),
-          column(
-            width = 2,
-            switchInput(
-              inputId = "darktheme",
-              label = "Dark Theme",
-              value = F,
-              #status = "warning",
-              #width = "150px",
-              size =  "mini",
-              inline = F
-            )
+  div(
+    id = "loadingPage",
+    hidden(img(src = "ipdgc_gb.png", id = "startLogo"))
+  ),
+  hidden(
+    div(
+      id = "uiPage",
+      dashboardPagePlus(
+        header = dashboardHeaderPlus(
+          title = uiOutput("wrapperlogo"),
+          #title = img(src = "ipdgc_gb_small.png", id = "wrapperlogo"),
+          left_menu = tagList(
+            # uiOutput("wrapperlogo"),
+            fluidRow(
+              column(
+                width = 8,
+                miniSearchBar
+              ),
+              column(
+                width = 3,
+                # switchInput(
+                #   inputId = "darktheme",
+                #   label = "Dark Theme",
+                #   value = F,
+                #   #status = "warning",
+                #   #width = "150px",
+                #   size =  "mini",
+                #   inline = F
+                # )
+                div(
+                  id = "top-row",
+                  prettySwitch(
+                    inputId = "darktheme",
+                    label = "Enable Dark Theme",
+                    slim = F,
+                    inline = T
+                  )
+                )
+              )
+                # div(
+                #   actionLink("about", "About"),
+                #   id = "top-row"
+                # )
+              
+              )
           )
-        )
+        ),
+        sidebar = dashboardSidebar(
+          disable = T
+        ),
+        body = dashboardBody(
+          boxPlus(
+            title = "Search Results",
+            uiOutput("panel1"),
+            width = 12,
+            closable = F
+          ),
+          boxPlus(
+            title = "Gene",
+            uiOutput("panel2"),
+            id = "genebox",
+            closable = F
+          ),
+          boxPlus(
+            title = "Variant",
+            uiOutput("panel3"),
+            closable = F
+          )
+        ),
+        title = "IPDGC Genome Browser",
+        sidebar_fullCollapse = T,
+        skin = "black"
       )
-    ),
-    sidebar = dashboardSidebar(
-      disable = T
-    ),
-    body = dashboardBody(
-      boxPlus(
-        title = "Search Results",
-        uiOutput("panel1"),
-        width = 12,
-        closable = F
-      ),
-      boxPlus(
-        title = "Gene",
-        uiOutput("panel2"),
-        id = "genebox",
-        closable = F
-      ),
-      boxPlus(
-        title = "Variant",
-        uiOutput("panel3"),
-        closable = F
-      )
-    ),
-    title = "IPDGC Genome Browser",
-    sidebar_fullCollapse = T,
-    skin = "black"
+    )
   )
 )
 

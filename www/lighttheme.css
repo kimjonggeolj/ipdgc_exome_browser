@@ -1,0 +1,73 @@
+/* Shiny-Dashboard Overrides*/
+.skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
+  background-color:#ecf0f5;
+}
+
+.skin-black .main-header .logo {
+    background-color: #fff;
+}
+
+.skin-black .main-header .navbar {
+    background-color: #fff;
+}
+
+.box {
+    background-color:#fff;
+    color: black;
+}
+
+.box-header .box-title {
+  color: black;
+}
+
+.dataTables_length label {
+  color: black;
+}
+
+.dataTables_length label select {
+  color: black;
+}
+
+label[for=minisearchBar] {
+  color: black;
+}
+
+.dataTables_filter label {
+  color: black;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  color:#333!important
+}
+
+.ellipsis {
+  color:#333;
+}
+
+input[type=search] {
+  background-color:#fff;
+  color:black;
+}
+
+input#minisearchBar_Text {
+  background-color: #fff;
+  color:black;
+}
+
+a {
+  color: #3c8dbc;
+}
+
+.wrapper .main-header .logo {
+  height: 87.5px;
+  background-color:#fff
+}
+
+.content-wrapper, .right-side {
+  background-color: #ecf0f5
+}
+
+/* Dark theme switch label*/
+.state label span {
+    color:black;
+}
