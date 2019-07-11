@@ -1,4 +1,12 @@
 /* Rest */
+#fixedDLButton{
+  right:25px;
+  bottom:25px;
+  position:fixed;
+  cursor:inherit;
+  z-index:3;
+}
+
 #startLogo {
   display:block;
   margin-top: 15%;

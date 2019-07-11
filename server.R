@@ -17,7 +17,6 @@ server <- function(input, output, session) {
   # onBookmarked(function(url) {
   #   updateQueryString(url)
   # })
-
   
   show("startLogo")
   
@@ -25,9 +24,10 @@ server <- function(input, output, session) {
             id = "startLogo",
             type = "fadeIn")
   
-  delay(2000,
+  delay(1500,
         {
           show("uiPage")
+          show("fixedDLButton")
           hide("loadingPage")
         }
   )

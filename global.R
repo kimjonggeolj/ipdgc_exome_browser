@@ -19,7 +19,7 @@ library(shinyanimate)
 miniSearchBar <- searchInput(
   inputId = "minisearchBar", 
   label = "Enter your search terms:", 
-  placeholder = "e.g. LRRK2, chr12, 12:40000000-50000000, rs1422910994", 
+  placeholder = "e.g. LRRK2, chr12, 12:40196744, 12:40000000-50000000, rs1422910994", 
   btnSearch = icon("search"), 
   btnReset = icon("remove"), 
   width = "50%"

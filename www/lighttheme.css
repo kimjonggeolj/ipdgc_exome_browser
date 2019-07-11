@@ -67,6 +67,12 @@ a {
   background-color: #ecf0f5
 }
 
+/* Shiny Widget overrides*/
+.dropdown-menu.dropdown-menu-right.dropdown-shinyWidgets {
+    background-color: #ecf0f5;
+    border-color:#eee;
+}
+
 /* Dark theme switch label*/
 .state label span {
     color:black;

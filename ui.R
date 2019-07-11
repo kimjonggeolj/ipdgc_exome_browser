@@ -24,6 +24,44 @@ ui <- tagList(
   ),
   hidden(
     div(
+      id = "fixedDLButton",
+      dropdownButton(
+        prettyToggle(
+          status_off = "primary",
+          status_on = "danger",
+          # icon_on = icon("cog"),
+          # icon_off = icon("cog"),
+          animation = "pulse",
+          inputId = "buildSwitch",
+          label_on = "hg38",
+          label_off = "hg19",
+          inline = T,
+          bigger = T
+        ),
+        prettyToggle(
+          inputId = "darktheme",
+          # icon_on = icon("moon"),
+          # icon_off = icon("lightbulb"),
+          animation = "pulse",
+          status_off = "primary",
+          status_on = "warning",
+          label_on = "Dark Theme",
+          label_off = "Light Theme",
+          inline = T,
+          bigger = T
+        ),
+        circle = T,
+        status = "DLInput",
+        icon = icon("cogs"),
+        width = "100px",
+        up = T,
+        right = T,
+        tooltip = tooltipOptions(
+          placement = "top",
+          title = "Click me for options/settings"
+          )
+      )),
+    div(
       id = "uiPage",
       dashboardPagePlus(
         header = dashboardHeaderPlus(
@@ -35,28 +73,28 @@ ui <- tagList(
               column(
                 width = 8,
                 miniSearchBar
-              ),
-              column(
-                width = 3,
-                # switchInput(
-                #   inputId = "darktheme",
-                #   label = "Dark Theme",
-                #   value = F,
-                #   #status = "warning",
-                #   #width = "150px",
-                #   size =  "mini",
-                #   inline = F
-                # )
-                div(
-                  id = "top-row",
-                  prettySwitch(
-                    inputId = "darktheme",
-                    label = "Enable Dark Theme",
-                    slim = F,
-                    inline = T
-                  )
-                )
-              )
+              )#,
+              # column(
+              #   width = 3,
+              #   # switchInput(
+              #   #   inputId = "darktheme",
+              #   #   label = "Dark Theme",
+              #   #   value = F,
+              #   #   #status = "warning",
+              #   #   #width = "150px",
+              #   #   size =  "mini",
+              #   #   inline = F
+              #   # )
+              #   div(
+              #     id = "top-row",
+              #     prettySwitch(
+              #       inputId = "darktheme",
+              #       label = "Enable Dark Theme",
+              #       slim = F,
+              #       inline = T
+              #     )
+              #   )
+              # )
                 # div(
                 #   actionLink("about", "About"),
                 #   id = "top-row"

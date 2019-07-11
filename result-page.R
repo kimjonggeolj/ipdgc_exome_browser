@@ -7,18 +7,36 @@ searchSwitch <- "geneID"
 # 4. chromosome number + base pair range (XX:YYYYYYY-ZZZZZZZ)
 # NEED TO ADD: rsID (may be a huge headache due to excessive number of rsIDs)
 # Maybe gene name????
+# eventReactive(
+#   searchString,
+#   {
+#     if (input$buildSwitch == F) {
+#       ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+#       setkey(ranges, `37bp1`, `37bp2`)
+#     } else {
+#       ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+#       setkey(ranges, `38bp1`, `38bp2`)
+#     }
+#   }
+# )
+
 searchFunction <- function (searchGene, searchString = input$searchBar, type) {
   # this is setting up for base pair range search
   dat <- if(searchGene) {geneList} else {varList}
-  ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
-  setkey(ranges, `37bp1`, `37bp2`)
   preOverlap <- dat[grepl(gsub("^(\\d+):.*$", "\\1",searchString, ignore.case = T),
         dat$chr,
         ignore.case = T)]
+  if (input$buildSwitch == F) {
+    ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+    setkey(ranges, `37bp1`, `37bp2`)
+  } else {
+    ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+    setkey(ranges, `38bp1`, `38bp2`)
+  }
   switch(type,
          geneID = dat[grepl(searchString, dat$id, ignore.case = T)],
          chr = dat[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), dat$chr, ignore.case = T)],
-         chrbp = subset( #first subset by chromosome number
+         chrbp37 = subset( #first subset by chromosome number
            subset(dat,
                   grepl(gsub("^(\\d+):.*$", "\\1",searchString, ignore.case = T),
                         dat$chr,
@@ -29,6 +47,19 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
              as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T)),
              dat$`37bp1`,
              dat$`37bp2`
+           )
+         ),
+         chrbp38 = subset( #first subset by chromosome number
+           subset(dat,
+                  grepl(gsub("^(\\d+):.*$", "\\1",searchString, ignore.case = T),
+                        dat$chr,
+                        ignore.case = T)
+           ),
+           # then see if provided bp is in any bp range of the genes
+           inrange(
+             as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T)),
+             dat$`38bp1`,
+             dat$`38bp2`
            )
          ),
          # look for overlap between provided bp ranges
@@ -48,7 +79,11 @@ runSearchPage <- function() {
   if (grepl("^chr\\d+$", searchSelect, ignore.case = T)) {
     searchSwitch <- "chr"
   } else if (grepl("^\\d+:\\d*$", searchSelect, ignore.case = T)){
-    searchSwitch <- "chrbp"
+    if (input$buildSwitch == F){
+      searchSwitch <- "chrbp37"
+    } else {
+      searchSwitch <- "chrbp38"
+    }
   } else if (grepl("^\\d{1,2}:\\d+-\\d+$", searchSelect, ignore.case = T)) {
     searchSwitch <- "chrbpRange"
   } else if (grepl("^rs\\d*", searchSelect, ignore.case = T)) {
@@ -60,8 +95,13 @@ runSearchPage <- function() {
   res <- searchFunction(searchGene = listSwitch,
     searchString = searchSelect,  type = searchSwitch)
   if (listSwitch) {
-    res <- res[,c(1:3,6,7)]
-    colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+    if (input$buildSwitch == F) {
+      res <- res[,c(1:3,6,7)]
+      # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+    } else {
+      res <- res[,c(1:5)]
+      # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+    }
     #storedRes <<- res
     for (i in 1:nrow(res)) {
       res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
@@ -107,8 +147,17 @@ runSearchPage <- function() {
 
   # UI rending of search results
   output$panel1 <<- renderUI(tagList(
-             resultTable
-  ))
+    h4(
+      "Current build:",
+      ifelse(
+        input$buildSwitch,
+        "hg38",
+        "hg19"
+        )
+      ),
+    resultTable
+  )
+  )
 
 
 }
@@ -116,8 +165,28 @@ runSearchPage <- function() {
 
 # initiates search function on hitting the minisubmit button
 observeEvent(
-    input$minisearchBar,
+    input$minisearchBar, #input$minisearchBar_search
     runSearchPage()
   )
 
+observeEvent(
+  input$buildSwitch,
+  runSearchPage()
+)
 
+# observeEvent(
+#   input$buildSwitch,
+#   {
+#     val <- input$minisearchBar
+#     updateSearchInput(
+#       session,
+#       inputId = "minisearchBar",
+#       value = ""
+#     )
+#     # updateSearchInput(
+#     #   session,
+#     #   inputId = "minisearchBar",
+#     #   value = val
+#     # )
+#   }
+# )
