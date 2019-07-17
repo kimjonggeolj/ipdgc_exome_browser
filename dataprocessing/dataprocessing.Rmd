@@ -1,0 +1,165 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(data.table)
+library(tidyverse)
+# library(biomaRt)
+load("../data/varDat.hg19.RData")
+# gene.Names <- dat[, "Gene.refGene"]
+# gene.Names <- unique(dat[, "Gene.refGene"])
+
+gene.Names <- fread("uniquegenes.txt")
+gene.Names <- unique(gene.Names)
+
+ref <- fread("refFlat.txt", header = F)
+
+# schema from: https://genome.ucsc.edu/goldenpath/gbdDescriptions.html
+colnames(ref) <- c("geneName", "name", "chrom", "strand", "txStart", "txEnd", "cdsStart", "cdsEnd", "exonCount", "exonStarts", "exonEnds")
+colnames(gene.Names) <- "geneName"
+
+ref$bpdif <- ref$txEnd - ref$txStart
+
+ref <- ref[order(geneName, -bpdif), ]
+
+gene.Names.Anno <- merge(ref, gene.Names, by = "geneName") # [, c("geneName", "name", "strand", "chrom", "txStart", "txEnd")]
+genes.to.remove <- gene.Names.Anno[duplicated(gene.Names.Anno$geneName)][,c("geneName", "name", "bpdif")]
+
+gene.Names.Anno.Filtered <- as.data.table(anti_join(gene.Names.Anno, genes.to.remove, by = "name")[, c("geneName", "chrom", "txStart", "txEnd")])
+
+unavailable <- anti_join(gene.Names, gene.Names.Anno.Filtered[, "geneName"])
+
+# gene.Names.Anno <- gene.Names.Anno[order(geneName, bpdif), ]
+
+
+# gene.Names.Anno.Unique <- unique(gene.Names.Anno)
+
+
+
+# 
+human <- useMart("ENSEMBL_MART_ENSEMBL", host = "grch37.ensembl.org", dataset = "hsapiens_gene_ensembl")
+# 
+gene.Names.Anno2 <- as.data.table(getBM(attributes = c('hgnc_symbol', 'chromosome_name', 'start_position', 'end_position'), 
+                         filters = 'hgnc_symbol',
+                         values = unavailable,
+                         mart = human)
+)
+
+gene.Names.Anno2$bpdif <- gene.Names.Anno2$end_position - gene.Names.Anno2$start_position
+gene.Names.Anno2 <- gene.Names.Anno2[order(hgnc_symbol, bpdif), ]
+genes.to.remove <- gene.Names.Anno2[duplicated(gene.Names.Anno2$hgnc_symbol)]
+
+gene.Names.Anno2.Filtered <- as.data.table(anti_join(gene.Names.Anno2, genes.to.remove, by = "hgnc_symbol"))[, -c("bpdif")]
+
+# fixing a chromosome position
+gene.Names.Anno2.Filtered[13, 2] <- 6
+
+colnames(gene.Names.Anno2.Filtered) <- colnames(gene.Names.Anno.Filtered)
+
+unavailable2 <- anti_join(unavailable, gene.Names.Anno2.Filtered[, "geneName"])
+
+
+# 
+# gene.Names.Anno2 <- as.data.table(getBM(attributes = c('external_gene_name', 'chromosome_name', 'start_position', 'end_position'), 
+#                          filters = 'external_gene_name', 
+#                          values = gene.Names, 
+#                          mart = human)
+# )
+# 
+# colnames(gene.Names.Anno)[1] <- "Gene.refGene"
+# colnames(gene.Names.Anno2)[1] <- "Gene.refGene"
+# 
+# # colnames(gene.Names) <- "Gene.refGene"
+# 
+# unavailable <- anti_join(gene.Names, gene.Names.Anno[, "Gene.refGene"])
+# 
+# #colnames(gene.Names) <- "external_gene_name"
+# unavailable2 <- anti_join(gene.Names, gene.Names.Anno2[, "Gene.refGene"])
+# 
+# anti_join(unavailable, unavailable2, by = )
+# 
+# gene.Names.Anno.numChr <- gene.Names.Anno[grepl("\\d+", hgnc_symbol)]
+
+refGene <- fread("hg19.refGene.txt.gz")[,c(2,3,5,6,13)]
+colnames(refGene) <- c("name", "chrom", "txStart", "txEnd", "geneName")
+
+refGene$bpdif <- refGene$txEnd - refGene$txStart
+
+refGene <- refGene[order(geneName, -bpdif), ]
+refGene$identifier <- paste0(refGene$geneName, refGene$txStart, refGene$txEnd, refGene$name)
+
+
+genes.to.remove <- refGene[duplicated(refGene$geneName)][,c("geneName", "name", "bpdif", "identifier")]
+
+
+refGene.Filtered <- as.data.table(anti_join(refGene, genes.to.remove, by = "identifier")[, c("geneName", "chrom", "txStart", "txEnd")])
+
+gene.Names.Anno3 <- merge(refGene.Filtered, unavailable2, by = "geneName") # [, c("geneName", "name", "strand", "chrom", "txStart", "txEnd")]
+# genes.to.remove <- gene.Names.Anno3[duplicated(gene.Names.Anno3$geneName)][,c("geneName", "name", "bpdif")]
+
+#gene.Names.Anno3.Filtered <- as.data.table(anti_join(gene.Names.Anno3, genes.to.remove, by = "name")[, c("geneName", "chrom", "txStart", "txEnd")])
+
+unavailable3 <- anti_join(unavailable2, gene.Names.Anno3[, "geneName"])
+
+
+
+gene.Names.Anno.Filtered$chrom <- gsub("chr(\\d+)", "\\1", gene.Names.Anno.Filtered$chrom)
+gene.Names.Anno3$chrom <- gsub("chr(\\d+).*", "\\1", gene.Names.Anno3$chrom)
+
+gene.Names.Anno.Aggregate <- rbind(gene.Names.Anno.Filtered, gene.Names.Anno2.Filtered, gene.Names.Anno3)
+# include 
+gene.Names.Anno.Aggregate$upstream <- NULL
+gene.Names.Anno.Aggregate$downstream <- NULL
+
+colnames(gene.Names.Anno.Aggregate) <- c("id", "chr", "37bp1", "37bp2")
+gene.Names.Anno.Aggregate$name <- NULL
+
+#gene.Names.Anno.Aggregate <- gene.Names.Anno.Aggregate[,c("id", "chr", "37bp1", "37bp2")]
+
+refname <- fread("hgnc_complete_set.txt")[, c(2,3)]
+colnames(refname)[1] <- "id"
+
+#refname2 <- refname %>% rename("refName" = "name")
+
+gene.Names.Anno.Aggregate.Name <- left_join(gene.Names.Anno.Aggregate, refname, by = "id")
+gene.Names.Anno.Aggregate.Name$`38bp1` <- ""
+gene.Names.Anno.Aggregate.Name$`38bp2` <- ""
+
+gene.Names.Anno.Aggregate.Name <- gene.Names.Anno.Aggregate.Name[ , c("id", "name", "chr", "38bp1", "38bp2", "37bp1", "37bp2")]
+
+# fwrite(gene.Names.Anno.Aggregate.Name, "../www/geneList.txt")
+# gene.Names.Anno.Aggregate$upstream <- gene.Names.Anno.Aggregate$txStart - 1000
+# gene.Names.Anno.Aggregate$downstream <- gene.Names.Anno.Aggregate$txEnd + 1000
+
+res <- gene.Names.Anno.Aggregate.Name
+
+for (i in 1:nrow(res)) {
+      res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
+}
+
+fwrite(res, "../www/geneList.txt")
+
+```
+
+varList processing
+```{r}
+library(data.table)
+library(tidyverse)
+
+load("../data/varDat.hg19.RData")
+
+prevarList <- dat[, c("HG19_ID", "Chr", "Start", "End", "Gene.refGene", "avsnp150")]
+varList.nested <- list()
+for (i in 1:22) {
+  varList.nested[i] <- prevarList[[grepl(i, prevarList$Chr)]]
+}
+varList.nested <- split(prevarList, prevarList$Chr)
+
+save(varList.nested, file = "varList.RData")
+
+```
+

@@ -72,6 +72,18 @@ a {
     background-color: #ecf0f5;
     border-color:#eee;
 }
+.sw-show.sw-dropdown-content {
+  background-color: #ecf0f5;
+  border-color:#eee;
+}
+.sw-dropdown-in {
+  background-color: #ecf0f5;
+  border-color:#eee;
+}
+.bttn-jelly.bttn-primary{
+  background-color: #1d89ff;
+  color:#fff;
+}
 
 /* Dark theme switch label*/
 .state label span {

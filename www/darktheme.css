@@ -67,8 +67,20 @@ a {
 
 /* Shiny Widget overrides*/
 .dropdown-menu.dropdown-menu-right.dropdown-shinyWidgets {
-    background-color: rgba(255, 255, 255, 0.16);
+    background-color: rgba(56, 56, 56);
     border-color: rgba(56, 56, 56);
+}
+.sw-show.sw-dropdown-content {
+  background-color: rgba(56, 56, 56);
+  border-color: rgba(56, 56, 56);
+}
+.sw-dropdown-in {
+  background-color: rgba(56, 56, 56);
+  border-color: rgba(56, 56, 56);
+}
+.bttn-jelly.bttn-primary{
+  background-color: #ffaf24;
+  color:rgba(56, 56, 56);
 }
 
 /* Dark theme switch label*/

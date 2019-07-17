@@ -163,7 +163,7 @@ observeEvent(input$geneClick, {
 })
 
 #return to search results when clicking return to results
-observeEvent(input$returnResults, {
-  output$mainPage <- resultPage
-}
-)
+# observeEvent(input$returnResults, {
+#   output$mainPage <- resultPage
+# }
+# )

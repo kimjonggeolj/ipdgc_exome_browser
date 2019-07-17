@@ -1,6 +1,7 @@
 geneList <- fread("www/geneList.txt")
 
-varList <- fread("www/varList.txt")
+#varList <- fread("www/varList.txt")
+load("www/varList.RData")
 
 #varList <- data.table("rsID" = "rs1422910994", "id" = "LRRK2")
 

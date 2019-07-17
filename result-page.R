@@ -45,8 +45,8 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
            # then see if provided bp is in any bp range of the genes
            inrange(
              as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T)),
-             dat$`37bp1`,
-             dat$`37bp2`
+             as.numeric(dat$`37bp1`)-1000,
+             as.numeric(dat$`37bp2`)+1000
            )
          ),
          chrbp38 = subset( #first subset by chromosome number
@@ -96,17 +96,17 @@ runSearchPage <- function() {
     searchString = searchSelect,  type = searchSwitch)
   if (listSwitch) {
     if (input$buildSwitch == F) {
-      res <- res[,c(1:3,6,7)]
+      res <- res[,c(1,3,6,7,2)]
       # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
     } else {
-      res <- res[,c(1:5)]
+      res <- res[,c(1,3:5,2)]
       # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
     }
     #storedRes <<- res
-    for (i in 1:nrow(res)) {
-      res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
-    }
-    colnames(res) <- c("Gene ID", "Gene Name", "Chromosome", "BP-Start", "BP-End")
+    # for (i in 1:nrow(res)) {
+    #   res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
+    # }
+    colnames(res) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
   } else {
     #storedRes <<- res
     colnames(res) <- c("Position (Ref/Alt)", "rsID", "Gene ID")
@@ -165,7 +165,7 @@ runSearchPage <- function() {
 
 # initiates search function on hitting the minisubmit button
 observeEvent(
-    input$minisearchBar, #input$minisearchBar_search
+    input$minisearchBar_search,
     runSearchPage()
   )
 

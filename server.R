@@ -20,9 +20,58 @@ server <- function(input, output, session) {
   
   show("startLogo")
   
+  # output$optionsButton <- renderUI(
+  #   {
+  #     div(
+  #       id = "fixedDLButton",
+  #       dropdown(
+  #         prettyToggle(
+  #           status_off = "primary",
+  #           status_on = "danger",
+  #           # icon_on = icon("cog"),
+  #           # icon_off = icon("cog"),
+  #           animation = "pulse",
+  #           inputId = "buildSwitch",
+  #           label_on = "hg38",
+  #           label_off = "hg19",
+  #           inline = T,
+  #           bigger = T
+  #         ),
+  #         prettyToggle(
+  #           inputId = "darktheme",
+  #           # icon_on = icon("moon"),
+  #           # icon_off = icon("lightbulb"),
+  #           animation = "pulse",
+  #           status_off = "primary",
+  #           status_on = "warning",
+  #           label_on = "Dark Theme",
+  #           label_off = "Light Theme",
+  #           inline = T,
+  #           bigger = T
+  #         ),
+  #         style = "material-circle",
+  #         # circle = T,
+  #         status = ifelse(input$darktheme, "warning", "primary"),
+  #         icon = icon("cogs"),
+  #         width = "150px",
+  #         up = T,
+  #         right = T
+  #         # tooltip = tooltipOptions(
+  #         #   placement = "top",
+  #         #   title = "Click me for options/settings"
+  #         #   )
+  #         # animate = animateOptions(
+  #         #   enter = animations$fading_entrances$fadeInLeftBig,
+  #         #   exit = animations$fading_exits$fadeOutRightBig
+  #         # )
+  #       )
+  #       )
+  #   }
+  # )
+  
   startAnim(session,
             id = "startLogo",
-            type = "fadeIn")
+            type = "flipInX")
   
   delay(1500,
         {
