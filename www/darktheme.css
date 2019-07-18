@@ -87,3 +87,9 @@ a {
 .state label span {
     color:#fff;
 }
+
+/* Table */
+.dataTables_empty {
+  background-color:#b1b1b1;
+  color:white;
+}

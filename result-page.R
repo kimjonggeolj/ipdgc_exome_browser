@@ -20,12 +20,17 @@ searchSwitch <- "geneID"
 #   }
 # )
 
+######## TO DO- integrate searchFunction + searchFunctionVar to make it more efficient
+
 searchFunction <- function (searchGene, searchString = input$searchBar, type) {
   # this is setting up for base pair range search
-  dat <- if(searchGene) {geneList} else {varList}
-  preOverlap <- dat[grepl(gsub("^(\\d+):.*$", "\\1",searchString, ignore.case = T),
+  dat <- geneList #if(searchGene) {geneList} else {varList}
+  preOverlap <- dat[grepl(gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T),
         dat$chr,
         ignore.case = T)]
+  if (grepl("\\d+:\\d+", searchString)) {
+    chrom <- gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T)
+  }
   if (input$buildSwitch == F) {
     ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
     setkey(ranges, `37bp1`, `37bp2`)
@@ -36,37 +41,72 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
   switch(type,
          geneID = dat[grepl(searchString, dat$id, ignore.case = T)],
          chr = dat[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), dat$chr, ignore.case = T)],
-         chrbp37 = subset( #first subset by chromosome number
-           subset(dat,
-                  grepl(gsub("^(\\d+):.*$", "\\1",searchString, ignore.case = T),
-                        dat$chr,
-                        ignore.case = T)
-           ),
-           # then see if provided bp is in any bp range of the genes
-           inrange(
-             as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T)),
-             as.numeric(dat$`37bp1`)-1000,
-             as.numeric(dat$`37bp2`)+1000
-           )
-         ),
-         chrbp38 = subset( #first subset by chromosome number
-           subset(dat,
-                  grepl(gsub("^(\\d+):.*$", "\\1",searchString, ignore.case = T),
-                        dat$chr,
-                        ignore.case = T)
-           ),
-           # then see if provided bp is in any bp range of the genes
-           inrange(
-             as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T)),
-             dat$`38bp1`,
-             dat$`38bp2`
-           )
-         ),
+         chrbp37 = {
+           dat <- dat[grepl(chrom, dat$chr)] #first subset by chromosome number
+           bp <- as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T))
+           dat[bp >= dat$`37bp1` & bp <= dat$`37bp2`] # then see if provided bp is in any bp range of the genes
+         },
+         chrbp38 = {
+           dat <- dat[grepl(chrom, dat$chr)] #first subset by chromosome number
+           bp <- as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T))
+           dat[bp >= dat$`38bp1` & bp <= dat$`38bp2`] # then see if provided bp is in any bp range of the genes
+         },
          # look for overlap between provided bp ranges
          # add chromosome at some point?????
-         chrbpRange = foverlaps(preOverlap, ranges, nomatch = NULL)[,c(3:9)],
-         rsID = dat[grepl(searchString, dat$rsID, ignore.case = T)]
+         chrbpRange = foverlaps(preOverlap, ranges, nomatch = NULL)[,c(3:9)]#,
+         #rsID = dat[grepl(searchString, dat$rsID, ignore.case = T)]
   )
+}
+
+searchFunctionVar <- function (searchString = input$searchBar, type) {
+  if (type %in% c("chr", "rsID", "chrbp38")) {
+    emptyVarList
+  } else if (grepl("^(\\d+):.*$", searchString, ignore.case = T)) {
+    chrom <- gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T)
+    dat <- varList.nested[[chrom]]
+    if (input$buildSwitch == F) {
+      ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+      setkey(ranges, `37bp1`, `37bp2`)
+    } else {
+      ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+      setkey(ranges, `38bp1`, `38bp2`)
+    }
+    switch(type,
+           
+           chrbp37 = {
+             bp <- as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T))
+             dat[bp >= dat$`37bp1` & bp <= dat$`37bp2`]
+             },
+           # chrbp37 = subset( #first subset by chromosome number
+           #   dat,
+           #   # then see if provided bp is in any bp range of the genes
+           #   inrange(
+           #     as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T)),
+           #     as.numeric(dat$`37bp1`)-1000,
+           #     as.numeric(dat$`37bp2`)+1000
+           #   )
+           # ),
+           chrbp38 = subset( #first subset by chromosome number
+             dat,
+             # then see if provided bp is in any bp range of the genes
+             inrange(
+               as.numeric(
+                 gsub("^\\d+:(\\d+)$",
+                      "\\1",
+                      searchString,
+                      ignore.case = T)
+                 ),
+               dat$`38bp1`,
+               dat$`38bp2`
+             )
+           ),
+           # look for overlap between provided bp ranges
+           # add chromosome at some point?????
+           chrbpRange = foverlaps(dat, ranges, nomatch = NULL)[,c(3:9)]
+    )
+  } else {
+    emptyVarList
+  }
 }
 
 #====Function for running the search
@@ -116,6 +156,8 @@ runSearchPage <- function() {
     }
   }
   
+  varRes <- searchFunctionVar(searchString = searchSelect,  type = searchSwitch)
+  colnames(varRes) <- c("Position", "Chromosome", "BP-Start", "BP-End", "Nearest Gene ID", "rsID")
   # prepping result page
   #   below segment specifically sets up the geneID elements to have
   #   a javascript function associated with it on click. On click, it
@@ -147,17 +189,41 @@ runSearchPage <- function() {
 
   # UI rending of search results
   output$panel1 <<- renderUI(tagList(
-    h4(
-      "Current build:",
-      ifelse(
-        input$buildSwitch,
-        "hg38",
-        "hg19"
-        )
+    h4("Gene Results:"
+      # "Current build:",
+      # ifelse(
+      #   input$buildSwitch,
+      #   "hg38",
+      #   "hg19"
+      #   )
       ),
     resultTable
   )
   )
+  
+  output$panel1b <<- renderUI(tagList(
+    h4("Variant Results:"),
+    renderDT(
+      {
+        datatable(
+          varRes,
+          # options = list(
+          #   autoWidth = TRUE,
+          #   columnDefs = list(list(width = '10%', targets = c(1, 3)))
+          # ),
+          escape = FALSE,
+          rownames= FALSE,
+          selection = 'none'
+        ) %>%
+          formatStyle(
+            columns=colnames(varRes),
+            style="bootstrap",
+            backgroundColor = tablebgcolor(),
+            color = tablecolor()
+          )
+      }
+    )
+  ))
 
 
 }

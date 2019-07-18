@@ -18,7 +18,7 @@ server <- function(input, output, session) {
   #   updateQueryString(url)
   # })
   
-  show("startLogo")
+  shinyjs::show("startLogo")
   
   # output$optionsButton <- renderUI(
   #   {
@@ -75,9 +75,9 @@ server <- function(input, output, session) {
   
   delay(1500,
         {
-          show("uiPage")
-          show("fixedDLButton")
-          hide("loadingPage")
+          shinyjs::show("uiPage")
+          shinyjs::show("fixedDLButton")
+          shinyjs::hide("loadingPage")
         }
   )
   

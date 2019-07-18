@@ -20,7 +20,7 @@ ui <- tagList(
   uiOutput("darktheme"),
   div(
     id = "loadingPage",
-    hidden(img(src = "ipdgc_gb.png", id = "startLogo"))
+    hidden(img(src = "ipdgc_vb.png", id = "startLogo"))
   ),
   hidden(
         div(
@@ -116,6 +116,7 @@ ui <- tagList(
           boxPlus(
             title = "Search Results",
             uiOutput("panel1"),
+            uiOutput("panel1b"),
             width = 12,
             closable = F
           ),
