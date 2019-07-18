@@ -14,3 +14,4 @@ load("www/MTvarList.RData")
 
 # File name format for variant table:
 # "varTab/[geneid].txt" in ALL lower case
+#grepl("^\\d{1,2}:\\d+-\\d+$", "22:43088902-4028", ignore.case = T)

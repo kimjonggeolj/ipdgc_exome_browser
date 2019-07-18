@@ -93,6 +93,6 @@ a {
 
 /* Table */
 .dataTables_empty {
-  background-color:#ddd;
+  background-color:rgba(249, 249, 249);
   color:black;
 }

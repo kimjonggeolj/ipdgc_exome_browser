@@ -43,7 +43,7 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
          chr = dat[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), dat$chr, ignore.case = T)],
          chrbp37 = {
            dat <- dat[grepl(chrom, dat$chr)] #first subset by chromosome number
-           bp <- as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T))
+           bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
            dat[bp >= dat$`37bp1` & bp <= dat$`37bp2`] # then see if provided bp is in any bp range of the genes
          },
          chrbp38 = {
@@ -72,9 +72,8 @@ searchFunctionVar <- function (searchString = input$searchBar, type) {
       setkey(ranges, `38bp1`, `38bp2`)
     }
     switch(type,
-           
            chrbp37 = {
-             bp <- as.numeric(gsub("^\\d+:(\\d+)$", "\\1", searchString, ignore.case = T))
+             bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
              dat[bp >= dat$`37bp1` & bp <= dat$`37bp2`]
              },
            # chrbp37 = subset( #first subset by chromosome number
@@ -118,14 +117,15 @@ runSearchPage <- function() {
   # detecting switch for the function
   if (grepl("^chr\\d+$", searchSelect, ignore.case = T)) {
     searchSwitch <- "chr"
-  } else if (grepl("^\\d+:\\d*$", searchSelect, ignore.case = T)){
-    if (input$buildSwitch == F){
-      searchSwitch <- "chrbp37"
-    } else {
-      searchSwitch <- "chrbp38"
-    }
   } else if (grepl("^\\d{1,2}:\\d+-\\d+$", searchSelect, ignore.case = T)) {
     searchSwitch <- "chrbpRange"
+  } else if (grepl("^\\d{1,2}:\\d+.*", searchSelect, ignore.case = T)){
+    searchSwitch <- "chrbp37"
+    # if (input$buildSwitch == F){
+    #   searchSwitch <- "chrbp37"
+    # } else {
+    #   searchSwitch <- "chrbp38"
+    # }
   } else if (grepl("^rs\\d*", searchSelect, ignore.case = T)) {
     searchSwitch <- "rsID"
     #listSwitch <- F
