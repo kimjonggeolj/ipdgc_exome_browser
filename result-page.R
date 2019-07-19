@@ -31,13 +31,16 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
   if (grepl("\\d+:\\d+", searchString)) {
     chrom <- gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T)
   }
-  if (input$buildSwitch == F) {
     ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
     setkey(ranges, `37bp1`, `37bp2`)
-  } else {
-    ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
-    setkey(ranges, `38bp1`, `38bp2`)
-  }
+    #==DISABLED== buildSwitch hg19 or hg38
+  # if (input$buildSwitch == F) {
+  #   ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+  #   setkey(ranges, `37bp1`, `37bp2`)
+  # } else {
+  #   ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+  #   setkey(ranges, `38bp1`, `38bp2`)
+  # }
   switch(type,
          geneID = dat[grepl(searchString, dat$id, ignore.case = T)],
          chr = dat[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), dat$chr, ignore.case = T)],
@@ -64,13 +67,16 @@ searchFunctionVar <- function (searchString = input$searchBar, type) {
   } else if (grepl("^(\\d+):.*$", searchString, ignore.case = T)) {
     chrom <- gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T)
     dat <- varList.nested[[chrom]]
-    if (input$buildSwitch == F) {
-      ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
-      setkey(ranges, `37bp1`, `37bp2`)
-    } else {
-      ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
-      setkey(ranges, `38bp1`, `38bp2`)
-    }
+    ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+    setkey(ranges, `37bp1`, `37bp2`)
+    #==DISABLED== buildSwitch hg19 or hg38
+    # if (input$buildSwitch == F) {
+    #   ranges <- data.table(`37bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `37bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+    #   setkey(ranges, `37bp1`, `37bp2`)
+    # } else {
+    #   ranges <- data.table(`38bp1` = as.numeric(gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T)), `38bp2` = as.numeric(gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+    #   setkey(ranges, `38bp1`, `38bp2`)
+    # }
     switch(type,
            chrbp37 = {
              bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
@@ -134,30 +140,34 @@ runSearchPage <- function() {
   # run search, set names of columns, then pass the result to storedRes for display in gene info
   res <- searchFunction(searchGene = listSwitch,
     searchString = searchSelect,  type = searchSwitch)
-  if (listSwitch) {
-    if (input$buildSwitch == F) {
-      res <- res[,c(1,3,6,7,2)]
-      # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
-    } else {
-      res <- res[,c(1,3:5,2)]
-      # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
-    }
-    #storedRes <<- res
-    # for (i in 1:nrow(res)) {
-    #   res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
-    # }
-    colnames(res) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
-  } else {
-    #storedRes <<- res
-    colnames(res) <- c("Position (Ref/Alt)", "rsID", "Gene ID")
-    for (i in 1:nrow(res)) {
-      res$`Gene ID`[i] <- paste0('<a id="', res$`Gene ID`[i], '" href="#" onclick="resClick(this.id)">', res$`Gene ID`[i], '</a>')
-      res$`Position (Ref/Alt)`[i] <- paste0('<a id="', res$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', res$`Position (Ref/Alt)`[i], '</a>')
-    }
-  }
+  res <- res[, c(1,3,6,7,2)]
+  # if (listSwitch) {
+  #   # if (input$buildSwitch == F) {
+  #   #   res <- res[,c(1,3,6,7,2)]
+  #   #   # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+  #   # } else {
+  #   #   res <- res[,c(1,3:5,2)]
+  #   #   # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+  #   # }
+  #   #storedRes <<- res
+  #   # for (i in 1:nrow(res)) {
+  #   #   res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
+  #   # }
+  #   colnames(res) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
+  # } else {
+  #   #storedRes <<- res
+  #   colnames(res) <- c("Position (Ref/Alt)", "rsID", "Gene ID")
+  #   for (i in 1:nrow(res)) {
+  #     res$`Gene ID`[i] <- paste0('<a id="', res$`Gene ID`[i], '" href="#" onclick="resClick(this.id)">', res$`Gene ID`[i], '</a>')
+  #     res$`Position (Ref/Alt)`[i] <- paste0('<a id="', res$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', res$`Position (Ref/Alt)`[i], '</a>')
+  #   }
+  # }
   
   varRes <- searchFunctionVar(searchString = searchSelect,  type = searchSwitch)
-  colnames(varRes) <- c("Position", "Chromosome", "BP-Start", "BP-End", "Nearest Gene ID", "rsID")
+  colnames(varRes) <- c("Position (Ref/Alt)", "Chromosome", "BP-Start", "BP-End", "Nearest Gene ID", "rsID")
+  for (i in 1:nrow(varRes)) {
+    varRes$`Position (Ref/Alt)`[i] <- paste0('<a id="', varRes$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', varRes$`Position (Ref/Alt)`[i], '</a>')
+  }
   # prepping result page
   #   below segment specifically sets up the geneID elements to have
   #   a javascript function associated with it on click. On click, it
@@ -235,10 +245,11 @@ observeEvent(
     runSearchPage()
   )
 
-observeEvent(
-  input$buildSwitch,
-  runSearchPage()
-)
+#==DISABLED==refreshes search function on hitting the buildSwitch
+# observeEvent(
+#   input$buildSwitch,
+#   runSearchPage()
+# )
 
 # observeEvent(
 #   input$buildSwitch,

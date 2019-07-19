@@ -158,6 +158,7 @@ load("../data/varDat.hg19.RData")
 
 prevarList <- dat[, c("HG19_ID", "Chr", "Start", "End", "Gene.refGene", "avsnp150")]
 colnames(prevarList) <- c("id", "chr", "37bp1", "37bp2", "geneID", "rsID")
+
 for (i in 1:nrow(prevarList)) {
   prevarList$id[i] <- paste0('<a id="',  prevarList$id[i], '" href="javascript:;" onclick="varClick(this.id)">', prevarList$id[i], '</a>')
   #restoreInput(id = paste0("res", i), default = NULL)

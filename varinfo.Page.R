@@ -4,7 +4,7 @@ simpleCap <- function(x) {
          collapse = " ")
 }
 
-
+# ===== TO DO: make separate observeEvent for a new input: "varClickSearch", which imports its own variantTable.global
 observeEvent(input$varClick, {
   var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
   colnames(var) <- c("Exome name (hg19)",
@@ -12,6 +12,7 @@ observeEvent(input$varClick, {
                      "Region",
                      "Functional consequence",
                      "Amino acid change",
+                     "Nearest Gene",
                      "rsID",
                      "Conditions (ClinVar)",
                      "Clinical significance (ClinVar)",
@@ -54,9 +55,12 @@ observeEvent(input$varClick, {
   #   digits = -2
   # )
   
-  output$exome.freq.Table <- renderTable(
-    dcast(melt(var[,c(8:13)], id.vars = "Exome-Distribution (cases)"), variable ~ `Exome-Distribution (cases)`),
-    digits = -2
+  output$exome.freq.Table <- renderTable({
+    table <- dcast(melt(var[,c(8:14)], id.vars = "Clinical significance (ClinVar)"), variable ~ `Clinical significance (ClinVar)`)
+    colnames(table) <- c("Population", "Frequency")
+    table
+    },
+      digits = -2
   )
   
   # output$reseq.freq.Table <- renderTable(
@@ -64,8 +68,11 @@ observeEvent(input$varClick, {
   #   digits = -2
   # )
   
-  output$others.freq.Table <- renderTable(
-    dcast(melt(var[, c(14:26)], id.vars = "gnomAD Genome Allele Frequency (AF)"), variable ~ `gnomAD Genome Allele Frequency (AF)`),
+  output$others.freq.Table <- renderTable({
+    table <- dcast(melt(var[, c(14:27)], id.vars = "Exome-number of participants (control)"), variable ~ `Exome-number of participants (control)`)
+    colnames(table) <- c("Population", "Frequency")
+    table
+      },
     digits = -2
   )
   
@@ -84,7 +91,8 @@ observeEvent(input$varClick, {
       ),
       column(width = 12,
              h2(var$rsID,
-                tags$i(paste0("(", toupper(input$resPageId), ")")),
+                tags$i(paste0("(", toupper(var$`Nearest Gene`[1]#input$resPageId
+                                           ), ")")),
                 tags$sup(
                   a(href = paste0(
                     "https://www.ai-omni.com/search=",
@@ -95,11 +103,17 @@ observeEvent(input$varClick, {
                   a(href = paste0("https://gnomad.broadinstitute.org/variant/", var[1,1]),
                     target = "_blank",
                     "gnomad"),
-                  a(href = paste0("https://bravo.sph.umich.edu/freeze5/hg38/variant/",
-                                  gsub("(\\d+):(\\d+):(.*):(.*)", "\\1-\\2-\\3-\\4", var[1,2])
+                  a(href = paste0("https://bravo.sph.umich.edu/freeze3a/hg19/variant/",
+                                  gsub("(\\d+):(\\d+):(.*):(.*)", "\\1-\\2-\\3-\\4", var[1,1])
                                        ),
                     target = "_blank",
                     "bravo"),
+                  # BRAVO for hg38 freeze5
+                  # a(href = paste0("https://bravo.sph.umich.edu/freeze5/hg38/variant/",
+                  #                 gsub("(\\d+):(\\d+):(.*):(.*)", "\\1-\\2-\\3-\\4", var[1,2])
+                  #                      ),
+                  #   target = "_blank",
+                  #   "bravo"),
                   a(href = paste0("https://www.ncbi.nlm.nih.gov/snp/", var$rsID[1]),
                     target = "_blank",
                     ifelse(var$rsID == "", "", "dbSNP"))

@@ -11,47 +11,48 @@ observeEvent(input$geneClick, {
   # print(head(initDat))
   print("initDat loaded")
   variantTable.global <<- initDat[grepl(toupper(input$resPageId), initDat$`Gene.refGene`)][, c("HG19_ID",
-                                                                                                                  #"HG38_ID",
-                                                                                                                  "Func.refGene",
-                                                                                                                  "ExonicFunc.refGene",
-                                                                                                                  "AAChange.refGene",
-                                                                                                                  "avsnp150",
-                                                                                                                  "CLNDBN",
-                                                                                                                  "CLINSIG",
-                                                                                                                  # IPDGC Genomes (hg38) Columns:
-                                                                                                                  # "genomes_cases",
-                                                                                                                  # "genomes_controls",
-                                                                                                                  # "MAF_genomes_case",
-                                                                                                                  # "genomes_cases_N",
-                                                                                                                  # "MAF_genomes_control",
-                                                                                                                  # "genomes_controls_N",
-                                                                                                                  # IPDGC Exomes + ReSeq (hg19) Columns:
-                                                                                                                  "exome_cases",
-                                                                                                                  "exome_controls",
-                                                                                                                  "MAF_exome_case",
-                                                                                                                  "exome_cases_N",
-                                                                                                                  "MAF_exome_control",
-                                                                                                                  "exome_controls_N",
-                                                                                                                  # "reseq_cases",
-                                                                                                                  # "reseq_controls",
-                                                                                                                  # "MAF_reseq_case",
-                                                                                                                  # "reseq_cases_N",
-                                                                                                                  # "MAF_reseq_control",
-                                                                                                                  # "reseq_controls_N",
-                                                                                                                  # gnomad (hg19) + UKBB (hg38) Columns:
-                                                                                                                  "AF",
-                                                                                                                  "AF_popmax",
-                                                                                                                  "controls_AF_popmax",
-                                                                                                                  "AF_male",
-                                                                                                                  "AF_female",
-                                                                                                                  "AF_afr",
-                                                                                                                  "AF_sas",
-                                                                                                                  "AF_amr",
-                                                                                                                  "AF_eas",
-                                                                                                                  "AF_nfe",
-                                                                                                                  "AF_fin",
-                                                                                                                  "AF_asj",
-                                                                                                                  "AF_oth"
+                                                                                               #"HG38_ID",
+                                                                                               "Func.refGene",
+                                                                                               "ExonicFunc.refGene",
+                                                                                               "AAChange.refGene",
+                                                                                               "Gene.refGene",
+                                                                                               "avsnp150",
+                                                                                               "CLNDBN",
+                                                                                               "CLINSIG",
+                                                                                               # IPDGC Genomes (hg38) Columns:
+                                                                                               # "genomes_cases",
+                                                                                               # "genomes_controls",
+                                                                                               # "MAF_genomes_case",
+                                                                                               # "genomes_cases_N",
+                                                                                               # "MAF_genomes_control",
+                                                                                               # "genomes_controls_N",
+                                                                                               # IPDGC Exomes + ReSeq (hg19) Columns:
+                                                                                               "exome_cases",
+                                                                                               "exome_controls",
+                                                                                               "MAF_exome_case",
+                                                                                               "exome_cases_N",
+                                                                                               "MAF_exome_control",
+                                                                                               "exome_controls_N",
+                                                                                               # "reseq_cases",
+                                                                                               # "reseq_controls",
+                                                                                               # "MAF_reseq_case",
+                                                                                               # "reseq_cases_N",
+                                                                                               # "MAF_reseq_control",
+                                                                                               # "reseq_controls_N",
+                                                                                               # gnomad (hg19) + UKBB (hg38) Columns:
+                                                                                               "AF",
+                                                                                               "AF_popmax",
+                                                                                               "controls_AF_popmax",
+                                                                                               "AF_male",
+                                                                                               "AF_female",
+                                                                                               "AF_afr",
+                                                                                               "AF_sas",
+                                                                                               "AF_amr",
+                                                                                               "AF_eas",
+                                                                                               "AF_nfe",
+                                                                                               "AF_fin",
+                                                                                               "AF_asj",
+                                                                                               "AF_oth"
   )]
   print("variantTable G loaded")
   #print(head(variantTable.global))
@@ -104,7 +105,7 @@ observeEvent(input$geneClick, {
   #                                                                                "AF_asj",
   #                                                                                "AF_oth"
   # )]
-  variantTable <- variantTable.global
+  variantTable <- variantTable.global[, -c("Gene.refGene")]
   colnames(variantTable) <- c("Exome name (hg19)",
                               # "Exome name (hg38)",
                               "Region",
@@ -154,17 +155,17 @@ observeEvent(input$geneClick, {
   }
   #aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
   aggregateVariantTable <- data.table(`Functional consequence` = c("All SNVs",
-                                                    "frameshift insertion",
-                                                    "frameshift deletion",
-                                                    "frameshift block substitution",
-                                                    "stopgain",
-                                                    "stoploss",
-                                                    "nonframeshift",
-                                                    "nonframeshift deletion",
-                                                    "nonframeshift block substitution",
-                                                    "nonsynonymous SNV",
-                                                    "synonymous SNV",
-                                                    "unknown"),
+                                                                   "frameshift insertion",
+                                                                   "frameshift deletion",
+                                                                   "frameshift block substitution",
+                                                                   "stopgain",
+                                                                   "stoploss",
+                                                                   "nonframeshift",
+                                                                   "nonframeshift deletion",
+                                                                   "nonframeshift block substitution",
+                                                                   "nonsynonymous SNV",
+                                                                   "synonymous SNV",
+                                                                   "unknown"),
                                       Count = c(nrow(variantTable),
                                                 length(which(variantTable$`Functional consequence` == "frameshift insertion")),
                                                 length(which(variantTable$`Functional consequence` == "frameshift deletion")),
@@ -177,7 +178,7 @@ observeEvent(input$geneClick, {
                                                 length(which(variantTable$`Functional consequence` == "nonsynonymous SNV")),
                                                 length(which(variantTable$`Functional consequence` == "synonymous SNV")),
                                                 length(which(variantTable$`Functional consequence` == "unknown"))
-                                                ))
+                                      ))
   #aggregateVariantTable$Count <-
   #colnames(aggregateVariantTable) <- c("Phenotype", "Frequency")
   #aggregateVariantTable <- fread(paste0("aggregate/", gene$id, ".txt"))
@@ -192,7 +193,7 @@ observeEvent(input$geneClick, {
              div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
     ),
     fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], options = list(scrollX = T), rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
-                                                                                                    , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
+                                                                                                                                                                     , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
     )}), style = "margin: 12px 50px 50px 12px;"))
   ))
   #show(id = "mainPageLink")

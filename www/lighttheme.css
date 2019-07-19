@@ -96,3 +96,7 @@ a {
   background-color:rgba(249, 249, 249);
   color:black;
 }
+
+.dataTables_wrapper .dataTables_info[role=status] {
+  color:#333;
+}

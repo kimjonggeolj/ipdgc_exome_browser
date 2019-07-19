@@ -26,18 +26,18 @@ ui <- tagList(
         div(
           id = "fixedDLButton",
           dropdown(
-            prettyToggle(
-              status_off = "primary",
-              status_on = "danger",
-              # icon_on = icon("cog"),
-              # icon_off = icon("cog"),
-              animation = "pulse",
-              inputId = "buildSwitch",
-              label_on = "hg38",
-              label_off = "hg19",
-              inline = T,
-              bigger = T
-            ),
+            # prettyToggle(
+            #   status_off = "primary",
+            #   status_on = "danger",
+            #   # icon_on = icon("cog"),
+            #   # icon_off = icon("cog"),
+            #   animation = "pulse",
+            #   inputId = "buildSwitch",
+            #   label_on = "hg38",
+            #   label_off = "hg19",
+            #   inline = T,
+            #   bigger = T
+            # ),
             prettyToggle(
               inputId = "darktheme",
               # icon_on = icon("moon"),
@@ -118,6 +118,7 @@ ui <- tagList(
             uiOutput("panel1"),
             uiOutput("panel1b"),
             width = 12,
+            collapsible = T,
             closable = F
           ),
           boxPlus(
