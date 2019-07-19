@@ -100,7 +100,7 @@ server <- function(input, output, session) {
   source("about-page.R", local = T)
   
   #====Google sample of sign in API server side
-  source("googlelogin-server.R", local = T)
+  # source("googlelogin-server.R", local = T)
   
   source('varinfo.Page.R', local = T)
 }
