@@ -14,7 +14,7 @@ library(shinyanimate)
 # 2 = result page
 # 3 = gene page
 # 4 = variant page
-
+'%ni%' <- Negate('%in%')
 
 miniSearchBar <- searchInput(
   inputId = "minisearchBar", 

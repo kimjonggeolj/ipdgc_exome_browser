@@ -15,6 +15,7 @@ ui <- tagList(
   #============================================================
   useShinyjs(),
   withAnim(),
+  useSweetAlert(),
   includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
   uiOutput("darktheme"),

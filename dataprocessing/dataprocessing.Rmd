@@ -62,8 +62,6 @@ colnames(gene.Names.Anno2.Filtered) <- colnames(gene.Names.Anno.Filtered)
 
 unavailable2 <- anti_join(unavailable, gene.Names.Anno2.Filtered[, "geneName"])
 
-
-# 
 # gene.Names.Anno2 <- as.data.table(getBM(attributes = c('external_gene_name', 'chromosome_name', 'start_position', 'end_position'), 
 #                          filters = 'external_gene_name', 
 #                          values = gene.Names, 
@@ -159,10 +157,10 @@ load("../data/varDat.hg19.RData")
 prevarList <- dat[, c("HG19_ID", "Chr", "Start", "End", "Gene.refGene", "avsnp150")]
 colnames(prevarList) <- c("id", "chr", "37bp1", "37bp2", "geneID", "rsID")
 
-for (i in 1:nrow(prevarList)) {
-  prevarList$id[i] <- paste0('<a id="',  prevarList$id[i], '" href="javascript:;" onclick="varClick(this.id)">', prevarList$id[i], '</a>')
-  #restoreInput(id = paste0("res", i), default = NULL)
-}
+# for (i in 1:nrow(prevarList)) {
+#   prevarList$id[i] <- paste0('<a id="',  prevarList$id[i], '" href="javascript:;" onclick="varClick(this.id)">', prevarList$id[i], '</a>')
+#   #restoreInput(id = paste0("res", i), default = NULL)
+# }
 varList.nested <- list()
 # for (i in 1:22) {
 #   varList.nested[i] <- prevarList[[grepl(i, prevarList$Chr)]]
@@ -228,4 +226,25 @@ save(varDat.chr21, file = "../varTab/chr21.RData")
 save(varDat.chr22, file = "../varTab/chr22.RData")
 ```
 
+```{r}
+library(data.table)
+library(tidyverse)
+load("../data/varDat.hg19.RData")
+
+dat$rsFirst <- gsub("^(\\w{1,4}).*", "\\1", dat$avsnp150)
+
+prevarList.rsID <- dat[, c("HG19_ID", "Chr", "Start", "End", "Gene.refGene", "avsnp150", "rsFirst")]
+
+colnames(prevarList.rsID) <- c("id", "chr", "37bp1", "37bp2", "geneID", "rsID", "rsFirst")
+for (i in 1:nrow(prevarList.rsID)) {
+      prevarList.rsID$id[i] <- paste0('<a id="', prevarList.rsID$id[i], '" href="javascript:;"onclick="resClick(this.id)">', prevarList.rsID$id[i], '</a>')
+}
+varList.rsID.nested <- split(prevarList.rsID, dat$rsFirst)
+varList.rsID.nested[1] <- NULL
+for (i in 1:length(varList.rsID.nested)) {
+  varList.rsID.nested[[i]]$rsFirst <- NULL
+}
+
+save(varList.rsID.nested, file = "../www/rsID.List.RData")
+```
 
