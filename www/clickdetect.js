@@ -2,6 +2,11 @@ function resClick(clicked_id) {
   Shiny.setInputValue('resPageId', clicked_id);
   Shiny.setInputValue('geneClick', Math.random());
 }
+
+function varResClick(clicked_id) {
+  Shiny.setInputValue('varResPageId', clicked_id);
+  Shiny.setInputValue('varResClick', Math.random());
+}
 /*
 function aboutClick() {
   $('#top-row').css({
@@ -14,6 +19,7 @@ function varClick(clicked_id) {
   Shiny.setInputValue('varPageId', clicked_id);
   Shiny.setInputValue('varClick', Math.random());
 }
+
 /*
 $(document).on('shiny:inputchanged', function(event) {
   if (event.name === 'submit') {

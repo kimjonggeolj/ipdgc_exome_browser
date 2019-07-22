@@ -2,7 +2,7 @@
 load("www/geneList.RData")
 #varList <- fread("www/varList.txt")
 load("www/varList.RData")
-load("www/MTvarList.RData")
+#load("www/MTvarList.RData")
 
 #save(emptyVarList, file = "www/MTvarList.RData")
 

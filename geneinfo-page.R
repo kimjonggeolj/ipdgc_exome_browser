@@ -3,7 +3,7 @@
 # function resClick() found in "clickdetect.js"
 observeEvent(input$geneClick, {
   #num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
-  gene <- geneList[grepl(paste0('="', toupper(input$resPageId), '"'), geneList$id)]#storedRes[num]
+  gene <- geneList[grepl(paste0('="', input$resPageId, '"'), geneList$id)]#storedRes[num]
   chrom <- gene$chr[1]
   #print(paste0("chromosome", chrom))
   load(paste0("varTab/", "chr", chrom, ".RData"))

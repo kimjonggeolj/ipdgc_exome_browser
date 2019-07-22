@@ -67,7 +67,7 @@
 # 
 # searchFunctionVar <- function (searchString = input$searchBar, type) {
 #   if (type %in% c("chr", "chrbp38", "STOP")) {
-#     emptyVarList
+#     varList.nested[[1]][0]
 #   } else if (type == "rsID"){
 #     rsFirst <- gsub("^(rs\\d\\d)\\d+$", "\\1", searchString, ignore.case = F)
 #     dat <- varList.rsID.nested[[rsFirst]]
@@ -118,7 +118,7 @@
 #            chrbpRange = foverlaps(dat, ranges, nomatch = NULL)[,c(3:9)]
 #     )
 #   } else {
-#     emptyVarList
+#     varList.nested[[1]][0]
 #   }
 # }
 
@@ -138,7 +138,7 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
            # empty
            dat.nested[[1]] <- geneList[geneList$chr == "A"]
            # empty
-           dat.nested[[2]] <- emptyVarList
+           dat.nested[[2]] <- varList.nested[[1]][0]
          },
          rsID = {
            rsFirst <- gsub("^(rs\\d\\d)\\d+$", "\\1", searchString, ignore.case = F)
@@ -150,12 +150,12 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
          chr = {
            dat.nested[[1]] <- geneList[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), geneList$chr, ignore.case = T)]
            # empty
-           dat.nested[[2]] <- emptyVarList
+           dat.nested[[2]] <- varList.nested[[1]][0]
          },
          chrbp37 = {
            bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
            dat.nested[[1]] <- dat.nested[[1]][bp >= dat.nested[[1]]$`37bp1` & bp <= dat.nested[[1]]$`37bp2`] # then see if provided bp is in any bp range of the genes
-           dat.nested[[2]] <- dat.nested[bp >= dat.nested$`37bp1` & bp <= dat.nested$`37bp2`]
+           dat.nested[[2]] <- dat.nested[[2]][bp >= dat.nested[[2]]$`37bp1` & bp <= dat.nested[[2]]$`37bp2`]
          },
          chrbp38 = {
            bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
@@ -168,14 +168,15 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
          },
          geneID = {
            dat.nested[[1]] <- geneList[grepl(searchString, geneList$id, ignore.case = T)]
-           dat.nested[[2]] <- emptyVarList
+           dat.nested[[2]] <- varList.nested[[1]][0]
          }
   )
-  if (nrow(dat.nested[[2]]) <= 1000) {
-    for (i in nrow(dat.nested[[2]])) {
-      dat.nested[[2]]$id[i] <- paste0('<a id="', dat.nested[[2]]$id[i], '" href="javascript:;"onclick="resClick(this.id)">', dat.nested[[2]]$id[i], '</a>')
+  #if (nrow(dat.nested[[2]]) <= 1000) {
+    for (i in 1:nrow(dat.nested[[2]])) {
+      dat.nested[[2]]$id[i] <- paste0('<a id="', dat.nested[[2]]$id[i], '" href="javascript:;"onclick="varResClick(this.id)">', dat.nested[[2]]$id[i], '</a>')
+      dat.nested[[2]]$geneID[i] <- paste0('<a id="', dat.nested[[2]]$geneID[i], '" href="javascript:;"onclick="resClick(this.id)">', dat.nested[[2]]$geneID[i], '</a>')
     }
-  }
+ # }
   dat.nested
 }
 
@@ -198,12 +199,12 @@ runSearchPage <- function() {
     #   searchSwitch <- "chrbp38"
     # }
   } else if (grepl("^rs\\d*", searchSelect, ignore.case = T)) {
-    if (grepl("^rs\\d{1,2}$", searchSelect, ignore.case = T)) {
+    if (grepl("^rs\\d{1,3}$", searchSelect, ignore.case = T)) {
       # throw error if rsID is < 3 digits long
       sendSweetAlert(
         session,
         title = "Search field error!",
-        text = 'Please provide at least three digits in the rsID.',
+        text = 'Please provide at least four digits in the rsID.',
         type =  "error"
       )
       searchSwitch <- "STOP"
@@ -243,9 +244,9 @@ runSearchPage <- function() {
   
   #varRes <- searchFunctionVar(searchString = searchSelect,  type = searchSwitch)
   colnames(res[[2]]) <- c("Position (Ref/Alt)", "Chromosome", "BP-Start", "BP-End", "Nearest Gene ID", "rsID")
-  for (i in 1:nrow(res[[2]])) {
-    res[[2]]$`Position (Ref/Alt)`[i] <- paste0('<a id="', res[[2]]$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', res[[2]]$`Position (Ref/Alt)`[i], '</a>')
-  }
+  # for (i in 1:nrow(res[[2]])) {
+  #   res[[2]]$`Position (Ref/Alt)`[i] <- paste0('<a id="', res[[2]]$`Position (Ref/Alt)`[i], '" href="#" onclick="varResClick(this.id)">', res[[2]]$`Position (Ref/Alt)`[i], '</a>')
+  # }
   # prepping result page
   #   below segment specifically sets up the geneID elements to have
   #   a javascript function associated with it on click. On click, it
