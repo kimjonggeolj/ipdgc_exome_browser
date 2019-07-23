@@ -171,6 +171,7 @@ observeEvent(input$varClick, {
     # )
   )
   )
+  shinyjs::show("varBox")
 })
 
 observeEvent(input$varResClick, {
@@ -388,4 +389,5 @@ observeEvent(input$varResClick, {
     # )
   )
   )
+  shinyjs::show("varBox")
 })

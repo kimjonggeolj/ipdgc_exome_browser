@@ -164,7 +164,11 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
          },
          chrbpRange = {
            dat.nested[[1]] <- foverlaps(dat.nested[[1]], ranges, nomatch = NULL)[,c(3:9)]
-           dat.nested[[2]] <- foverlaps(dat.nested[[2]], ranges, nomatch = NULL)[,c(3:9)]
+           # this is rearranged later; this formatting is to make it consistent with other results
+           dat.nested[[1]] <- dat.nested[[1]][, c("id", "name", "chr", "38bp1", "38bp2", "i.37bp1", "i.37bp2")]
+           dat.nested[[2]] <- foverlaps(dat.nested[[2]], ranges, nomatch = NULL)[,c(3:8)]
+           
+           dat.nested[[2]] <- dat.nested[[2]][, c("id", "chr", "i.37bp1", "i.37bp2", "geneID", "rsID")]
          },
          geneID = {
            dat.nested[[1]] <- geneList[grepl(searchString, geneList$id, ignore.case = T)]
@@ -200,7 +204,7 @@ runSearchPage <- function() {
     # }
   } else if (grepl("^rs\\d*", searchSelect, ignore.case = T)) {
     if (grepl("^rs\\d{1,3}$", searchSelect, ignore.case = T)) {
-      # throw error if rsID is < 3 digits long
+      # throw error if rsID is < 4 digits long
       sendSweetAlert(
         session,
         title = "Search field error!",
@@ -220,6 +224,7 @@ runSearchPage <- function() {
   res <- searchFunction(searchGene = listSwitch,
     searchString = searchSelect, type = searchSwitch)
   res[[1]] <- res[[1]][, c(1,3,6,7,2)]
+  colnames(res[[1]]) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
   # if (listSwitch) {
   #   # if (input$buildSwitch == F) {
   #   #   res <- res[,c(1,3,6,7,2)]
@@ -277,7 +282,8 @@ runSearchPage <- function() {
   
 
   # UI rending of search results
-  output$panel1 <<- renderUI(tagList(
+  output$panel1 <<- if (searchSwitch %in% c("STOP", "chrbp37", "chr", "chrbpRange", "geneID")) {
+    renderUI(tagList(
     h4("Gene Results:"
       # "Current build:",
       # ifelse(
@@ -289,8 +295,12 @@ runSearchPage <- function() {
     resultTable
   )
   )
+  } else {
+    renderUI(tagList(div()))
+  }
   
-  output$panel1b <<- renderUI(tagList(
+  output$panel1b <<- if (searchSwitch %in% c("STOP", "chrbp37", "chrbpRange", "rsID")) {
+    renderUI(tagList(
     h4("Variant Results:"),
     renderDT(
       {
@@ -313,6 +323,9 @@ runSearchPage <- function() {
       }
     )
   ))
+  } else {
+    renderUI(tagList(div()))
+  }
 
 
 }

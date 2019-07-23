@@ -4,6 +4,8 @@ load("www/geneList.RData")
 load("www/varList.RData")
 #load("www/MTvarList.RData")
 
+load("www/rsID.List.RData")
+
 #save(emptyVarList, file = "www/MTvarList.RData")
 
 #varList <- data.table("rsID" = "rs1422910994", "id" = "LRRK2")

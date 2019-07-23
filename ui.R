@@ -24,50 +24,50 @@ ui <- tagList(
     hidden(img(src = "ipdgc_vb.png", id = "startLogo"))
   ),
   hidden(
-        div(
-          id = "fixedDLButton",
-          dropdown(
-            # prettyToggle(
-            #   status_off = "primary",
-            #   status_on = "danger",
-            #   # icon_on = icon("cog"),
-            #   # icon_off = icon("cog"),
-            #   animation = "pulse",
-            #   inputId = "buildSwitch",
-            #   label_on = "hg38",
-            #   label_off = "hg19",
-            #   inline = T,
-            #   bigger = T
-            # ),
-            prettyToggle(
-              inputId = "darktheme",
-              # icon_on = icon("moon"),
-              # icon_off = icon("lightbulb"),
-              animation = "pulse",
-              status_off = "primary",
-              status_on = "warning",
-              label_on = "Dark Theme",
-              label_off = "Light Theme",
-              inline = T,
-              bigger = T
-            ),
-            style = "jelly",
-            # circle = T,
-            status = "primary",
-            icon = icon("cogs"),
-            width = "150px",
-            up = T,
-            right = T
-            # tooltip = tooltipOptions(
-            #   placement = "top",
-            #   title = "Click me for options/settings"
-            #   )
-            # animate = animateOptions(
-            #   enter = animations$fading_entrances$fadeInLeftBig,
-            #   exit = animations$fading_exits$fadeOutRightBig
-            # )
-          )
-          ),
+    div(
+      id = "fixedDLButton",
+      dropdown(
+        # prettyToggle(
+        #   status_off = "primary",
+        #   status_on = "danger",
+        #   # icon_on = icon("cog"),
+        #   # icon_off = icon("cog"),
+        #   animation = "pulse",
+        #   inputId = "buildSwitch",
+        #   label_on = "hg38",
+        #   label_off = "hg19",
+        #   inline = T,
+        #   bigger = T
+        # ),
+        prettyToggle(
+          inputId = "darktheme",
+          # icon_on = icon("moon"),
+          # icon_off = icon("lightbulb"),
+          animation = "pulse",
+          status_off = "primary",
+          status_on = "warning",
+          label_on = "Dark Theme",
+          label_off = "Light Theme",
+          inline = T,
+          bigger = T
+        ),
+        style = "jelly",
+        # circle = T,
+        status = "primary",
+        icon = icon("cogs"),
+        width = "150px",
+        up = T,
+        right = T
+        # tooltip = tooltipOptions(
+        #   placement = "top",
+        #   title = "Click me for options/settings"
+        #   )
+        # animate = animateOptions(
+        #   enter = animations$fading_entrances$fadeInLeftBig,
+        #   exit = animations$fading_exits$fadeOutRightBig
+        # )
+      )
+    ),
     div(
       id = "uiPage",
       dashboardPagePlus(
@@ -102,12 +102,12 @@ ui <- tagList(
               #     )
               #   )
               # )
-                # div(
-                #   actionLink("about", "About"),
-                #   id = "top-row"
-                # )
+              # div(
+              #   actionLink("about", "About"),
+              #   id = "top-row"
+              # )
               
-              )
+            )
           )
         ),
         sidebar = dashboardSidebar(
@@ -122,16 +122,28 @@ ui <- tagList(
             collapsible = T,
             closable = F
           ),
-          boxPlus(
-            title = "Gene",
-            uiOutput("panel2"),
-            id = "genebox",
-            closable = F
+          hidden(
+            div(
+              id = "geneBox",
+              boxPlus(
+                title = "Gene",
+                uiOutput("panel2"),
+                id = "genebox",
+                closable = F,
+                status = "warning"
+              )
+            )
           ),
-          boxPlus(
-            title = "Variant",
-            uiOutput("panel3"),
-            closable = F
+          hidden(
+            div(
+              id = "varBox",
+              boxPlus(
+                title = "Variant",
+                uiOutput("panel3"),
+                closable = F,
+                status = "primary"
+              )
+            )
           )
         ),
         title = "IPDGC Genome Browser",

@@ -186,8 +186,9 @@ observeEvent(input$geneClick, {
     fluidRow(
       column(width = 6,
              h1(input$resPageId),#gene$id),
-             h2(gene$name),
-             div("Region:", paste0("Chromosome ", gene$chr, ": ", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;")
+             h2(ifelse(is.na(gene$name), "", gene$name)),
+             div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
+             ifelse(grepl("^LOC", input$resPageId) | input$resPageId == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", input$resPageId), target = "_blank"))))
       ),
       column(width = 6,
              div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
@@ -200,6 +201,7 @@ observeEvent(input$geneClick, {
   #hide(id = "miniSearchBar")
   #hide(id = "minisubmit")
   #pageState <<- 3
+  shinyjs::show("geneBox")
 })
 
 #return to search results when clicking return to results

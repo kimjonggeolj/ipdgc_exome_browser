@@ -38,4 +38,4 @@ www/ipdgc_vb_small.png
 www/ipdgc_vb_small_dark.png
 www/geneList.RData
 www/varList.RData
-www/MTvarList.RData
+www/rsID.List.RData
