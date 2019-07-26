@@ -100,3 +100,9 @@ a {
 .dataTables_wrapper .dataTables_info[role=status] {
   color:#333;
 }
+
+/* Layout Switch */
+.bootstrap-switch .bootstrap-switch-label {
+  background-color:#eee;
+  color:black;
+}

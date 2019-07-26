@@ -1,3 +1,17 @@
+output$geneBox <- renderUI({
+  boxPlus(
+    title = "Gene",
+    uiOutput("panel2"),
+    id = "genebox",
+    width = ifelse(
+      input$layout,
+      6,
+      12),
+    closable = F,
+    status = "warning"
+  )
+})
+
 #==event that triggers the gene info page
 # input$geneClick and input$resPageId are activated by javascript
 # function resClick() found in "clickdetect.js"
@@ -193,7 +207,7 @@ observeEvent(input$geneClick, {
       column(width = 6,
              div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
     ),
-    fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], options = list(scrollX = T), rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
+    fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], options = list(paging = F, scrollX = T, scrollY = "500px"), rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
                                                                                                                                                                      , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
     )}), style = "margin: 12px 50px 50px 12px;"))
   ))
@@ -201,7 +215,7 @@ observeEvent(input$geneClick, {
   #hide(id = "miniSearchBar")
   #hide(id = "minisubmit")
   #pageState <<- 3
-  shinyjs::show("geneBox")
+  #shinyjs::show("geneBox")
 })
 
 #return to search results when clicking return to results

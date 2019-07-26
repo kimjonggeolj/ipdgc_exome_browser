@@ -4,6 +4,20 @@ simpleCap <- function(x) {
          collapse = " ")
 }
 
+
+output$varBox <- renderUI({
+  boxPlus(
+    title = "Variant",
+    uiOutput("panel3"),
+    width = ifelse(
+      input$layout,
+      6,
+      12),
+    closable = F,
+    status = "primary"
+  )
+})
+
 # ===== TO DO: make separate observeEvent for a new input: "varClickSearch", which imports its own variantTable.global
 observeEvent(input$varClick, {
   var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
@@ -171,7 +185,7 @@ observeEvent(input$varClick, {
     # )
   )
   )
-  shinyjs::show("varBox")
+  #shinyjs::show("varBox")
 })
 
 observeEvent(input$varResClick, {
@@ -389,5 +403,5 @@ observeEvent(input$varResClick, {
     # )
   )
   )
-  shinyjs::show("varBox")
+  #shinyjs::show("varBox")
 })

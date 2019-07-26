@@ -14,6 +14,8 @@ library(shinyanimate)
 # 2 = result page
 # 3 = gene page
 # 4 = variant page
+
+#boxWidth <- 12
 '%ni%' <- Negate('%in%')
 
 miniSearchBar <- searchInput(

@@ -103,4 +103,13 @@ server <- function(input, output, session) {
   # source("googlelogin-server.R", local = T)
   
   source('varinfo.Page.R', local = T)
+  
+  observeEvent(input$layout,
+               {
+                 if (input$layout == T) {
+                   boxWidth <<- 6
+                 } else {
+                   boxWidth <<- 12
+                 }
+               })
 }

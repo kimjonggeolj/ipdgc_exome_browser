@@ -51,6 +51,13 @@ ui <- tagList(
           inline = T,
           bigger = T
         ),
+        switchInput(
+          inputId = "layout",
+          label = "Layout",
+          onLabel = icon("boxes"),
+          offLabel = icon("stream"),
+          size = "default"
+        ),
         style = "jelly",
         # circle = T,
         status = "primary",
@@ -122,29 +129,33 @@ ui <- tagList(
             collapsible = T,
             closable = F
           ),
-          hidden(
-            div(
-              id = "geneBox",
-              boxPlus(
-                title = "Gene",
-                uiOutput("panel2"),
-                id = "genebox",
-                closable = F,
-                status = "warning"
-              )
-            )
-          ),
-          hidden(
-            div(
-              id = "varBox",
-              boxPlus(
-                title = "Variant",
-                uiOutput("panel3"),
-                closable = F,
-                status = "primary"
-              )
-            )
-          )
+          uiOutput("geneBox"),
+          uiOutput("varBox")
+          # hidden(
+          #   div(
+          #     id = "geneBox",
+          #     boxPlus(
+          #       title = "Gene",
+          #       uiOutput("panel2"),
+          #       id = "genebox",
+          #       width = boxWidth,
+          #       closable = F,
+          #       status = "warning"
+          #     )
+          #   )
+          # ),
+          # hidden(
+          #   div(
+          #     id = "varBox",
+          #     boxPlus(
+          #       title = "Variant",
+          #       uiOutput("panel3"),
+          #       width = boxWidth,
+          #       closable = F,
+          #       status = "primary"
+          #     )
+          #   )
+          # )
         ),
         title = "IPDGC Genome Browser",
         sidebar_fullCollapse = T,
