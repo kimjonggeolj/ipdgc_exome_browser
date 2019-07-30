@@ -71,10 +71,13 @@ server <- function(input, output, session) {
       runFromURL <<- T
       updateTextInput(session, "minisearchBar", value = query[['gene']])
       updateTextInput(session, "minisearchBar_text", value = query[['gene']])
-      runSearchPage_URL()
+      runSearchPage()
       runjs("Shiny.setInputValue('geneClick', Math.random())")
     } else if (!is.null(query[['variant']])) {
       runFromURL <<- T
+      updateTextInput(session, "minisearchBar", value = query[['variant']])
+      updateTextInput(session, "minisearchBar_text", value = query[['variant']])
+      runSearchPage()
       runjs("Shiny.setInputValue('varResClick', Math.random())")
     }
     })
