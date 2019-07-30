@@ -49,7 +49,7 @@ input[type=search] {
     color: white;
   }
 
-input#minisearchBar_Text {
+input#minisearchBar_text {
     background-color: rgba(56, 56, 56);
     color:white;
   }
@@ -80,7 +80,7 @@ a {
 }
 .bttn-jelly.bttn-primary{
   background-color: #ffaf24;
-  color:rgba(56, 56, 56);
+  color:black;
 }
 
 /* Dark theme switch label*/

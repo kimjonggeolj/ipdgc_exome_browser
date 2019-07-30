@@ -226,6 +226,151 @@ runSearchPage <- function() {
 
 
 }
+#URL SEARCH
+runSearchPage_URL <- function() {
+  # if initial main page, then read from big search bar
+  # else read from mini search bar
+  searchSelect <- query[['gene']]
+  listSwitch <- !grepl("^rs\\d*", searchSelect, ignore.case = T)
+  # detecting switch for the function
+  if (grepl("^chr\\d+$", searchSelect, ignore.case = T)) {
+    searchSwitch <- "chr"
+  } else if (grepl("^\\d{1,2}:\\d+-\\d+$", searchSelect, ignore.case = T)) {
+    searchSwitch <- "chrbpRange"
+  } else if (grepl("^\\d{1,2}:\\d+.*", searchSelect, ignore.case = T)){
+    searchSwitch <- "chrbp37"
+    # if (input$buildSwitch == F){
+    #   searchSwitch <- "chrbp37"
+    # } else {
+    #   searchSwitch <- "chrbp38"
+    # }
+  } else if (grepl("^rs\\d*", searchSelect, ignore.case = T)) {
+    if (grepl("^rs\\d{1,3}$", searchSelect, ignore.case = T)) {
+      # throw error if rsID is < 4 digits long
+      sendSweetAlert(
+        session,
+        title = "Search field error!",
+        text = 'Please provide at least four digits in the rsID.',
+        type =  "error"
+      )
+      searchSwitch <- "STOP"
+    } else {
+      searchSwitch <- "rsID"
+    }
+    #listSwitch <- F
+  } else {
+    searchSwitch <- "geneID"
+  }
+  
+  # run search, set names of columns, then pass the result to storedRes for display in gene info
+  res <- searchFunction(searchGene = listSwitch,
+                        searchString = searchSelect, type = searchSwitch)
+  res[[1]] <- res[[1]][, c(1,3,6,7,2)]
+  colnames(res[[1]]) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
+  # if (listSwitch) {
+  #   # if (input$buildSwitch == F) {
+  #   #   res <- res[,c(1,3,6,7,2)]
+  #   #   # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+  #   # } else {
+  #   #   res <- res[,c(1,3:5,2)]
+  #   #   # colnames(res) <- c("id", "name", "chr", "37bp1", "37bp2")
+  #   # }
+  #   #storedRes <<- res
+  #   # for (i in 1:nrow(res)) {
+  #   #   res$id[i] <- paste0('<a id="', res$id[i], '" href="#" onclick="resClick(this.id)">', res$id[i], '</a>')
+  #   # }
+  #   colnames(res) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
+  # } else {
+  #   #storedRes <<- res
+  #   colnames(res) <- c("Position (Ref/Alt)", "rsID", "Gene ID")
+  #   for (i in 1:nrow(res)) {
+  #     res$`Gene ID`[i] <- paste0('<a id="', res$`Gene ID`[i], '" href="#" onclick="resClick(this.id)">', res$`Gene ID`[i], '</a>')
+  #     res$`Position (Ref/Alt)`[i] <- paste0('<a id="', res$`Position (Ref/Alt)`[i], '" href="#" onclick="varClick(this.id)">', res$`Position (Ref/Alt)`[i], '</a>')
+  #   }
+  # }
+  
+  #varRes <- searchFunctionVar(searchString = searchSelect,  type = searchSwitch)
+  colnames(res[[2]]) <- c("Position (Ref/Alt)", "Chromosome", "BP-Start", "BP-End", "Nearest Gene ID", "rsID")
+  # for (i in 1:nrow(res[[2]])) {
+  #   res[[2]]$`Position (Ref/Alt)`[i] <- paste0('<a id="', res[[2]]$`Position (Ref/Alt)`[i], '" href="#" onclick="varResClick(this.id)">', res[[2]]$`Position (Ref/Alt)`[i], '</a>')
+  # }
+  # prepping result page
+  #   below segment specifically sets up the geneID elements to have
+  #   a javascript function associated with it on click. On click, it
+  #   should open the gene information page. "See clickdetect.js"
+  #   for details.
+  
+  
+  resultTable <- renderDT(
+    {
+      datatable(
+        res[[1]],
+        # options = list(
+        #   autoWidth = TRUE,
+        #   columnDefs = list(list(width = '10%', targets = c(1, 3)))
+        # ),
+        escape = FALSE,
+        rownames= FALSE,
+        selection = 'none'
+      ) %>%
+        formatStyle(
+          columns=colnames(res[[1]]),
+          style="bootstrap",
+          backgroundColor = tablebgcolor(),
+          color = tablecolor()
+        )
+    }
+  )
+  
+  
+  # UI rending of search results
+  output$panel1 <<- if (searchSwitch %in% c("STOP", "chrbp37", "chr", "chrbpRange", "geneID")) {
+    renderUI(tagList(
+      h4("Gene Results:"
+         # "Current build:",
+         # ifelse(
+         #   input$buildSwitch,
+         #   "hg38",
+         #   "hg19"
+         #   )
+      ),
+      resultTable
+    )
+    )
+  } else {
+    renderUI(tagList(div()))
+  }
+  
+  output$panel1b <<- if (searchSwitch %in% c("STOP", "chrbp37", "chrbpRange", "rsID")) {
+    renderUI(tagList(
+      h4("Variant Results:"),
+      renderDT(
+        {
+          datatable(
+            res[[2]],
+            # options = list(
+            #   autoWidth = TRUE,
+            #   columnDefs = list(list(width = '10%', targets = c(1, 3)))
+            # ),
+            escape = FALSE,
+            rownames= FALSE,
+            selection = 'none'
+          ) %>%
+            formatStyle(
+              columns=colnames(res[[2]]),
+              style="bootstrap",
+              backgroundColor = tablebgcolor(),
+              color = tablecolor()
+            )
+        }
+      )
+    ))
+  } else {
+    renderUI(tagList(div()))
+  }
+  
+  
+}
 
 
 # initiates search function on hitting the minisubmit button

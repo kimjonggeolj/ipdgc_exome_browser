@@ -87,32 +87,18 @@ ui <- tagList(
               column(
                 width = 8,
                 miniSearchBar
-              )#,
-              # column(
-              #   width = 3,
-              #   # switchInput(
-              #   #   inputId = "darktheme",
-              #   #   label = "Dark Theme",
-              #   #   value = F,
-              #   #   #status = "warning",
-              #   #   #width = "150px",
-              #   #   size =  "mini",
-              #   #   inline = F
-              #   # )
-              #   div(
-              #     id = "top-row",
-              #     prettySwitch(
-              #       inputId = "darktheme",
-              #       label = "Enable Dark Theme",
-              #       slim = F,
-              #       inline = T
-              #     )
-              #   )
-              # )
-              # div(
-              #   actionLink("about", "About"),
-              #   id = "top-row"
-              # )
+              ),
+              column(
+                width = 4,
+                style = "text-align:right",
+                div(
+                  div(HTML("&nbsp;"),
+                      style = "font-size:14px;"),
+                  actionLink("about", HTML("&nbsp;"), icon =icon("question")),
+                  id = "top-row"
+                )
+              )
+
               
             )
           )
@@ -165,51 +151,6 @@ ui <- tagList(
   )
 )
 
-
-#   fluidPage(title = "IPDGC Genome Browser",
-#             # activate javascript package
-#             useShinyjs(),
-#             #theme = shinytheme("cyborg"),
-#             uiOutput("darktheme"),
-#             includeCSS("www/theme.css"),
-#             tags$script(src = "clickdetect.js"),
-#             fluidRow(
-#               column(width = 10,
-#                      # start hidden, show when search is performed
-#                      actionLink("wrapperlogo", uiOutput("wrapperlogo")),
-#                      miniSearchBar,
-#                      miniSubmitButton
-#                      ),
-#               column(width = 2,
-#                      div(actionLink("about", "About"), id = "top-row")),
-#               hr(),
-#             materialSwitch(
-#               inputId = "darktheme",
-#               label = "Dark Theme",
-#               value = F,
-#               status = "warning",
-#               width = "150px",
-#               inline = T
-#             ),
-#             fluidRow(
-#               div(
-#                 h4("Search Result"),
-#                 uiOutput("panel1")
-#               )
-#             ),
-#             splitLayout(
-#               div(
-#                 h4("Gene"),
-#                 uiOutput("panel2")
-#                 ),
-#               div(
-#                 h4("Variant"),
-#                 uiOutput("panel3")
-#               )
-#             )
-#   )
-# )
-# )
 
 
 # This uiOutput allows rendering of UI inside this initial wrapper UI

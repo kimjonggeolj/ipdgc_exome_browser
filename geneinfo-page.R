@@ -17,14 +17,29 @@ output$geneBox <- renderUI({
 # function resClick() found in "clickdetect.js"
 observeEvent(input$geneClick, {
   #num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
-  gene <- geneList[grepl(paste0('="', input$resPageId, '"'), geneList$id)]#storedRes[num]
+  # Check if URL or search table click
+  if (runFromURL) {
+    searchString <- query[['gene']]
+    runFromURL <<- F
+  } else {
+    searchString <- input$resPageId
+  }
+  gene <- geneList[grepl(paste0('="', searchString, '"'), geneList$id)]#storedRes[num]
   chrom <- gene$chr[1]
+  if (is.na(chrom)) {
+    sendSweetAlert(
+      session = session,
+      title = "Not Found",
+      text = "Given gene not found. Please search and select a different gene.",
+      type = "warning"
+    )
+  } else {
   #print(paste0("chromosome", chrom))
   load(paste0("varTab/", "chr", chrom, ".RData"))
   initDat <- eval(as.name(paste0("varDat.chr", chrom)))
   # print(head(initDat))
   print("initDat loaded")
-  variantTable.global <<- initDat[grepl(toupper(input$resPageId), initDat$`Gene.refGene`)][, c("HG19_ID",
+  variantTable.global <<- initDat[grepl(toupper(searchString), initDat$`Gene.refGene`)][, c("HG19_ID",
                                                                                                #"HG38_ID",
                                                                                                "Func.refGene",
                                                                                                "ExonicFunc.refGene",
@@ -75,7 +90,7 @@ observeEvent(input$geneClick, {
   
   
   #fread(tolower(paste0("varTab/",
-  #                                              tolower(input$resPageId),#gene$id,
+  #                                              tolower(searchString),#gene$id,
   #                                              ".txt")))[, c("HG19_ID",
   #                                                                                "HG38_ID",
   #                                                                                "Func.refGene",
@@ -199,10 +214,10 @@ observeEvent(input$geneClick, {
   output$panel2 <- renderUI(tagList(
     fluidRow(
       column(width = 6,
-             h1(input$resPageId),#gene$id),
+             h1(searchString),#gene$id),
              h2(ifelse(is.na(gene$name), "", gene$name)),
              div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
-             ifelse(grepl("^LOC", input$resPageId) | input$resPageId == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", input$resPageId), target = "_blank"))))
+             ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
       ),
       column(width = 6,
              div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"))#style = "position:absolute;right:12px"))
@@ -211,20 +226,10 @@ observeEvent(input$geneClick, {
                                                                                                                                                                      , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
     )}), style = "margin: 12px 50px 50px 12px;"))
   ))
-  #show(id = "mainPageLink")
-  #hide(id = "miniSearchBar")
-  #hide(id = "minisubmit")
-  #pageState <<- 3
-  #shinyjs::show("geneBox")
+  }
 })
 
-#return to search results when clicking return to results
-# observeEvent(input$returnResults, {
-#   output$mainPage <- resultPage
-#   #hide(id = "mainPageLink")
-#   #show(id = "miniSearchBar")
-#   #show(id = "minisubmit")
-#   #pageState <<- 2
-#   #hide(id = "wrapperlogo")
-# }
-# )
+
+
+############ URL SEARCH ###########
+

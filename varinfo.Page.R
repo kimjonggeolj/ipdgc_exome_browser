@@ -190,11 +190,18 @@ observeEvent(input$varClick, {
 
 observeEvent(input$varResClick, {
   print("varResClick start")
-  chrom <- gsub("^(\\d{1,2}):\\d+:.*$", "\\1", input$varResPageId)
+  # switch to see if running from URL or not
+  if (runFromURL) {
+    searchString <- query[['variant']]
+    runFromUR <<- F
+  } else {
+    searchString <- input$varResPageId
+  }
+  chrom <- gsub("^(\\d{1,2}):\\d+:.*$", "\\1", searchString)
   print(chrom)
   load(paste0("varTab/", "chr", chrom, ".RData"))
   var <- eval(as.name(paste0("varDat.chr", chrom)))
-  var <- var[var$`HG19_ID` == input$varResPageId][, c("HG19_ID",
+  var <- var[var$`HG19_ID` == searchString][, c("HG19_ID",
                                                       #"HG38_ID",
                                                       "Func.refGene",
                                                       "ExonicFunc.refGene",

@@ -1,3 +1,7 @@
+## UPLOAD COMMAND:
+# library(rsconnect)
+# deployApp(appFileManifest = "appManifest.txt", appName = "ExomeBrowser")
+
 # This page sets up the global variables and the packages used in both ui.R and server.R
 library(shiny)
 library(data.table)

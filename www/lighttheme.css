@@ -20,15 +20,28 @@
   color: black;
 }
 
+a {
+  color: #3c8dbc;
+}
+
+.ellipsis {
+  color:#333;
+}
+.wrapper .main-header .logo {
+  height: 87.5px;
+  background-color:#fff
+}
+
+.content-wrapper, .right-side {
+  background-color: #ecf0f5
+}
+
+/* Data Tables */
 .dataTables_length label {
   color: black;
 }
 
 .dataTables_length label select {
-  color: black;
-}
-
-label[for=minisearchBar] {
   color: black;
 }
 
@@ -40,31 +53,28 @@ label[for=minisearchBar] {
   color:#333!important
 }
 
-.ellipsis {
-  color:#333;
-}
-
 input[type=search] {
   background-color:#fff;
   color:black;
 }
 
-input#minisearchBar_Text {
-  background-color: #fff;
+.dataTables_empty {
+  background-color:rgba(249, 249, 249);
   color:black;
 }
 
-a {
-  color: #3c8dbc;
+.dataTables_wrapper .dataTables_info[role=status] {
+  color:#333;
 }
 
-.wrapper .main-header .logo {
-  height: 87.5px;
-  background-color:#fff
+/* Search Bar */
+label[for=minisearchBar] {
+  color: black;
 }
 
-.content-wrapper, .right-side {
-  background-color: #ecf0f5
+input#minisearchBar_text {
+  background-color: #fff;
+  color:black;
 }
 
 /* Shiny Widget overrides*/
@@ -88,17 +98,6 @@ a {
 /* Dark theme switch label*/
 .state label span {
     color:black;
-}
-
-
-/* Table */
-.dataTables_empty {
-  background-color:rgba(249, 249, 249);
-  color:black;
-}
-
-.dataTables_wrapper .dataTables_info[role=status] {
-  color:#333;
 }
 
 /* Layout Switch */

@@ -48,10 +48,8 @@
    margin-bottom:1%;
    font-weight:bold;
    */
-   margin: 0;
-   position: absolute;
-   top: 50%;
-   transform: translateY(50%);
+   font-size:20px;
+   display:inline-block;
  }
  
  #mainPageLink {
@@ -90,10 +88,3 @@ hr {
 .form-group .shiny-input-container {
  padding-bottom:0px;
 }
-
-.col-sm-3 {
-  float:right;
-  vertical-align:middle;
-  display: table-cell;
-}
-
