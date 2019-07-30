@@ -86,7 +86,8 @@ runSearchPage <- function() {
   # if initial main page, then read from big search bar
   # else read from mini search bar
   searchSelect <- input$minisearchBar
-  listSwitch <- !grepl("^rs\\d*", searchSelect, ignore.case = T)
+  searchSelect <- gsub("\\s", "", searchSelect)
+  #listSwitch <- !grepl("^rs\\d*", searchSelect, ignore.case = T)
   # detecting switch for the function
   if (grepl("^chr\\d+$", searchSelect, ignore.case = T)) {
     searchSwitch <- "chr"
@@ -231,6 +232,7 @@ runSearchPage_URL <- function() {
   # if initial main page, then read from big search bar
   # else read from mini search bar
   searchSelect <- query[['gene']]
+  searchSelect <- gsub("\\s", "", searchSelect)
   listSwitch <- !grepl("^rs\\d*", searchSelect, ignore.case = T)
   # detecting switch for the function
   if (grepl("^chr\\d+$", searchSelect, ignore.case = T)) {
