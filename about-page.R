@@ -14,11 +14,11 @@ observeEvent(input$about, {
     fluidRow(
       column(
         width = 3,
-        a(img(src = "ipdgc.png", style = "height:50px;"), href = "https://pdgenetics.org/", targe = "_blank")
+        a(img(src = "ipdgc.png", style = "height:50px;"), href = "https://pdgenetics.org/", target = "_blank")
         ),
       column(
         width = 3,
-        a(img(src = "nia-logo.png", style = "height:50px;"), href = "https://www.nia.nih.gov/", targe = "_blank"))
+        a(img(src = "nia-logo.png", style = "height:50px;"), href = "https://www.nia.nih.gov/", target = "_blank"))
       )
   ))
 })
