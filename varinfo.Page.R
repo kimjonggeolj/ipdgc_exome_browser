@@ -193,7 +193,7 @@ observeEvent(input$varResClick, {
   # switch to see if running from URL or not
   if (runFromURL) {
     searchString <- query[['variant']]
-    runFromUR <<- F
+    runFromURL <<- F
   } else {
     searchString <- input$varResPageId
   }
