@@ -1,5 +1,4 @@
 # This is the "UI file" of the app.
-# In reality, it only establishes the initial wrapper UI and a window for search results.
 ui <- tagList(
   
   
@@ -13,20 +12,26 @@ ui <- tagList(
   # ),
   
   #============================================================
+  
+# Initialize Shinyjs + Shinyanimate
   useShinyjs(),
   withAnim(),
-  useSweetAlert(),
+# theme + javascript for detecting clicks for search results
   includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
+# dark theme
   uiOutput("darktheme"),
+# Start logo
   div(
     id = "loadingPage",
     hidden(img(src = "ipdgc_vb.png", id = "startLogo"))
   ),
   hidden(
+# fixed option button
     div(
       id = "fixedDLButton",
       dropdown(
+# hg19 vs hg38 switch
         # prettyToggle(
         #   status_off = "primary",
         #   status_on = "danger",
@@ -39,6 +44,7 @@ ui <- tagList(
         #   inline = T,
         #   bigger = T
         # ),
+# dark theme switch
         prettyToggle(
           inputId = "darktheme",
           # icon_on = icon("moon"),
@@ -51,6 +57,7 @@ ui <- tagList(
           inline = T,
           bigger = T
         ),
+# layout switch (stacked vs pyramid)
         switchInput(
           inputId = "layout",
           label = "Layout",
@@ -65,24 +72,16 @@ ui <- tagList(
         width = "150px",
         up = T,
         right = T
-        # tooltip = tooltipOptions(
-        #   placement = "top",
-        #   title = "Click me for options/settings"
-        #   )
-        # animate = animateOptions(
-        #   enter = animations$fading_entrances$fadeInLeftBig,
-        #   exit = animations$fading_exits$fadeOutRightBig
-        # )
       )
     ),
+# main UI
     div(
       id = "uiPage",
       dashboardPagePlus(
+# header
         header = dashboardHeaderPlus(
           title = uiOutput("wrapperlogo"),
-          #title = img(src = "ipdgc_gb_small.png", id = "wrapperlogo"),
           left_menu = tagList(
-            # uiOutput("wrapperlogo"),
             fluidRow(
               column(
                 width = 8,
@@ -98,8 +97,6 @@ ui <- tagList(
                   id = "top-row"
                 )
               )
-
-              
             )
           )
         ),
@@ -117,31 +114,6 @@ ui <- tagList(
           ),
           uiOutput("geneBox"),
           uiOutput("varBox")
-          # hidden(
-          #   div(
-          #     id = "geneBox",
-          #     boxPlus(
-          #       title = "Gene",
-          #       uiOutput("panel2"),
-          #       id = "genebox",
-          #       width = boxWidth,
-          #       closable = F,
-          #       status = "warning"
-          #     )
-          #   )
-          # ),
-          # hidden(
-          #   div(
-          #     id = "varBox",
-          #     boxPlus(
-          #       title = "Variant",
-          #       uiOutput("panel3"),
-          #       width = boxWidth,
-          #       closable = F,
-          #       status = "primary"
-          #     )
-          #   )
-          # )
         ),
         title = "IPDGC Genome Browser",
         sidebar_fullCollapse = T,

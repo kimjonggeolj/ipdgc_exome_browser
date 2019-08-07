@@ -22,12 +22,3 @@ observeEvent(input$about, {
       )
   ))
 })
-
-
-#add padding to "about" when clicking "search"
-# observeEvent(input$submit,
-#              {addClass(id = "top-row", class = "paddedrow")}
-# )
-# #remove padding to "about" when clicking the logo
-# observeEvent(input$wrapperlogo,
-#              {removeClass(id = "top-row", class = "paddedrow")})

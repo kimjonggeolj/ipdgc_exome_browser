@@ -1,29 +1,11 @@
 # Server.R is where most of the heavy lifting happens.
 
 server <- function(input, output, session) {
-  # if (pageState == 3) {
-  #   setBookmarkExclude(c("about", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults"))
-  # } else {
-  #   setBookmarkExclude(c("about", "minisearchBar", "searchBar", "darktheme", "minisubmit", "submit", "wrapperlogo", "returnResults", "resPageId"))
-  # }
-
-  
-  # observe({
-  #   # Trigger this observer every time an input changes
-  #   reactiveValuesToList(input)
-  #   session$doBookmark()
-  # })
-  # onBookmarked(function(url) {
-  #   updateQueryString(url)
-  # })
-  
+  #====initialization
   shinyjs::show("startLogo")
-
-  
   startAnim(session,
             id = "startLogo",
             type = "flipInX")
-  
   delay(1500,
         {
           shinyjs::show("uiPage")
@@ -33,8 +15,6 @@ server <- function(input, output, session) {
   )
   
   source("darktheme.R", local = T)
-
-
 
   #====search results
   source("result-page.R", local = T)
@@ -81,4 +61,8 @@ server <- function(input, output, session) {
       runjs("Shiny.setInputValue('varResClick', Math.random())")
     }
     })
+  
+  if (!exists("runFromURL")) {
+    runFromURL <<- F
+  }
 }

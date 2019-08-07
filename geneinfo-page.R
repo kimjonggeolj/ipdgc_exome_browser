@@ -228,8 +228,3 @@ observeEvent(input$geneClick, {
   ))
   }
 })
-
-
-
-############ URL SEARCH ###########
-

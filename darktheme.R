@@ -23,7 +23,7 @@ observeEvent(input$darktheme, {
 }
 )
 #=============================
-
+#===Dark Mode reactives for data tables===
 tablecolor <- reactive({
   if (input$darktheme == T) {
     'white'
