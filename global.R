@@ -11,6 +11,8 @@ library(shinyWidgets) # widgets
 library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyanimate)
+library(plotly)
+library(ggplot2)
 
 '%ni%' <- Negate('%in%')
 

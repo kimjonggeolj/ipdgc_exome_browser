@@ -19,6 +19,7 @@ ui <- tagList(
 # theme + javascript for detecting clicks for search results
   includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
+  tags$script(src = "boxsize.js"),
 # dark theme
   uiOutput("darktheme"),
 # Start logo
@@ -105,6 +106,7 @@ ui <- tagList(
         ),
         body = dashboardBody(
           boxPlus(
+            id = "resultbox",
             title = "Search Results",
             uiOutput("panel1"),
             uiOutput("panel1b"),

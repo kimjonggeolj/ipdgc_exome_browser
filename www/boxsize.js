@@ -4,11 +4,7 @@
 //    Shiny.onInputChange("dimension", dimension); 
 //  }
 //});
-//$(document).on("shiny:sessioninitialized", function(event) { //shiny:sessioninitialized
-//    dimension = document.getElementById('forestbox').offsetWidth;
-//    Shiny.onInputChange("dimension", dimension);
-//});
 $(window).resize(function(event) {
-    dimension = document.getElementById('genebox').offsetWidth;
+    dimension = document.getElementById('resultbox').offsetWidth;
     Shiny.onInputChange("dimension", dimension);
 });

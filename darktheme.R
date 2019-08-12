@@ -34,7 +34,7 @@ tablecolor <- reactive({
 
 tablebgcolor <- reactive({
   if (input$darktheme == T) {
-    'rgba(56, 56, 56)'
+    '#383838'
     #'#282828'
   } else {
     '#FFFFFF'

@@ -11,6 +11,7 @@ observeEvent(input$about, {
     p("url_search", session$clientData$url_search),
     p("url_pathname", session$clientData$url_pathname),
     p("session", str(reactiveValuesToList(input))),
+    p("window.size.slow", window.size.slow()),
     fluidRow(
       column(
         width = 3,

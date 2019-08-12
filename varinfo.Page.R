@@ -20,7 +20,12 @@ output$varBox <- renderUI({
 
 # ===== TO DO: make separate observeEvent for a new input: "varClickSearch", which imports its own variantTable.global
 observeEvent(input$varClick, {
-  var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
+  if (runfromPlotly) {
+    var <- plotlyVariantTable
+    runfromPlotly <<- F
+  } else {
+    var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
+  }
   colnames(var) <- c("Exome name (hg19)",
                      # "Exome name (hg38)",
                      "Region",
