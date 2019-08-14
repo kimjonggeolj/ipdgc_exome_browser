@@ -85,8 +85,12 @@ ui <- tagList(
           left_menu = tagList(
             fluidRow(
               column(
-                width = 8,
+                width = 6,
                 miniSearchBar
+              ),
+              column(
+                width = 2,
+                h2("ALPHA VERSION")
               ),
               column(
                 width = 4,
