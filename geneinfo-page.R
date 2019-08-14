@@ -405,9 +405,13 @@ observeEvent(input$geneClick, {
         geom_tile(
           color = tablebgcolor(),
           size = 2
-          ) + # The color of the lines between tiles
+          ) +
+        # The color of the lines between tiles
         scale_fill_manual("Changes",
-                          values = colorList[[2]]#,
+                          values = colorList[[2]],
+                          guide = guide_legend(
+                            ncol = 2
+                            )
                           #breaks = colorList[[3]]
                           ) +
         labs(title = "Functional Consequence") +
@@ -425,15 +429,15 @@ observeEvent(input$geneClick, {
               panel.grid.minor=element_blank(),
               plot.background=element_rect(fill = tablebgcolor(),
                                            color = tablebgcolor()),
-              legend.position = 'left',
+              legend.position = 'bottom',
               legend.key = element_rect(fill = tablebgcolor(),
                                         color = tablebgcolor()
                                         ),
               legend.background = element_rect(fill = tablebgcolor()),
-              legend.title = element_text(color = tablecolor()),
+              legend.title = element_blank(),
               legend.text = element_text(color = tablecolor()),
-              plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()),
-              plot.margin=grid::unit(c(0,0,0,0), "mm")
+              plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor())#,
+              #plot.margin=grid::unit(c(0,0,0,0), "mm")
         )
     })
     #aggregateVariantTable$Count <-
@@ -459,7 +463,7 @@ observeEvent(input$geneClick, {
                  height = "500px"
                ),
                id = "aggregateVariantTable",
-               style = "display:inline;height:100%;width:60%;")
+               style = "display:inline;height:100%;width:50%;")
         )#style = "position:absolute;right:12px"))
       ),
       fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], options = list(paging = F, scrollX = T, scrollY = "500px"), rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])

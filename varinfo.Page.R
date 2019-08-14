@@ -281,19 +281,20 @@ observeEvent(input$varResClick, {
                      # "Reseq-MAF (control)",
                      # "Reseq-number of participants (controls)",
                      # gnomad (hg19) + UKBB (hg38) Columns:
-                     "gnomAD Genome Allele Frequency (AF)",
-                     "gnomAD Popmax Filtering AF",
-                     "gnomAD Popmax Filtering AF-Controls",
-                     "gnomAD AF-male",
-                     "gnomAD AF-female",
-                     "gnomAD AF-African",
-                     "gnomAD AF-South Asian",
-                     "gnomAD AF-Latino",
-                     "gnomAD AF-East Asian",
-                     "gnomAD AF-European (non-Finnish)",
-                     "gnomAD AF-Finnish",
-                     "gnomAD AF-Ashkenazi Jewish",
-                     "gnomAD AF-Other")
+                     "Genome Allele Frequency (AF)", #gnomAD====================
+                     "Popmax Filtering AF",
+                     "Popmax Filtering AF-Controls",
+                     "AF-male",
+                     "AF-female",
+                     "AF-African",
+                     "AF-South Asian",
+                     "AF-Latino",
+                     "AF-East Asian",
+                     "AF-European (non-Finnish)",
+                     "AF-Finnish",
+                     "AF-Ashkenazi Jewish",
+                     "AF-Other"                     #gnomAD ends here===========
+                     )
   # output$genome.freq.Table <- renderTable(
   #   var[, c(9:14)],
   #   digits = -2
@@ -335,8 +336,19 @@ observeEvent(input$varResClick, {
       ),
       column(width = 12,
              h2(var$rsID,
-                tags$i(paste0("(", toupper(var$`Nearest Gene`[1]#input$resPageId
-                ), ")")),
+                tags$i(
+                  HTML(
+                    paste0("(",
+                           a(
+                             onClick = "resClick(this.id)",
+                             href = "javascript:;",
+                             id = var$`Nearest Gene`[1],
+                             toupper(var$`Nearest Gene`[1]#input$resPageId
+                             )
+                           ),
+                           ")")
+                    )
+                  ),
                 tags$sup(
                   a(href = paste0(
                     "https://www.ai-omni.com/search=",
@@ -375,18 +387,18 @@ observeEvent(input$varResClick, {
                     tagList(div(tags$b("ClinVar (Clinical Significance): "), var$`Clinical significance (ClinVar)`,
                                 style = "margin-bottom:50px;"))),
              
-             h3("Frequency Table")
+             h2("Frequency Table")
       )
     ),
     fluidRow(
       column(
         width = 6,
-        h4("IPDGC"),
+        h3("IPDGC"),
         # h5("Genome"),
         # div(
         #   tableOutput("genome.freq.Table")
         # ),
-        h5("Exome"),
+        h4("Exome"),
         div(
           tableOutput("exome.freq.Table")
         )#,
@@ -397,7 +409,8 @@ observeEvent(input$varResClick, {
       ),
       column(
         width = 6,
-        h4("Other Resources"),
+        h3("Other Resources"),
+        h4(a("gnomAD", href = "https://gnomad.broadinstitute.org/", target = "_blank")),
         div(
           tableOutput("others.freq.Table")
         )
