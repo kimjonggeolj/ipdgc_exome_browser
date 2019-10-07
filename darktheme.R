@@ -20,8 +20,7 @@ observeEvent(input$darktheme, {
     output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_vb_small.png", id = "wrapperlogo")))
 
   }
-}
-)
+})
 #=============================
 #===Dark Mode reactives for data tables===
 tablecolor <- reactive({

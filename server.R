@@ -1,7 +1,11 @@
 # Server.R is where most of the heavy lifting happens.
 
 server <- function(input, output, session) {
-  runfromPlotly <<- F
+  # Colorscale for needlePlot + waffle plot
+  colorList <- list()
+  colorList[[1]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift mutation" = "#7fc97f", "frameshift mutation" = "#fdc086", "stopgain" = "#ffff99", "stoploss" = "#f0027f",  "NA/unknown" = "#e8e6e4")
+  colorList[[2]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift" = "#7fc97f", "nonframeshift insertion" = "#7fc9c9", "nonframeshift deletion" = "#a4c97f", "nonframeshift block substitution" = "#5e915d",  "frameshift insertion" = "#fdc086", "frameshift deletion" = "#fddd86", "frameshift block substitution" = "#fda286", "stopgain" = "#ffff99", "stoploss" = "#f0027f", "NA/unknown" = "#e8e6e4")
+  
   #====initialization
   shinyjs::show("startLogo")
   startAnim(session,
@@ -31,7 +35,8 @@ server <- function(input, output, session) {
           })
         }
   )
-
+  
+  #====Dark theme/light theme events and reactives
   source("darktheme.R", local = T)
   
   #====search results
@@ -39,12 +44,7 @@ server <- function(input, output, session) {
   
   #====page for gene information
   source("geneinfo-page.R", local = T)
-  
-  #====page for variant information
-  # observeEvent(input$varClick, {
-  #   var <- varList[varList$id == toupper(input$varPageId)]
-  # })
-  
+
   #====about page
   source("about-page.R", local = T)
   

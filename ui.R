@@ -1,4 +1,13 @@
 # This is the "UI file" of the app.
+miniSearchBar <- searchInput(
+  inputId = "minisearchBar", 
+  label = "Enter your search terms:", 
+  placeholder = "e.g. LRRK2, chr12, 12:40196744, 12:40000000-50000000, rs1422910994", 
+  btnSearch = icon("search"), 
+  btnReset = icon("remove"), 
+  width = "80%"
+)
+
 ui <- tagList(
   
   
@@ -48,8 +57,6 @@ ui <- tagList(
 # dark theme switch
         prettyToggle(
           inputId = "darktheme",
-          # icon_on = icon("moon"),
-          # icon_off = icon("lightbulb"),
           animation = "pulse",
           status_off = "primary",
           status_on = "warning",
@@ -85,15 +92,15 @@ ui <- tagList(
           left_menu = tagList(
             fluidRow(
               column(
-                width = 6,
+                width = 7,
                 miniSearchBar
               ),
               column(
-                width = 2,
-                h2("ALPHA VERSION")
+                width = 4,
+                h3("ALPHA VERSION")
               ),
               column(
-                width = 4,
+                width = 1,
                 style = "text-align:right",
                 div(
                   div(HTML("&nbsp;"),
@@ -129,15 +136,6 @@ ui <- tagList(
   )
 )
 
-
-
-# This uiOutput allows rendering of UI inside this initial wrapper UI
-# When you want to render a UI inside the wrapper, define a "mainpage" variable
-# with renderUI() + whatever UI elements you want.
-#uiOutput("mainPage"),
-
-
-
 #========Below is part II of sample Google login API==========
 # , div(id="signin", class="g-signin2", "data-onsuccess"="onSignIn"),
 # actionButton("signout", "Sign Out", onclick="signOut();", class="btn-danger"),
@@ -145,5 +143,3 @@ ui <- tagList(
 #               dt("Email"), dd(textOutput("g.email")),
 #               dt("Image"), dd(uiOutput("g.image")) ))
 #=============================================================
-
-#uiOutput("wrapUI")

@@ -6,6 +6,8 @@
 # 4. chromosome number + base pair range (XX:YYYYYYY-ZZZZZZZ)
 # NEED TO ADD: rsID (may be a huge headache due to excessive number of rsIDs)
 # Maybe gene name????
+
+# ==hg19 vs 38==
 # eventReactive(
 #   searchString,
 #   {
@@ -72,6 +74,13 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
            dat.nested[[2]] <- varList.nested[[1]][0]
          }
   )
+  
+  # prepping result page
+  #   below segment specifically sets up the geneID elements to have
+  #   a javascript function associated with it on click. On click, it
+  #   should open the gene information page. "See clickdetect.js"
+  #   for details.
+  
   #if (nrow(dat.nested[[2]]) <= 1000) {
     for (i in 1:nrow(dat.nested[[2]])) {
       dat.nested[[2]]$id[i] <- paste0('<a id="', dat.nested[[2]]$id[i], '" href="javascript:;"onclick="varResClick(this.id)">', dat.nested[[2]]$id[i], '</a>')
@@ -132,6 +141,7 @@ runSearchPage <- function() {
     searchString = searchSelect, type = searchSwitch)
   res[[1]] <- res[[1]][, c(1,3,6,7,2)]
   colnames(res[[1]]) <- c("Gene ID", "Chromosome", "BP-Start", "BP-End", "Gene Name")
+  # == hg19 vs 38==
   # if (listSwitch) {
   #   # if (input$buildSwitch == F) {
   #   #   res <- res[,c(1,3,6,7,2)]
@@ -159,11 +169,7 @@ runSearchPage <- function() {
   # for (i in 1:nrow(res[[2]])) {
   #   res[[2]]$`Position (Ref/Alt)`[i] <- paste0('<a id="', res[[2]]$`Position (Ref/Alt)`[i], '" href="#" onclick="varResClick(this.id)">', res[[2]]$`Position (Ref/Alt)`[i], '</a>')
   # }
-  # prepping result page
-  #   below segment specifically sets up the geneID elements to have
-  #   a javascript function associated with it on click. On click, it
-  #   should open the gene information page. "See clickdetect.js"
-  #   for details.
+
 
   
   resultTable <- renderDT(
@@ -200,8 +206,7 @@ runSearchPage <- function() {
       #   )
       ),
     resultTable
-  )
-  )
+  ))
   } else {
     renderUI(tagList(div()))
   }

@@ -13,18 +13,11 @@ library(shinydashboardPlus)
 library(shinyanimate)
 library(plotly)
 library(ggplot2)
+#library(reshape2)
 
 '%ni%' <- Negate('%in%')
 
-miniSearchBar <- searchInput(
-  inputId = "minisearchBar", 
-  label = "Enter your search terms:", 
-  placeholder = "e.g. LRRK2, chr12, 12:40196744, 12:40000000-50000000, rs1422910994", 
-  btnSearch = icon("search"), 
-  btnReset = icon("remove"), 
-  width = "50%"
-)
-
+runfromPlotly <- F
 
 #====initial data loading file
 source("datatables.R", local = T)

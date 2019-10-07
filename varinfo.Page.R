@@ -74,12 +74,13 @@ observeEvent(input$varClick, {
   #   digits = -2
   # )
   
-  output$exome.freq.Table <- renderTable({
-    table <- dcast(melt(var[,c(8:14)], id.vars = "Clinical significance (ClinVar)"), variable ~ `Clinical significance (ClinVar)`)
-    colnames(table) <- c("Population", "Frequency")
-    table
-  },
-  digits = -2
+  output$exome.freq.Table <- renderTable(
+    {
+      table <- dcast(melt(var[,c(8:14)], id.vars = "Clinical significance (ClinVar)"), variable ~ `Clinical significance (ClinVar)`)
+      colnames(table) <- c("Population", "Frequency")
+      table
+    },
+    digits = -2
   )
   
   # output$reseq.freq.Table <- renderTable(
@@ -87,12 +88,13 @@ observeEvent(input$varClick, {
   #   digits = -2
   # )
   
-  output$others.freq.Table <- renderTable({
-    table <- dcast(melt(var[, c(14:27)], id.vars = "Exome-number of participants (control)"), variable ~ `Exome-number of participants (control)`)
-    colnames(table) <- c("Population", "Frequency")
-    table
-  },
-  digits = -2
+  output$others.freq.Table <- renderTable(
+    {
+      table <- dcast(melt(var[, c(14:27)], id.vars = "Exome-number of participants (control)"), variable ~ `Exome-number of participants (control)`)
+      colnames(table) <- c("Population", "Frequency")
+      table
+    },
+    digits = -2
   )
   
   var$rsID <- ifelse(var$rsID == ".", "", var$rsID)
