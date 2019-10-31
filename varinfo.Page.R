@@ -196,7 +196,7 @@ observeEvent(input$varClick, {
 })
 
 observeEvent(input$varResClick, {
-  print("varResClick start")
+  # print("varResClick start")
   # switch to see if running from URL or not
   if (runFromURL) {
     searchString <- query[['variant']]
@@ -205,7 +205,7 @@ observeEvent(input$varResClick, {
     searchString <- input$varResPageId
   }
   chrom <- gsub("^(\\d{1,2}):\\d+:.*$", "\\1", searchString)
-  print(chrom)
+  # print(chrom)
   load(paste0("varTab/", "chr", chrom, ".RData"))
   var <- eval(as.name(paste0("varDat.chr", chrom)))
   var <- var[var$`HG19_ID` == searchString][, c("HG19_ID",

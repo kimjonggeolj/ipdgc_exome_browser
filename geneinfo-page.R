@@ -38,7 +38,7 @@ observeEvent(input$geneClick, {
     load(paste0("varTab/", "chr", chrom, ".RData"))
     initDat <- eval(as.name(paste0("varDat.chr", chrom)))
     # print(head(initDat))
-    print("initDat loaded")
+    # print("initDat loaded")
     initDat <- initDat[grepl(toupper(searchString), initDat$`Gene.refGene`)][, c("HG19_ID",
                                                                                  "Start",
                                                                                  #"HG38_ID",
@@ -115,7 +115,8 @@ observeEvent(input$geneClick, {
       #        `frameshift block substitution` = 3,
       #        `nonframeshift` = 1
       # )
-    })
+    }
+    )
     
     needleData$y <- sapply(needleData$`Functional Consequence`, function (x) {
       switch(x,
@@ -128,7 +129,7 @@ observeEvent(input$geneClick, {
              `stoploss` = 4
       )
     })
-
+    
     # needleData$color <- lapply(needleData$y, function (x) {
     #   switch(x,
     #          `0` = "black",
@@ -183,7 +184,7 @@ observeEvent(input$geneClick, {
     #                                                                                              "AF_asj",
     #                                                                                              "AF_oth"
     # )]
-    print("variantTable G loaded")
+    # print("variantTable G loaded")
     variantTable <- variantTable.global[, -c("Gene.refGene")]
     colnames(variantTable) <- c("Exome name (hg19)",
                                 # "Exome name (hg38)",
@@ -229,9 +230,14 @@ observeEvent(input$geneClick, {
                                 "gnomAD AF-Other")
     # print("variantTable local loaded")
     for (i in 1:nrow(variantTable)) {
-      variantTable$`Exome name (hg19)`[i] <- paste0('<a id="',  variantTable$`Exome name (hg19)`[i], '" href="javascript:;" onclick="varClick(this.id)">', variantTable$`Exome name (hg19)`[i], '</a>')
+      if (nchar(variantTable$`Exome name (hg19)`[i]) > 19) {
+        variantTable$`Exome name (hg19)`[i] <- paste0('<a id="', variantTable$`Exome name (hg19)`[i], '" href="javascript:;" onclick="varClick(this.id)">', gsub("^(.{20}).*$", "\\1...", variantTable$`Exome name (hg19)`[i]), '</a>')
+      } else {
+        variantTable$`Exome name (hg19)`[i] <- paste0('<a id="', variantTable$`Exome name (hg19)`[i], '" href="javascript:;" onclick="varClick(this.id)">', variantTable$`Exome name (hg19)`[i], '</a>')
+      }
       #restoreInput(id = paste0("res", i), default = NULL)
     }
+    
     #aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
     aggregateVariantTable <- data.table(`Functional consequence` = c("All SNVs",
                                                                      "frameshift insertion",
@@ -291,34 +297,34 @@ observeEvent(input$geneClick, {
           ),
           #position = position_jitter(height = 0L, seed = 1L),
           color = tablecolor()
-          ) +
+        ) +
         scale_fill_manual(
           values = colorList[[1]]#,
           #breaks = colorList[[1]]
         ) +
         theme(
           axis.title.y = element_blank(),
-            axis.text.y = element_blank(),
-            axis.ticks.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank(),
           axis.text = element_text(color = tablecolor()),
-            panel.background=element_rect(fill = tablebgcolor(),
-                                          colour = tablebgcolor()
-            ),
+          panel.background=element_rect(fill = tablebgcolor(),
+                                        colour = tablebgcolor()
+          ),
           axis.title.x = element_text(color = tablecolor()),
-            panel.border=element_blank(),
-            panel.grid.major=element_blank(),
-            panel.grid.minor=element_blank(),
-            plot.background=element_rect(fill = tablebgcolor()),
-            legend.key = element_rect(fill = tablebgcolor(),
-                                      color = tablebgcolor()
-            ),
-            #legend.position = c(1.2, 0.2),
-            legend.background = element_rect(fill = tablebgcolor()),
-            legend.title = element_blank(),# element_text(color = tablecolor()),
-            legend.text = element_text(color = tablecolor()))
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          plot.background=element_rect(fill = tablebgcolor()),
+          legend.key = element_rect(fill = tablebgcolor(),
+                                    color = tablebgcolor()
+          ),
+          #legend.position = c(1.2, 0.2),
+          legend.background = element_rect(fill = tablebgcolor()),
+          legend.title = element_blank(),# element_text(color = tablecolor()),
+          legend.text = element_text(color = tablecolor()))
       event_register(p, 'plotly_click')
       ggplotly(p, tooltip = c("Position", "Functional Consequence"), height = 300, width = NULL
-        )
+      )
       
       
       # ====== plotly version =====
@@ -405,39 +411,45 @@ observeEvent(input$geneClick, {
         geom_tile(
           color = tablebgcolor(),
           size = 2
-          ) +
+        ) +
         # The color of the lines between tiles
         scale_fill_manual("Changes",
                           values = colorList[[2]],
                           guide = guide_legend(
-                            ncol = 2
-                            )
-                          #breaks = colorList[[3]]
-                          ) +
+                            ncol = 1
+                          )
+                          #breaks = colorList[[3]]0
+        ) +
         labs(title = "Functional Consequence") +
-        theme(axis.line=element_blank(),
-              axis.text.x=element_blank(),
-              axis.text.y=element_blank(),
-              axis.ticks=element_blank(),
-              axis.title.x=element_blank(),
-              axis.title.y=element_blank(),
-              panel.background=element_rect(fill = tablebgcolor(),
-                                            colour = tablebgcolor()
-                                            ),
-              panel.border=element_blank(),
-              panel.grid.major=element_blank(),
-              panel.grid.minor=element_blank(),
-              plot.background=element_rect(fill = tablebgcolor(),
-                                           color = tablebgcolor()),
-              legend.position = 'bottom',
-              legend.key = element_rect(fill = tablebgcolor(),
-                                        color = tablebgcolor()
-                                        ),
-              legend.background = element_rect(fill = tablebgcolor()),
-              legend.title = element_blank(),
-              legend.text = element_text(color = tablecolor()),
-              plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor())#,
-              #plot.margin=grid::unit(c(0,0,0,0), "mm")
+        theme(
+          axis.line=element_blank(),
+          axis.text.x=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_rect(
+            fill = tablebgcolor(),
+            colour = tablebgcolor()
+          ),
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          plot.background=element_rect(
+            fill = tablebgcolor(),
+            color = tablebgcolor()
+          ),
+          legend.position = 'right',
+          legend.key = element_rect(
+            fill = tablebgcolor(),
+            color = tablebgcolor()
+          ),
+          legend.background = element_rect(fill = tablebgcolor()),
+          legend.title = element_blank(),
+          legend.text = element_text(color = tablecolor()),
+          plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()
+          )#,
+          #plot.margin=grid::unit(c(0,0,0,0), "mm")
         )
     })
     #aggregateVariantTable$Count <-
@@ -445,28 +457,58 @@ observeEvent(input$geneClick, {
     #aggregateVariantTable <- fread(paste0("aggregate/", gene$id, ".txt"))
     output$panel2 <- renderUI(tagList(
       fluidRow(
-        column(width = 6,
+        column(width = 4,
                h1(searchString),#gene$id),
                h2(ifelse(is.na(gene$name), "", gene$name)),
                div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
-               ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank")))),
-               plotlyOutput(
-                 "needlePlot",
-                 height = "300px"
-               )
+               ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
         ),
-        column(width = 6,
-               div(renderTable(aggregateVariantTable), id = "aggregateVariantTable"),
-               div(plotOutput(
-                 #width = "30%",
-                 "aggregateDonut",
-                 height = "500px"
-               ),
-               id = "aggregateVariantTable",
-               style = "display:inline;height:100%;width:50%;")
+        column(width = 8,
+               div(renderTable(aggregateVariantTable), id = "aggregateVariantTable")
         )#style = "position:absolute;right:12px"))
       ),
-      fluidRow(div(renderDT({datatable(variantTable[, c(1:8,11,17)], options = list(paging = F, scrollX = T, scrollY = "500px"), rownames= FALSE, escape = FALSE, selection = 'none') %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
+      fluidRow(
+        div(plotOutput(
+          #width = "30%",
+          "aggregateDonut",
+          height = "500px"
+        )#,
+        #id = "aggregateVariantTable"#,
+        #style = "display:inline;height:100%;width:50%;"
+        )
+      ),
+      fluidRow(
+        plotlyOutput(
+          "needlePlot",
+          height = "300px"
+        )
+      ),
+      fluidRow(div(renderDT({
+        dat <- variantTable[, c(1:8,11,17)]
+        # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
+        datatable(
+          dat,
+          options = list(
+            paging = F,
+            scrollX = T,
+            scrollY = "500px",
+            lengthChange = FALSE,
+            columnDefs = list(
+              #list(width = '10px', targets = 0),
+              list(
+                targets = 3,
+                render = JS(
+                  "function(data, type, row, meta) {",
+                  "return type === 'display' && data.length > 19 ?",
+                  "'<span title=\"' + data + '\">' + data.substr(0, 19) + '...</span>' : data;",
+                  "}")
+              )
+              # Maybe ask Cornelis if we can shorten Amino acid change to just the amino acid change, e.g. p.Y136Y
+            )
+            ),
+          rownames= FALSE,
+          escape = FALSE
+          ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
                                                                                                                                                                                                       , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
       )}), style = "margin: 12px 50px 50px 12px;"))
     ))
