@@ -239,20 +239,7 @@ observeEvent(input$geneClick, {
     }
     
     #aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
-    aggregateVariantTable <- data.table(`Functional consequence` = c("All SNVs",
-                                                                     "frameshift insertion",
-                                                                     "frameshift deletion",
-                                                                     "frameshift block substitution",
-                                                                     "stopgain",
-                                                                     "stoploss",
-                                                                     "nonframeshift",
-                                                                     "nonframeshift insertion",
-                                                                     "nonframeshift deletion",
-                                                                     "nonframeshift block substitution",
-                                                                     "nonsynonymous SNV",
-                                                                     "synonymous SNV",
-                                                                     "NA/unknown"),
-                                        Count = c(nrow(variantTable),
+    aggregateVariantTable <- data.table(Count = c(nrow(variantTable),
                                                   length(which(variantTable$`Functional consequence` == "frameshift insertion")),
                                                   length(which(variantTable$`Functional consequence` == "frameshift deletion")),
                                                   length(which(variantTable$`Functional consequence` == "frameshift block substitution")),
@@ -265,7 +252,21 @@ observeEvent(input$geneClick, {
                                                   length(which(variantTable$`Functional consequence` == "nonsynonymous SNV")),
                                                   length(which(variantTable$`Functional consequence` == "synonymous SNV")),
                                                   length(which(variantTable$`Functional consequence` == "unknown")) + length(which(variantTable$`Functional consequence` == "."))
-                                        ))
+                                        ),
+                                        `Functional consequence` = c("All SNVs",
+                                                                     "frameshift insertion",
+                                                                     "frameshift deletion",
+                                                                     "frameshift block substitution",
+                                                                     "stopgain",
+                                                                     "stoploss",
+                                                                     "nonframeshift",
+                                                                     "nonframeshift insertion",
+                                                                     "nonframeshift deletion",
+                                                                     "nonframeshift block substitution",
+                                                                     "nonsynonymous SNV",
+                                                                     "synonymous SNV",
+                                                                     "NA/unknown")
+                                        )
     # Colorscale for needlePlot + waffle plot
     colorList <- list()
     #colorList[[1]] <- c("synonymous SNV", "nonsynonymous SNV", "nonframeshift mutation", "frameshift mutation", "stopgain", "stoploss", "NA/unknown")
@@ -420,7 +421,7 @@ observeEvent(input$geneClick, {
                           )
                           #breaks = colorList[[3]]0
         ) +
-        labs(title = "Functional Consequence") +
+        labs(title = "SNV Type Distribution") +
         theme(
           axis.line=element_blank(),
           axis.text.x=element_blank(),
@@ -439,14 +440,14 @@ observeEvent(input$geneClick, {
             fill = tablebgcolor(),
             color = tablebgcolor()
           ),
-          legend.position = 'right',
-          legend.key = element_rect(
-            fill = tablebgcolor(),
-            color = tablebgcolor()
-          ),
-          legend.background = element_rect(fill = tablebgcolor()),
-          legend.title = element_blank(),
-          legend.text = element_text(color = tablecolor()),
+          legend.position = 'none',
+          # legend.key = element_rect(
+          #   fill = tablebgcolor(),
+          #   color = tablebgcolor()
+          # ),
+          # legend.background = element_rect(fill = tablebgcolor()),
+          # legend.title = element_blank(),
+          # legend.text = element_text(color = tablecolor()),
           plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()
           )#,
           #plot.margin=grid::unit(c(0,0,0,0), "mm")
@@ -464,19 +465,44 @@ observeEvent(input$geneClick, {
                ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
         ),
         column(width = 8,
-               div(renderTable(aggregateVariantTable), id = "aggregateVariantTable")
+               column(width = 7,
+               plotOutput(
+                 #width = "30%",
+                 "aggregateDonut",
+                 height = "550px"
+               ),
+               style = "padding-right:0px;"
+               ),
+        column(width = 5,
+               div(
+                 renderDT({
+                   datatable(
+                     aggregateVariantTable,
+                     rownames = F,
+                     selection = 'none',
+                     options = list(
+                       paging = F,
+                       dom = 't'
+                     )
+                     ) %>% formatStyle(
+                       columns = "Count",
+                       valueColumns = "Functional consequence",
+                       target = 'cell',
+                       backgroundColor = styleEqual(
+                         unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
+                       )
+                       )
+                 }),
+                 id = "aggregateVariantTable")
+               )
         )#style = "position:absolute;right:12px"))
       ),
-      fluidRow(
-        div(plotOutput(
-          #width = "30%",
-          "aggregateDonut",
-          height = "500px"
-        )#,
-        #id = "aggregateVariantTable"#,
-        #style = "display:inline;height:100%;width:50%;"
-        )
-      ),
+      # fluidRow(
+      #   div(#,
+      #   #id = "aggregateVariantTable"#,
+      #   #style = "display:inline;height:100%;width:50%;"
+      #   )
+      # ),
       fluidRow(
         plotlyOutput(
           "needlePlot",

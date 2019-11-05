@@ -4,6 +4,32 @@ simpleCap <- function(x) {
          collapse = " ")
 }
 
+output$varBox <- renderUI({
+  hidden(
+    absolutePanel(
+      fluidRow(
+      ),
+      boxPlus(
+        title = actionBttn(
+          "hide.draggable.top",
+          icon = icon('times'),
+          style = 'simple',
+          color = 'primary',
+          size = 'sm'
+        ),#"Variant",
+        uiOutput("panel3"),
+        width = 12,
+        closable = F,
+        status = "primary"
+      ),
+      draggable = T,
+      fixed = T,
+      width = '65%',
+      id = "draggable-top"
+    )
+  )
+})
+
 varPageFunc <- function(var = var) {
   colnames(var) <- c("Exome name (hg19)",
                      # "Exome name (hg38)",
@@ -157,33 +183,34 @@ varPageFunc <- function(var = var) {
              #h2("Frequency Table")
       )
     ),
+    hr(),
     fluidRow(
       column(
         width = 4,
-            descriptionBlock(
-              header = "REGION",
-              text = simpleCap(var$Region[1]),
-              right_border = T,
-              margin_bottom = F
-            )
-        ),
-      column(
-        width = 4,
-            descriptionBlock(
-              header = "AMINO ACID CHANGE",
-              text = gsub(".*(p\\..*)", "\\1", var$`Amino acid change`),
-              right_border = T,
-              margin_bottom = F
-            )
+        descriptionBlock(
+          header = "REGION",
+          text = simpleCap(var$Region[1]),
+          right_border = T,
+          margin_bottom = F
+        )
       ),
       column(
         width = 4,
-            descriptionBlock(
-              header = "FUNCTIONAL CONSEQUENCE",
-              text = gsub("_", " ", var$`Functional consequence`),
-              right_border = FALSE,
-              margin_bottom = F
-            )
+        descriptionBlock(
+          header = "AMINO ACID CHANGE",
+          text = gsub(".*(p\\..*)", "\\1", var$`Amino acid change`),
+          right_border = T,
+          margin_bottom = F
+        )
+      ),
+      column(
+        width = 4,
+        descriptionBlock(
+          header = "FUNCTIONAL CONSEQUENCE",
+          text = gsub("_", " ", var$`Functional consequence`),
+          right_border = FALSE,
+          margin_bottom = F
+        )
       ),
     ),
     fluidRow(
@@ -203,7 +230,7 @@ varPageFunc <- function(var = var) {
                 var$`Conditions (ClinVar)`
               )
             )
-            ),
+          ),
           right_border = T,
           margin_bottom = F
         )
@@ -230,6 +257,7 @@ varPageFunc <- function(var = var) {
         )
       )
     ),
+    hr(),
     fluidRow(
       column(
         width = 6,
@@ -290,33 +318,24 @@ varPageFunc <- function(var = var) {
       #     ),
       #   )
       # )#,
-    # hr(),
-    # fluidRow(
-    #   column(
-    #     width = 12,
-    #     h4("Other Resources"),
-    #     div(
-    #       tableOutput("others.freq.Table")
-    #     )
-    #   )
-    # )
+      # hr(),
+      # fluidRow(
+      #   column(
+      #     width = 12,
+      #     h4("Other Resources"),
+      #     div(
+      #       tableOutput("others.freq.Table")
+      #     )
+      #   )
+      # )
+    )
   )
   )
-  )
+  show(id = "draggable-top")
 }
 
-
-output$varBox <- renderUI({
-  boxPlus(
-    title = "Variant",
-    uiOutput("panel3"),
-    width = ifelse(
-      input$layout,
-      6,
-      12),
-    closable = F,
-    status = "primary"
-  )
+observeEvent(input$hide.draggable.top, {
+  hide(id = "draggable-top")
 })
 
 # ===== TO DO: make separate observeEvent for a new input: "varClickSearch", which imports its own variantTable.global
@@ -345,48 +364,48 @@ observeEvent(input$varResClick, {
   load(paste0("varTab/", "chr", chrom, ".RData"))
   var <- eval(as.name(paste0("varDat.chr", chrom)))
   var <- var[var$`HG19_ID` == searchString][, c("HG19_ID",
-                                                      #"HG38_ID",
-                                                      "Func.refGene",
-                                                      "ExonicFunc.refGene",
-                                                      "AAChange.refGene",
-                                                      "Gene.refGene",
-                                                      "avsnp150",
-                                                      "CLNDBN",
-                                                      "CLINSIG",
-                                                      # IPDGC Genomes (hg38) Columns:
-                                                      # "genomes_cases",
-                                                      # "genomes_controls",
-                                                      # "MAF_genomes_case",
-                                                      # "genomes_cases_N",
-                                                      # "MAF_genomes_control",
-                                                      # "genomes_controls_N",
-                                                      # IPDGC Exomes + ReSeq (hg19) Columns:
-                                                      "exome_cases",
-                                                      "exome_controls",
-                                                      "MAF_exome_case",
-                                                      "exome_cases_N",
-                                                      "MAF_exome_control",
-                                                      "exome_controls_N",
-                                                      # "reseq_cases",
-                                                      # "reseq_controls",
-                                                      # "MAF_reseq_case",
-                                                      # "reseq_cases_N",
-                                                      # "MAF_reseq_control",
-                                                      # "reseq_controls_N",
-                                                      # gnomad (hg19) + UKBB (hg38) Columns:
-                                                      "AF",
-                                                      "AF_popmax",
-                                                      "controls_AF_popmax",
-                                                      "AF_male",
-                                                      "AF_female",
-                                                      "AF_afr",
-                                                      "AF_sas",
-                                                      "AF_amr",
-                                                      "AF_eas",
-                                                      "AF_nfe",
-                                                      "AF_fin",
-                                                      "AF_asj",
-                                                      "AF_oth"
+                                                #"HG38_ID",
+                                                "Func.refGene",
+                                                "ExonicFunc.refGene",
+                                                "AAChange.refGene",
+                                                "Gene.refGene",
+                                                "avsnp150",
+                                                "CLNDBN",
+                                                "CLINSIG",
+                                                # IPDGC Genomes (hg38) Columns:
+                                                # "genomes_cases",
+                                                # "genomes_controls",
+                                                # "MAF_genomes_case",
+                                                # "genomes_cases_N",
+                                                # "MAF_genomes_control",
+                                                # "genomes_controls_N",
+                                                # IPDGC Exomes + ReSeq (hg19) Columns:
+                                                "exome_cases",
+                                                "exome_controls",
+                                                "MAF_exome_case",
+                                                "exome_cases_N",
+                                                "MAF_exome_control",
+                                                "exome_controls_N",
+                                                # "reseq_cases",
+                                                # "reseq_controls",
+                                                # "MAF_reseq_case",
+                                                # "reseq_cases_N",
+                                                # "MAF_reseq_control",
+                                                # "reseq_controls_N",
+                                                # gnomad (hg19) + UKBB (hg38) Columns:
+                                                "AF",
+                                                "AF_popmax",
+                                                "controls_AF_popmax",
+                                                "AF_male",
+                                                "AF_female",
+                                                "AF_afr",
+                                                "AF_sas",
+                                                "AF_amr",
+                                                "AF_eas",
+                                                "AF_nfe",
+                                                "AF_fin",
+                                                "AF_asj",
+                                                "AF_oth"
   )]
   varPageFunc(var)
   # var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]

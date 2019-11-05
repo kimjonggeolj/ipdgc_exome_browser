@@ -1,6 +1,6 @@
 ## UPLOAD COMMAND:
 # library(rsconnect)
-# deployApp(appFileManifest = "appManifest.txt", appName = "ExomeBrowser")
+# deployApp(appFileManifest = "appManifest.txt", appName = "ExomeBrowser", account = 'pdgenetics')
 
 # This page sets up the global variables and the packages used in both ui.R and server.R
 library(shiny)
@@ -14,6 +14,8 @@ library(shinyanimate)
 library(plotly)
 library(ggplot2)
 library(stringr)
+library(pander)
+library(markdown)
 #library(reshape2)
 
 '%ni%' <- Negate('%in%')
