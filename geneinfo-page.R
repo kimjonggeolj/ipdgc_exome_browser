@@ -488,10 +488,11 @@ observeEvent(input$geneClick, {
                        columns = "Count",
                        valueColumns = "Functional consequence",
                        target = 'cell',
+                       color = "black",
                        backgroundColor = styleEqual(
                          unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
                        )
-                       )
+                       ) %>% formatStyle(columns="Functional consequence", backgroundColor = tablebgcolor(), color = tablecolor())
                  }),
                  id = "aggregateVariantTable")
                )
@@ -503,6 +504,8 @@ observeEvent(input$geneClick, {
       #   #style = "display:inline;height:100%;width:50%;"
       #   )
       # ),
+      hr(),
+      h3('SNV-by base pair position'),
       fluidRow(
         plotlyOutput(
           "needlePlot",
@@ -534,9 +537,8 @@ observeEvent(input$geneClick, {
             ),
           rownames= FALSE,
           escape = FALSE
-          ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)])
-                                                                                                                                                                                                      , style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor()#, style = tableCol
-      )}), style = "margin: 12px 50px 50px 12px;"))
+          ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)]), style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor())
+        }), style = "margin: 12px 50px 50px 12px;"))
     ))
   }
 })

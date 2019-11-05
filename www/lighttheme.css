@@ -16,6 +16,10 @@
     color: black;
 }
 
+.box.box-primary {
+    background-color:rgb(245, 245, 245);
+}
+
 .box-header .box-title {
   color: black;
 }
