@@ -41,3 +41,4 @@ www/varList.RData
 www/rsID.List.RData
 www/ipdgc.png
 www/nia-logo.png
+www/jquery-ui.min.js
