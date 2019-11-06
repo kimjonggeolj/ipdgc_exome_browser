@@ -25,10 +25,12 @@ ui <- tagList(
 # Initialize Shinyjs + Shinyanimate
   useShinyjs(),
   withAnim(),
+  tags$script(src = "jquery-ui.min.js"),
 # theme + javascript for detecting clicks for search results
   includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
   tags$script(src = "boxsize.js"),
+  # tags$script(src = "draggable.js"),
 # dark theme
   uiOutput("darktheme"),
 # Start logo

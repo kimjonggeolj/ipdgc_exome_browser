@@ -3,26 +3,25 @@ simpleCap <- function(x) {
   paste0(toupper(substring(s, 1,1)), substring(s, 2),
          collapse = " ")
 }
-
 output$varBox <- renderUI({
   hidden(
     absolutePanel(
-      fluidRow(
-      ),
       boxPlus(
         title = actionBttn(
           "hide.draggable.top",
           icon = icon('times'),
           style = 'simple',
-          color = 'primary',
+          color = 'default',
           size = 'sm'
         ),#"Variant",
         uiOutput("panel3"),
         width = 12,
         closable = F,
-        status = "primary"
+        status = "primary",
+        solidHeader = T
       ),
-      draggable = T,
+      class = "draggable",
+      # draggable = T,
       fixed = T,
       width = '65%',
       id = "draggable-top"
@@ -355,7 +354,6 @@ observeEvent(input$varResClick, {
   # switch to see if running from URL or not
   if (runFromURL) {
     searchString <- query[['variant']]
-    runFromURL <<- F
   } else {
     searchString <- input$varResPageId
   }
@@ -410,4 +408,13 @@ observeEvent(input$varResClick, {
   varPageFunc(var)
   # var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
   #shinyjs::show("varBox")
+  runFromURL <<- F
+  runjs(
+  '$(".draggable").draggable({ 
+		cursor: "move",
+		handle: ".box-header",
+        cancel: ".box-body",
+        containment: ".content-wrapper"
+  });'
+  )
 })
