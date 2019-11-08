@@ -5,21 +5,23 @@ observeEvent(input$about, {
     hr(),
     h4("Current database statistics"),
     renderTable(data.table(`Total Variant Events` = "INSERT NUM HERE", `Total Subjects` = "INSERT NUM HERE")),
-    h4("Debug data"),
-    p("pixelratio",session$clientData$pixelratio),
-    p("wrapperlogowidth", session$clientData$output_wrapperlogo_width),
-    p("url_search", session$clientData$url_search),
-    p("url_pathname", session$clientData$url_pathname),
-    p("session", str(reactiveValuesToList(input))),
-    p("window.size.slow", window.size.slow()),
+    # h4("Debug data"),
+    # p("pixelratio",session$clientData$pixelratio),
+    # p("wrapperlogowidth", session$clientData$output_wrapperlogo_width),
+    # p("url_search", session$clientData$url_search),
+    # p("url_pathname", session$clientData$url_pathname),
+    # p("session", str(reactiveValuesToList(input))),
+    # p("window.size.slow", window.size.slow()),
     fluidRow(
-      column(
-        width = 3,
-        a(img(src = "ipdgc.png", style = "height:50px;"), href = "https://pdgenetics.org/", target = "_blank")
-        ),
-      column(
-        width = 3,
-        a(img(src = "nia-logo.png", style = "height:50px;"), href = "https://www.nia.nih.gov/", target = "_blank"))
-      )
+      a(img(src = "ipdgc.png", style = "height:100px;"), href = "https://pdgenetics.org/", target = "_blank"),
+      a(img(src = "nia-logo.png", style = "height:50px;"), href = "https://www.nia.nih.gov/", target = "_blank"))
+      # column(
+      #   width = 3,
+      #   a(img(src = "ipdgc.png", style = "height:100px;"), href = "https://pdgenetics.org/", target = "_blank")
+      #   ),
+      # column(
+      #   width = 3,
+      #   a(img(src = "nia-logo.png", style = "height:50px;"), href = "https://www.nia.nih.gov/", target = "_blank"))
+      # )
   ))
 })

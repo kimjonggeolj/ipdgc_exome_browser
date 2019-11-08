@@ -1,17 +1,3 @@
-output$geneBox <- renderUI({
-  boxPlus(
-    title = "Gene",
-    uiOutput("panel2"),
-    id = "genebox",
-    width = ifelse(
-      input$layout,
-      6,
-      12),
-    closable = F,
-    status = "warning"
-  )
-})
-
 #==event that triggers the gene info page
 # input$geneClick and input$resPageId are activated by javascript
 # function resClick() found in "clickdetect.js"
@@ -456,62 +442,92 @@ observeEvent(input$geneClick, {
     #aggregateVariantTable$Count <-
     #colnames(aggregateVariantTable) <- c("Phenotype", "Frequency")
     #aggregateVariantTable <- fread(paste0("aggregate/", gene$id, ".txt"))
-    output$panel2 <- renderUI(tagList(
+    
+    output$geneInfo <- renderUI(tagList(
+      h1(searchString),#gene$id),
+      h2(ifelse(is.na(gene$name), "", gene$name)),
+      # div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
+    ))
+    
+    output$geneNumbers <- renderUI(tagList(
       fluidRow(
-        column(width = 4,
-               h1(searchString),#gene$id),
-               h2(ifelse(is.na(gene$name), "", gene$name)),
-               div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
-               ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
+        column(
+          width = 4,
+          descriptionBlock(
+            header = "CHR",
+            text = gene$chr,
+            right_border = T,
+            margin_bottom = F
+          )
         ),
-        column(width = 8,
-               column(width = 7,
-               plotOutput(
-                 #width = "30%",
-                 "aggregateDonut",
-                 height = "550px"
-               ),
-               style = "padding-right:0px;"
-               ),
-        column(width = 5,
-               div(
-                 renderDT({
-                   datatable(
-                     aggregateVariantTable,
-                     rownames = F,
-                     selection = 'none',
-                     options = list(
-                       paging = F,
-                       dom = 't'
-                     )
-                     ) %>% formatStyle(
-                       columns = "Count",
-                       valueColumns = "Functional consequence",
-                       target = 'cell',
-                       color = "black",
-                       backgroundColor = styleEqual(
-                         unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
-                       )
-                       ) %>% formatStyle(columns="Functional consequence", backgroundColor = tablebgcolor(), color = tablecolor())
-                 }),
-                 id = "aggregateVariantTable")
-               )
-        )#style = "position:absolute;right:12px"))
-      ),
-      # fluidRow(
-      #   div(#,
-      #   #id = "aggregateVariantTable"#,
-      #   #style = "display:inline;height:100%;width:50%;"
-      #   )
-      # ),
-      hr(),
+        column(
+          width = 4,
+          descriptionBlock(
+            header = "BP-START",
+            text = gene$`37bp1`,
+            right_border = T,
+            margin_bottom = F
+          )
+        ),
+        column(
+          width = 4,
+          descriptionBlock(
+            header = "BP-END",
+            text = gene$`37bp2`,
+            right_border = FALSE,
+            margin_bottom = F
+          )
+        ),
+      )
+    ))
+    
+    output$geneLinks <- renderUI(tagList(
+      ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
+    ))
+    
+    output$geneWaffle <- renderUI(tagList(
+             plotOutput(
+               #width = "30%",
+               "aggregateDonut",
+               height = "550px"
+             )
+    ))
+    
+    output$geneWaffleTable <- renderUI(tagList(
+      div(
+        renderDT({
+          datatable(
+            aggregateVariantTable,
+            rownames = F,
+            selection = 'none',
+            options = list(
+              paging = F,
+              dom = 't'
+            )
+          ) %>% formatStyle(
+            columns = "Count",
+            valueColumns = "Functional consequence",
+            target = 'cell',
+            color = "black",
+            backgroundColor = styleEqual(
+              unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
+            )
+          ) %>% formatStyle(columns="Functional consequence", backgroundColor = tablebgcolor(), color = tablecolor())
+        }),
+        id = "aggregateVariantTable")
+    ))
+    
+    output$geneNeedle <- renderUI(tagList(
       h3('SNV-by base pair position'),
       fluidRow(
         plotlyOutput(
           "needlePlot",
           height = "300px"
         )
-      ),
+      )
+    ))
+    
+    output$geneVartable <- renderUI(tagList(
       fluidRow(div(renderDT({
         dat <- variantTable[, c(1:8,11,17)]
         # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
@@ -534,11 +550,104 @@ observeEvent(input$geneClick, {
               )
               # Maybe ask Cornelis if we can shorten Amino acid change to just the amino acid change, e.g. p.Y136Y
             )
-            ),
+          ),
           rownames= FALSE,
           escape = FALSE
-          ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)]), style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor())
-        }), style = "margin: 12px 50px 50px 12px;"))
+        ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)]), style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor())
+      }), style = "margin: 12px 50px 50px 12px;"))
     ))
+    
+    show(id = "geneBoxes")
+    if (geneBoxHidden) {
+      startAnim(session,
+                id = "geneBoxes",
+                type = "slideInDown")
+      geneBoxHidden <<- F
+    }
+    
+    # output$panel2 <- renderUI(tagList(
+    #   fluidRow(
+    #     column(width = 4,
+    #            h1(searchString),#gene$id),
+    #            h2(ifelse(is.na(gene$name), "", gene$name)),
+    #            div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
+    #            ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
+    #     ),
+    #     column(width = 8,
+    #            column(width = 7,
+    #            plotOutput(
+    #              #width = "30%",
+    #              "aggregateDonut",
+    #              height = "550px"
+    #            ),
+    #            style = "padding-right:0px;"
+    #            ),
+    #     column(width = 5,
+    #            div(
+    #              renderDT({
+    #                datatable(
+    #                  aggregateVariantTable,
+    #                  rownames = F,
+    #                  selection = 'none',
+    #                  options = list(
+    #                    paging = F,
+    #                    dom = 't'
+    #                  )
+    #                  ) %>% formatStyle(
+    #                    columns = "Count",
+    #                    valueColumns = "Functional consequence",
+    #                    target = 'cell',
+    #                    color = "black",
+    #                    backgroundColor = styleEqual(
+    #                      unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
+    #                    )
+    #                    ) %>% formatStyle(columns="Functional consequence", backgroundColor = tablebgcolor(), color = tablecolor())
+    #              }),
+    #              id = "aggregateVariantTable")
+    #            )
+    #     )#style = "position:absolute;right:12px"))
+    #   ),
+    #   # fluidRow(
+    #   #   div(#,
+    #   #   #id = "aggregateVariantTable"#,
+    #   #   #style = "display:inline;height:100%;width:50%;"
+    #   #   )
+    #   # ),
+    #   hr(),
+    #   h3('SNV-by base pair position'),
+    #   fluidRow(
+    #     plotlyOutput(
+    #       "needlePlot",
+    #       height = "300px"
+    #     )
+    #   ),
+    #   fluidRow(div(renderDT({
+    #     dat <- variantTable[, c(1:8,11,17)]
+    #     # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
+    #     datatable(
+    #       dat,
+    #       options = list(
+    #         paging = F,
+    #         scrollX = T,
+    #         scrollY = "500px",
+    #         lengthChange = FALSE,
+    #         columnDefs = list(
+    #           #list(width = '10px', targets = 0),
+    #           list(
+    #             targets = 3,
+    #             render = JS(
+    #               "function(data, type, row, meta) {",
+    #               "return type === 'display' && data.length > 19 ?",
+    #               "'<span title=\"' + data + '\">' + data.substr(0, 19) + '...</span>' : data;",
+    #               "}")
+    #           )
+    #           # Maybe ask Cornelis if we can shorten Amino acid change to just the amino acid change, e.g. p.Y136Y
+    #         )
+    #         ),
+    #       rownames= FALSE,
+    #       escape = FALSE
+    #       ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)]), style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor())
+    #     }), style = "margin: 12px 50px 50px 12px;"))
+    # ))
   }
 })

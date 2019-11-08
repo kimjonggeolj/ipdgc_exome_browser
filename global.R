@@ -14,9 +14,9 @@ library(shinyanimate)
 library(plotly)
 library(ggplot2)
 library(stringr)
-library(pander)
-library(markdown)
-#library(reshape2)
+# library(pander)
+# library(markdown)
+# library(reshape2)
 
 '%ni%' <- Negate('%in%')
 

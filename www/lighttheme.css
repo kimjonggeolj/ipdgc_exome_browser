@@ -1,3 +1,9 @@
+/*Search Result*/
+#searchResults {
+  background-color:#fff;
+  color: black;
+}
+
 /* Shiny-Dashboard Overrides*/
 .skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
   background-color:#ecf0f5;

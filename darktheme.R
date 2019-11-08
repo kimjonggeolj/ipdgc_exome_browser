@@ -8,7 +8,7 @@ observeEvent(input$darktheme, {
     })
     
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb_dark.png", class = "mainlogo")))
-    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_vb_small_dark.png", id = "wrapperlogo")))
+    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small_dark.png", id = "wrapperlogo")))
 
   } else {
     output$darktheme <<- renderUI({
@@ -17,7 +17,7 @@ observeEvent(input$darktheme, {
                           ))
     })
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))
-    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_vb_small.png", id = "wrapperlogo")))
+    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small.png", id = "wrapperlogo")))
 
   }
 })

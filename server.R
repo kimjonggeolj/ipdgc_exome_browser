@@ -20,12 +20,12 @@ server <- function(input, output, session) {
           shinyjs::show("fixedDLButton")
           shinyjs::hide("loadingPage")
           shinyjs::runjs(
-            "dimension = document.getElementById('resultbox').offsetWidth;
-            Shiny.onInputChange('dimension', dimension);"
+            "dimension = document.getElementById('geneNeedle').offsetWidth;
+      Shiny.onInputChange('dimension', dimension);"
           )
           delay(1000, {
             window.size <- reactive({
-              ifelse(input$layout, input$dimension/2, input$dimension)
+              input$dimension
             })
             window.size.slow <- debounce({
               window.size
@@ -35,6 +35,9 @@ server <- function(input, output, session) {
           })
         }
   )
+  
+  geneBoxHidden <<- T
+  resultHidden <<- T
   
   #====Dark theme/light theme events and reactives
   source("darktheme.R", local = T)
@@ -53,14 +56,14 @@ server <- function(input, output, session) {
   
   source('varinfo.Page.R', local = T)
   
-  observeEvent(input$layout,
-               {
-                 if (input$layout) {
-                   boxWidth <<- 6
-                 } else {
-                   boxWidth <<- 12
-                 }
-               })
+  # observeEvent(input$layout,
+  #              {
+  #                if (input$layout) {
+  #                  boxWidth <<- 6
+  #                } else {
+  #                  boxWidth <<- 12
+  #                }
+  #              })
   
   observeEvent(
     event_data("plotly_click"),

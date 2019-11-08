@@ -5,6 +5,6 @@
 //  }
 //});
 $(window).resize(function(event) {
-    dimension = document.getElementById('resultbox').offsetWidth;
+    dimension = document.getElementById('geneNeedle').offsetWidth;
     Shiny.onInputChange("dimension", dimension);
 });

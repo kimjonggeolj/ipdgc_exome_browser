@@ -36,7 +36,7 @@ ui <- tagList(
 # Start logo
   div(
     id = "loadingPage",
-    hidden(img(src = "ipdgc_vb.png", id = "startLogo"))
+    hidden(img(src = "ipdgc_eb.png", id = "startLogo"))
   ),
   hidden(
 # fixed option button
@@ -68,13 +68,13 @@ ui <- tagList(
           bigger = T
         ),
 # layout switch (stacked vs pyramid)
-        switchInput(
-          inputId = "layout",
-          label = "Layout",
-          onLabel = icon("boxes"),
-          offLabel = icon("stream"),
-          size = "default"
-        ),
+        # switchInput(
+        #   inputId = "layout",
+        #   label = "Layout",
+        #   onLabel = icon("boxes"),
+        #   offLabel = icon("stream"),
+        #   size = "default"
+        # ),
         style = "jelly",
         # circle = T,
         status = "primary",
@@ -118,19 +118,86 @@ ui <- tagList(
           disable = T
         ),
         body = dashboardBody(
-          boxPlus(
-            id = "resultbox",
-            title = "Search Results",
-            uiOutput("panel1"),
-            uiOutput("panel1b"),
-            width = 12,
-            collapsible = T,
-            closable = F
+          hidden(
+            div(
+              h3("Search Results", style = "display:inline-block;padding-left:15px;"),
+              div(
+                uiOutput("panel1"),
+                style = 'padding-left:15px;padding-right:15px;'
+              ),
+              div(
+                uiOutput("panel1b"),
+                style = 'padding-left:15px;padding-right:15px;'
+              ),
+              style = "width:100%;",
+              id = 'searchResults'
+            )
           ),
-          uiOutput("geneBox"),
+          # boxPlus(
+          #   id = "resultbox",
+          #   title = "Search Results",
+          #   # uiOutput("panel1"),
+          #   # uiOutput("panel1b"),
+          #   width = 12,
+          #   #collapsible = T,
+          #   closable = F
+          # ),
+          
+          div(
+            hidden(
+              div(id = "geneBoxes",
+                  column(
+                    width = 4,
+                    boxPlus(
+                      uiOutput("geneInfo"),
+                      width = 12,
+                      closable = F,
+                      status = "warning"
+                    ),
+                    boxPlus(
+                      uiOutput("geneNumbers"),
+                      width = 12,
+                      closable = F,
+                      status = "danger"
+                    ),
+                    boxPlus(
+                      uiOutput('geneLinks'),
+                      width = 12,
+                      closable = F,
+                      status = "success"
+                    )
+                  ),
+                  boxPlus(
+                    uiOutput("geneWaffle"),
+                    width = 5,
+                    closable = F,
+                    status = "success"
+                  ),
+                  boxPlus(
+                    uiOutput("geneWaffleTable"),
+                    width = 3,
+                    closable = F,
+                    status = "success"
+                  ),
+                  boxPlus(
+                    uiOutput("geneNeedle"),
+                    width = 12,
+                    closable = F,
+                    status = "info"
+                  ),
+                  boxPlus(
+                    uiOutput("geneVartable"),
+                    width = 12,
+                    closable = F,
+                    status = "danger"
+                  )
+                  )
+            ),
+            style = "padding-top: 15px;"
+              ),
           uiOutput("varBox")
         ),
-        title = "IPDGC Genome Browser",
+        title = "IPDGC Exome Browser",
         sidebar_fullCollapse = T,
         skin = "black"
       )

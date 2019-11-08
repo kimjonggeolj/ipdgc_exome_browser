@@ -3,6 +3,7 @@ simpleCap <- function(x) {
   paste0(toupper(substring(s, 1,1)), substring(s, 2),
          collapse = " ")
 }
+
 output$varBox <- renderUI({
   hidden(
     absolutePanel(
@@ -22,7 +23,7 @@ output$varBox <- renderUI({
       ),
       class = "draggable",
       # draggable = T,
-      fixed = T,
+      # fixed = T,
       width = '65%',
       id = "draggable-top"
     )
@@ -119,7 +120,7 @@ varPageFunc <- function(var = var) {
       column(width = 12,
              h1(
                tags$b("Variant:"),
-               var$`Exome name (hg19)`,
+               span(var$`Exome name (hg19)`, id = "variantName"),
                "(hg19)")#,
              # h1(HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
              #    var$`Exome name (hg38)`,
@@ -331,6 +332,32 @@ varPageFunc <- function(var = var) {
   )
   )
   show(id = "draggable-top")
+  runjs(
+    'containmentTop = $(".content-wrapper").position().top;
+  //mydiv = document.getElementById("draggable-top");
+//var moveHeight = ((parseInt(document.body.clientHeight) / 2) - (parseInt(mydiv.offsetHeight) / 2)) +"px";
+//var moveWidth = ((parseInt(document.body.clientWidth) / 2) - (parseInt(mydiv.offsetWidth) / 2)) +"px";
+
+  $(".draggable").draggable({ 
+		cursor: "move",
+		handle: ".box-header",
+        cancel: ".box-body",
+        containment: [,containmentTop,,]
+  });
+    
+    $(".draggable").parent().position({
+    my: "center",
+    at: "center",
+    of: window,
+    using: function (pos, ext) {
+        $(this).animate({ top: pos.top }, 600);
+    }
+})
+    
+    '
+    
+    
+  )
 }
 
 observeEvent(input$hide.draggable.top, {
@@ -409,12 +436,4 @@ observeEvent(input$varResClick, {
   # var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
   #shinyjs::show("varBox")
   runFromURL <<- F
-  runjs(
-  '$(".draggable").draggable({ 
-		cursor: "move",
-		handle: ".box-header",
-        cancel: ".box-body",
-        containment: ".content-wrapper"
-  });'
-  )
 })

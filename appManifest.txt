@@ -33,9 +33,9 @@ www/theme.css
 www/darktheme.css
 www/lighttheme.css
 www/clickdetect.js
-www/ipdgc_vb.png
-www/ipdgc_vb_small.png
-www/ipdgc_vb_small_dark.png
+www/ipdgc_eb.png
+www/ipdgc_eb_small.png
+www/ipdgc_eb_small_dark.png
 www/geneList.RData
 www/varList.RData
 www/rsID.List.RData

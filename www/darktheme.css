@@ -1,3 +1,10 @@
+/*Search Result*/
+#searchResults {
+  background-color: rgba(56, 56, 56);
+  color: white;
+}
+
+
 /* Shiny-Dashboard Overrides*/
 .skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
   background-color:#121212;

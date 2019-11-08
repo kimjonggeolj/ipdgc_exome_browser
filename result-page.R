@@ -244,8 +244,16 @@ runSearchPage <- function() {
 
 # initiates search function on hitting the minisubmit button
 observeEvent(
-    input$minisearchBar_search,
-    runSearchPage()
+    input$minisearchBar_search,{
+      runSearchPage()
+      show(id = "searchResults")
+      if (resultHidden) {
+        startAnim(session,
+                  id = "searchResults",
+                  type = "slideInDown")
+        resultHidden <<- F
+      }
+    }
   )
 
 #==DISABLED==refreshes search function on hitting the buildSwitch
