@@ -1,8 +1,12 @@
 #==event that triggers the gene info page
-# input$geneClick and input$resPageId are activated by javascript
-# function resClick() found in "clickdetect.js"
+# Two ways to trigger:
+# 1. Javascript function resClick() in search results table (found in "clickdetect.js")
+# 2. URL "?gene=[geneName]"
+
+# Both methods trigger input$geneClick
+
+
 observeEvent(input$geneClick, {
-  #num <- as.numeric(gsub("^res(\\d+)", "\\1", input$resPageId))
   # Check if URL or search table click
   if (runFromURL) {
     searchString <- query[['gene']]
@@ -10,8 +14,11 @@ observeEvent(input$geneClick, {
   } else {
     searchString <- input$resPageId
   }
-  gene <- geneList[grepl(paste0('="', searchString, '"'), geneList$id)]#storedRes[num]
+  # Pulls out the gene information from the geneList object
+  gene <- geneList[grepl(paste0('="', searchString, '"'), geneList$id)]
   chrom <- gene$chr[1]
+  # Error message if gene does not exist
+  # Likely happening if URL id given is misspelled or outright wrong
   if (is.na(chrom)) {
     sendSweetAlert(
       session = session,
@@ -20,11 +27,32 @@ observeEvent(input$geneClick, {
       type = "warning"
     )
   } else {
+    # ======================================================================
+    # From here, the process goes like this:
+    # 1. Load the proper data table (DT) (DTs are separated by chromosome numbers)
+    # 2. Extract all variants related to the gene into a local DT for use
+    # 3. Push variant DT to the global environment so that it can be used for the variant box
+    # 4. Format the local DT for graphs and tables
+    # 5. Generate graphs and tables
+    # 6. Generate and update UI
+    # 7. If hidden, show the UI
+    # ======================================================================
+    
+    
+    # === Debug script ===
     #print(paste0("chromosome", chrom))
+    # ====================
+    
+    # ========== STEP 1 ==========
+    
     load(paste0("varTab/", "chr", chrom, ".RData"))
     initDat <- eval(as.name(paste0("varDat.chr", chrom)))
+    # === Debug scripts ===
     # print(head(initDat))
     # print("initDat loaded")
+    # =====================
+    
+    # ========== STEP 2 ==========
     initDat <- initDat[grepl(toupper(searchString), initDat$`Gene.refGene`)][, c("HG19_ID",
                                                                                  "Start",
                                                                                  #"HG38_ID",
@@ -70,9 +98,18 @@ observeEvent(input$geneClick, {
                                                                                  "AF_asj",
                                                                                  "AF_oth"
     )]
+    
+    # ========== STEP 3 ==========
     variantTable.global <<- initDat[, -"Start"]
-    needleData <- initDat[, c("HG19_ID", "Start", "Func.refGene", "ExonicFunc.refGene", "avsnp150")]
-    colnames(needleData) <- c("HG19_ID", "Position", "Region", "Functional Consequence", "rsID")
+    # debugTable <<- initDat
+    
+    # ========== STEP 4 ==========
+    # FOR NEEDLE PLOT
+    needleData <- initDat[, c("HG19_ID", "Func.refGene", "ExonicFunc.refGene", "avsnp150")]
+    colnames(needleData) <- c("HG19_ID", "Region", "Functional Consequence", "rsID")
+    needleData$Position <- gsub("^\\d+:(\\d+):.+$", "\\1", needleData$HG19_ID)
+    needleData <- needleData[, c("HG19_ID", "Position", "Region", "Functional Consequence", "rsID")]
+    # Simplifying functional consequence for the needle plot
     needleData$`Functional Consequence` <- sapply(needleData$`Functional Consequence`, function (x) {
       if (grepl("^frameshift", x)) {
         "frameshift mutation"
@@ -85,25 +122,9 @@ observeEvent(input$geneClick, {
       } else {
         x
       }
-      # 
-      # switch(x,
-      #        `nonsynonymous SNV` = 1,
-      #        `.` = 0,
-      #        `synonymous SNV` = 0,
-      #        `stopgain` = 4,
-      #        `nonframeshift deletion` = 2,
-      #        `frameshift deletion` = 3,
-      #        `frameshift insertion` = 3,
-      #        `nonframeshift insertion` = 2,
-      #        `unknown` = 0,
-      #        `stoploss` = 4,
-      #        `nonframeshift block substitution` = 2,
-      #        `frameshift block substitution` = 3,
-      #        `nonframeshift` = 1
-      # )
-    }
+     }
     )
-    
+    # Assigning y levels for needle plot
     needleData$y <- sapply(needleData$`Functional Consequence`, function (x) {
       switch(x,
              `nonsynonymous SNV` = 1,
@@ -115,16 +136,6 @@ observeEvent(input$geneClick, {
              `stoploss` = 4
       )
     })
-    
-    # needleData$color <- lapply(needleData$y, function (x) {
-    #   switch(x,
-    #          `0` = "black",
-    #          `1` = "green",
-    #          `2` = "yellow",
-    #          `3` = "magenta",
-    #          `4` = "red"
-    #   )
-    # })
     
     # variantTable.global <<- initDat[grepl(toupper(searchString), initDat$`Gene.refGene`)][, c("HG19_ID",
     #                                                                                              #"HG38_ID",
@@ -171,6 +182,9 @@ observeEvent(input$geneClick, {
     #                                                                                              "AF_oth"
     # )]
     # print("variantTable G loaded")
+    
+    # FOR VARIANT TABLE
+    
     variantTable <- variantTable.global[, -c("Gene.refGene")]
     colnames(variantTable) <- c("Exome name (hg19)",
                                 # "Exome name (hg38)",
@@ -221,10 +235,10 @@ observeEvent(input$geneClick, {
       } else {
         variantTable$`Exome name (hg19)`[i] <- paste0('<a id="', variantTable$`Exome name (hg19)`[i], '" href="javascript:;" onclick="varClick(this.id)">', variantTable$`Exome name (hg19)`[i], '</a>')
       }
-      #restoreInput(id = paste0("res", i), default = NULL)
     }
     
-    #aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
+    # FOR FUNCTIONAL CONSEQUENCE SUMMARY TABLE
+    #     aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
     aggregateVariantTable <- data.table(Count = c(nrow(variantTable),
                                                   length(which(variantTable$`Functional consequence` == "frameshift insertion")),
                                                   length(which(variantTable$`Functional consequence` == "frameshift deletion")),
@@ -253,14 +267,12 @@ observeEvent(input$geneClick, {
                                                                      "synonymous SNV",
                                                                      "NA/unknown")
                                         )
+    # ========== STEP 5 ==========
     # Colorscale for needlePlot + waffle plot
     colorList <- list()
-    #colorList[[1]] <- c("synonymous SNV", "nonsynonymous SNV", "nonframeshift mutation", "frameshift mutation", "stopgain", "stoploss", "NA/unknown")
     colorList[[1]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift mutation" = "#7fc97f", "frameshift mutation" = "#fdc086", "stopgain" = "#ffff99", "stoploss" = "#f0027f",  "NA/unknown" = "#e8e6e4")
-    #colorList[[3]] <- c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution", "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")
     colorList[[2]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift" = "#7fc97f", "nonframeshift insertion" = "#7fc9c9", "nonframeshift deletion" = "#a4c97f", "nonframeshift block substitution" = "#5e915d",  "frameshift insertion" = "#fdc086", "frameshift deletion" = "#fddd86", "frameshift block substitution" = "#fda286", "stopgain" = "#ffff99", "stoploss" = "#f0027f", "NA/unknown" = "#e8e6e4")
     
-    nelements <- length(unique(needleData$`Functional Consequence`))
     # needle plot, ggplot version
     output$needlePlot <- renderPlotly({
       p <- ggplot(needleData, aes(x = Position, y = y, fill = `Functional Consequence`)) +
@@ -275,19 +287,19 @@ observeEvent(input$geneClick, {
             ymax = y
           ),
           # removed for compatibility with clickable plot
-          #position = position_jitter(height = 0L, seed = 1L),
+          # position = position_jitter(height = 0L, seed = 1L),
           color = tablecolor()
         ) +
         geom_point(
           aes(
             size = 1
           ),
-          #position = position_jitter(height = 0L, seed = 1L),
+          # position = position_jitter(height = 0L, seed = 1L),
           color = tablecolor()
         ) +
         scale_fill_manual(
           values = colorList[[1]]#,
-          #breaks = colorList[[1]]
+          # breaks = colorList[[1]]
         ) +
         theme(
           axis.title.y = element_blank(),
@@ -315,6 +327,7 @@ observeEvent(input$geneClick, {
       
       
       # ====== plotly version =====
+      # nelements <- length(unique(needleData$`Functional Consequence`))
       # plot_ly(
       #   needleData,
       #   # type = "scatter",
@@ -374,6 +387,9 @@ observeEvent(input$geneClick, {
       #   )
     }
     )
+    
+    # Waffle plot
+    
     output$aggregateDonut <- renderPlot({
       # Waffles
       # How many rows do you want the y axis to have?
@@ -405,7 +421,7 @@ observeEvent(input$geneClick, {
                           guide = guide_legend(
                             ncol = 1
                           )
-                          #breaks = colorList[[3]]0
+                          # breaks = colorList[[3]]0
         ) +
         labs(title = "SNV Type Distribution") +
         theme(
@@ -426,7 +442,8 @@ observeEvent(input$geneClick, {
             fill = tablebgcolor(),
             color = tablebgcolor()
           ),
-          legend.position = 'none',
+          plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()),
+          legend.position = 'none'#'bottom',
           # legend.key = element_rect(
           #   fill = tablebgcolor(),
           #   color = tablebgcolor()
@@ -434,14 +451,13 @@ observeEvent(input$geneClick, {
           # legend.background = element_rect(fill = tablebgcolor()),
           # legend.title = element_blank(),
           # legend.text = element_text(color = tablecolor()),
-          plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()
-          )#,
+          
+          #,
           #plot.margin=grid::unit(c(0,0,0,0), "mm")
         )
     })
-    #aggregateVariantTable$Count <-
-    #colnames(aggregateVariantTable) <- c("Phenotype", "Frequency")
-    #aggregateVariantTable <- fread(paste0("aggregate/", gene$id, ".txt"))
+    
+    # ========== STEP 6 ==========
     
     output$geneInfo <- renderUI(tagList(
       h1(searchString),#gene$id),
@@ -533,15 +549,20 @@ observeEvent(input$geneClick, {
         # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
         datatable(
           dat,
+          # plugins = "ellipsis",
           options = list(
             paging = F,
             scrollX = T,
-            scrollY = "500px",
+            # scrollY = "500px",
             lengthChange = FALSE,
+            # columnDefs = list(list(
+            #   targets = c(3,5,6),
+            #   render = JS("$.fn.dataTable.render.ellipsis( 14, false )")
+            # ))
             columnDefs = list(
               #list(width = '10px', targets = 0),
               list(
-                targets = 3,
+                targets = c(3,5,6),
                 render = JS(
                   "function(data, type, row, meta) {",
                   "return type === 'display' && data.length > 19 ?",
@@ -553,101 +574,24 @@ observeEvent(input$geneClick, {
           ),
           rownames= FALSE,
           escape = FALSE
-        ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)]), style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor())
+        ) %>% formatStyle(
+          columns=colnames(variantTable[, c(1:8,11,17)]),
+          backgroundColor = tablebgcolor(),
+          color = tablecolor()
+          )
       }), style = "margin: 12px 50px 50px 12px;"))
     ))
     
+    # ========== STEP 7 ==========
+    
+    # Show the hidden gene boxes
     show(id = "geneBoxes")
+    # Animation (only the first time)
     if (geneBoxHidden) {
       startAnim(session,
                 id = "geneBoxes",
                 type = "slideInDown")
       geneBoxHidden <<- F
     }
-    
-    # output$panel2 <- renderUI(tagList(
-    #   fluidRow(
-    #     column(width = 4,
-    #            h1(searchString),#gene$id),
-    #            h2(ifelse(is.na(gene$name), "", gene$name)),
-    #            div("Region:", paste0("Chromosome ", gene$chr, ":", gene$`37bp1`, "-", gene$`37bp2`), style = "margin-bottom:20px;"),
-    #            ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
-    #     ),
-    #     column(width = 8,
-    #            column(width = 7,
-    #            plotOutput(
-    #              #width = "30%",
-    #              "aggregateDonut",
-    #              height = "550px"
-    #            ),
-    #            style = "padding-right:0px;"
-    #            ),
-    #     column(width = 5,
-    #            div(
-    #              renderDT({
-    #                datatable(
-    #                  aggregateVariantTable,
-    #                  rownames = F,
-    #                  selection = 'none',
-    #                  options = list(
-    #                    paging = F,
-    #                    dom = 't'
-    #                  )
-    #                  ) %>% formatStyle(
-    #                    columns = "Count",
-    #                    valueColumns = "Functional consequence",
-    #                    target = 'cell',
-    #                    color = "black",
-    #                    backgroundColor = styleEqual(
-    #                      unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
-    #                    )
-    #                    ) %>% formatStyle(columns="Functional consequence", backgroundColor = tablebgcolor(), color = tablecolor())
-    #              }),
-    #              id = "aggregateVariantTable")
-    #            )
-    #     )#style = "position:absolute;right:12px"))
-    #   ),
-    #   # fluidRow(
-    #   #   div(#,
-    #   #   #id = "aggregateVariantTable"#,
-    #   #   #style = "display:inline;height:100%;width:50%;"
-    #   #   )
-    #   # ),
-    #   hr(),
-    #   h3('SNV-by base pair position'),
-    #   fluidRow(
-    #     plotlyOutput(
-    #       "needlePlot",
-    #       height = "300px"
-    #     )
-    #   ),
-    #   fluidRow(div(renderDT({
-    #     dat <- variantTable[, c(1:8,11,17)]
-    #     # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
-    #     datatable(
-    #       dat,
-    #       options = list(
-    #         paging = F,
-    #         scrollX = T,
-    #         scrollY = "500px",
-    #         lengthChange = FALSE,
-    #         columnDefs = list(
-    #           #list(width = '10px', targets = 0),
-    #           list(
-    #             targets = 3,
-    #             render = JS(
-    #               "function(data, type, row, meta) {",
-    #               "return type === 'display' && data.length > 19 ?",
-    #               "'<span title=\"' + data + '\">' + data.substr(0, 19) + '...</span>' : data;",
-    #               "}")
-    #           )
-    #           # Maybe ask Cornelis if we can shorten Amino acid change to just the amino acid change, e.g. p.Y136Y
-    #         )
-    #         ),
-    #       rownames= FALSE,
-    #       escape = FALSE
-    #       ) %>% formatStyle(columns=colnames(variantTable[, c(1:8,11,17)]), style="bootstrap", backgroundColor = tablebgcolor(), color = tablecolor())
-    #     }), style = "margin: 12px 50px 50px 12px;"))
-    # ))
-  }
+    }
 })

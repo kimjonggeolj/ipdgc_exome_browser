@@ -108,3 +108,8 @@ hr {
     padding-left: 0px;
     padding-right: 0px;
 }
+
+#searchResults {
+   padding-bottom: 25px;
+   width:100%;
+}

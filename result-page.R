@@ -4,7 +4,7 @@
 # 2. chromosome number (chrXX)
 # 3. chromosome number + base pair (XX:YYYYYYYY)
 # 4. chromosome number + base pair range (XX:YYYYYYY-ZZZZZZZ)
-# NEED TO ADD: rsID (may be a huge headache due to excessive number of rsIDs)
+# 5. rsID
 # Maybe gene name????
 
 # ==hg19 vs 38==

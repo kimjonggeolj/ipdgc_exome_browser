@@ -1,10 +1,10 @@
 # Server.R is where most of the heavy lifting happens.
 
-server <- function(input, output, session) {
+shinyServer(function(input, output, session) {
   # Colorscale for needlePlot + waffle plot
-  colorList <- list()
-  colorList[[1]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift mutation" = "#7fc97f", "frameshift mutation" = "#fdc086", "stopgain" = "#ffff99", "stoploss" = "#f0027f",  "NA/unknown" = "#e8e6e4")
-  colorList[[2]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift" = "#7fc97f", "nonframeshift insertion" = "#7fc9c9", "nonframeshift deletion" = "#a4c97f", "nonframeshift block substitution" = "#5e915d",  "frameshift insertion" = "#fdc086", "frameshift deletion" = "#fddd86", "frameshift block substitution" = "#fda286", "stopgain" = "#ffff99", "stoploss" = "#f0027f", "NA/unknown" = "#e8e6e4")
+  # colorList <- list()
+  # colorList[[1]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift mutation" = "#7fc97f", "frameshift mutation" = "#fdc086", "stopgain" = "#ffff99", "stoploss" = "#f0027f",  "NA/unknown" = "#e8e6e4")
+  # colorList[[2]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift" = "#7fc97f", "nonframeshift insertion" = "#7fc9c9", "nonframeshift deletion" = "#a4c97f", "nonframeshift block substitution" = "#5e915d",  "frameshift insertion" = "#fdc086", "frameshift deletion" = "#fddd86", "frameshift block substitution" = "#fda286", "stopgain" = "#ffff99", "stoploss" = "#f0027f", "NA/unknown" = "#e8e6e4")
   
   #====initialization
   shinyjs::show("startLogo")
@@ -71,6 +71,7 @@ server <- function(input, output, session) {
       if (is.null(event_data("plotly_click"))) {
         NULL
       } else {
+        #eventdatDebug <<- event_data("plotly_click")
         eventdat <<- as.data.table(event_data("plotly_click")[3])
         print(eventdat[1,1])
         print(eventdat$x[1])
@@ -79,7 +80,8 @@ server <- function(input, output, session) {
         #plotlyID <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
         #print(plotlyID)
         #print(plotlyID.integer)
-        plotlyVariantTable <<- variantTable.global[grepl(eventdat$x[1], HG19_ID)]#[grepl(paste0("^.*", plotlyID, ".*$"), HG19_ID)]
+        #plotlyVariantTable <<- variantTable.global[grepl(eventdat$x[1], HG19_ID)]#[grepl(paste0("^.*", plotlyID, ".*$"), HG19_ID)]
+        plotlyVariantTable <<- variantTable.global[eventdat$x[1],]
         runjs("Shiny.setInputValue('varClick', Math.random());")
       }
     })
@@ -107,3 +109,4 @@ server <- function(input, output, session) {
     runFromURL <<- F
   }
 }
+)

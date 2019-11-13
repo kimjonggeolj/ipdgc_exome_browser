@@ -1,5 +1,6 @@
 #====Dark Mode observeEvent====
 observeEvent(input$darktheme, {
+  # === Dark mode ===
   if (input$darktheme == T) {
     output$darktheme <<- renderUI({
       tags$head(tags$link(rel = "stylesheet", type = "text/css",
@@ -9,7 +10,9 @@ observeEvent(input$darktheme, {
     
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb_dark.png", class = "mainlogo")))
     output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small_dark.png", id = "wrapperlogo")))
-
+    
+  # === Light mode ===
+    
   } else {
     output$darktheme <<- renderUI({
       tags$head(tags$link(rel = "stylesheet", type = "text/css",
@@ -22,6 +25,7 @@ observeEvent(input$darktheme, {
   }
 })
 #=============================
+
 #===Dark Mode reactives for data tables===
 tablecolor <- reactive({
   if (input$darktheme == T) {
@@ -34,7 +38,6 @@ tablecolor <- reactive({
 tablebgcolor <- reactive({
   if (input$darktheme == T) {
     '#383838'
-    #'#282828'
   } else {
     '#FFFFFF'
   }

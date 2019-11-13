@@ -8,7 +8,7 @@ miniSearchBar <- searchInput(
   width = "80%"
 )
 
-ui <- tagList(
+tagList(
   
   
   #========Below is part I of sample Google login API==========
@@ -25,7 +25,10 @@ ui <- tagList(
 # Initialize Shinyjs + Shinyanimate
   useShinyjs(),
   withAnim(),
-  tags$script(src = "jquery-ui.min.js"),
+  tags$script(src = 'jquery-ui.min-draggable+position.js'),
+  # tags$script(src = 'jquery-ui-draggable.js'),
+  # tags$script(src = "jquery-ui.min.js"),
+  # includeCSS("www/jquery-ui.min.css"),
 # theme + javascript for detecting clicks for search results
   includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
@@ -129,20 +132,11 @@ ui <- tagList(
                 uiOutput("panel1b"),
                 style = 'padding-left:15px;padding-right:15px;'
               ),
-              style = "width:100%;",
+              #style = "width:100%;",
               id = 'searchResults'
             )
           ),
-          # boxPlus(
-          #   id = "resultbox",
-          #   title = "Search Results",
-          #   # uiOutput("panel1"),
-          #   # uiOutput("panel1b"),
-          #   width = 12,
-          #   #collapsible = T,
-          #   closable = F
-          # ),
-          
+
           div(
             hidden(
               div(id = "geneBoxes",
