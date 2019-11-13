@@ -107,7 +107,7 @@ observeEvent(input$geneClick, {
     # FOR NEEDLE PLOT
     needleData <- initDat[, c("HG19_ID", "Func.refGene", "ExonicFunc.refGene", "avsnp150")]
     colnames(needleData) <- c("HG19_ID", "Region", "Functional Consequence", "rsID")
-    needleData$Position <- gsub("^\\d+:(\\d+):.+$", "\\1", needleData$HG19_ID)
+    needleData$Position <- as.numeric(gsub("^\\d+:(\\d+):.+$", "\\1", needleData$HG19_ID))
     needleData <- needleData[, c("HG19_ID", "Position", "Region", "Functional Consequence", "rsID")]
     # Simplifying functional consequence for the needle plot
     needleData$`Functional Consequence` <- sapply(needleData$`Functional Consequence`, function (x) {
@@ -305,7 +305,11 @@ observeEvent(input$geneClick, {
           axis.title.y = element_blank(),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
-          axis.text = element_text(color = tablecolor()),
+          axis.text.x = element_text(face="bold",
+                                     # size=14,
+                                     angle=45,
+                                     color = tablecolor()
+                                     ),
           panel.background=element_rect(fill = tablebgcolor(),
                                         colour = tablebgcolor()
           ),
@@ -322,7 +326,7 @@ observeEvent(input$geneClick, {
           legend.title = element_blank(),# element_text(color = tablecolor()),
           legend.text = element_text(color = tablecolor()))
       event_register(p, 'plotly_click')
-      ggplotly(p, tooltip = c("Position", "Functional Consequence"), height = 300, width = NULL
+      ggplotly(p, tooltip = c("Position", "Functional Consequence"), height = 400, width = NULL
       )
       
       
@@ -538,7 +542,7 @@ observeEvent(input$geneClick, {
       fluidRow(
         plotlyOutput(
           "needlePlot",
-          height = "300px"
+          height = "400px"
         )
       )
     ))

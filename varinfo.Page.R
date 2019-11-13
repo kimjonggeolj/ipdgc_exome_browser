@@ -135,8 +135,8 @@ varPageFunc <- function(var = var) {
                            a(
                              onClick = "resClick(this.id)",
                              href = "javascript:;",
-                             id = var$`Nearest Gene`[1],
-                             toupper(var$`Nearest Gene`[1]#input$resPageId
+                             id = ifelse(str_count(var$`Nearest Gene`[1], ";") == 0, var$`Nearest Gene`[1], gsub("^(\\w+);.+$", "\\1", var$`Nearest Gene`[1])),
+                             toupper(ifelse(str_count(var$`Nearest Gene`[1], ";") == 0, var$`Nearest Gene`[1], gsub("^(\\w+);.+$", "\\1", var$`Nearest Gene`[1]))#input$resPageId
                              )
                            ),
                            ")")

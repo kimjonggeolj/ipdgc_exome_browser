@@ -73,15 +73,15 @@ shinyServer(function(input, output, session) {
       } else {
         #eventdatDebug <<- event_data("plotly_click")
         eventdat <<- as.data.table(event_data("plotly_click")[3])
-        print(eventdat[1,1])
-        print(eventdat$x[1])
+        #print(eventdat[1,1])
+        #print(eventdat$x[1])
         runfromPlotly <<- T
         #plotlyID.integer <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
         #plotlyID <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
         #print(plotlyID)
         #print(plotlyID.integer)
-        #plotlyVariantTable <<- variantTable.global[grepl(eventdat$x[1], HG19_ID)]#[grepl(paste0("^.*", plotlyID, ".*$"), HG19_ID)]
-        plotlyVariantTable <<- variantTable.global[eventdat$x[1],]
+        plotlyVariantTable <<- variantTable.global[grepl(eventdat$x[1], HG19_ID)]#[grepl(paste0("^.*", plotlyID, ".*$"), HG19_ID)]
+        #plotlyVariantTable <<- variantTable.global[eventdat$x[1],]
         runjs("Shiny.setInputValue('varClick', Math.random());")
       }
     })
@@ -108,5 +108,18 @@ shinyServer(function(input, output, session) {
   if (!exists("runFromURL")) {
     runFromURL <<- F
   }
+  runjs(
+    'var searchBar = document.getElementById("minisearchBar_text");
+    
+    searchBar.addEventListener("keyup", function(event) {
+  // Number 13 is the "Enter" key on the keyboard
+  if (event.keyCode === 13) {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("minisearchBar_search").click();
+  }
+});'
+  )
 }
 )
