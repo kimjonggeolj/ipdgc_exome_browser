@@ -2,6 +2,10 @@
 # library(rsconnect)
 # deployApp(appFileManifest = "appManifest.txt", appName = "ExomeBrowser", account = 'pdgenetics')
 
+## FOR DEMO, change 'isDemo' variable to T then
+# library(rsconnect)
+# deployApp(appFileManifest = "appManifestDemo.txt", appName = "LRRK2Browser", account = 'pdgenetics')
+
 # This page sets up the global variables and the packages used in both ui.R and server.R
 library(shiny)
 library(data.table)
@@ -21,6 +25,10 @@ library(stringr)
 '%ni%' <- Negate('%in%')
 
 runfromPlotly <- F
+
+isDemo <- T
+
+variantFolder <- ifelse(isDemo, "demodata/varTab/", "data/varTab/")
 
 #====initial data loading file
 source("datatables.R", local = T)

@@ -102,7 +102,9 @@ tagList(
               ),
               column(
                 width = 4,
-                h3("ALPHA VERSION")
+                h3(
+                  ifelse(isDemo, "DEMO - LRRK2 ONLY", "ALPHA VERSION")
+                  )
               ),
               column(
                 width = 1,
@@ -110,7 +112,11 @@ tagList(
                 div(
                   div(HTML("&nbsp;"),
                       style = "font-size:14px;"),
-                  actionLink("about", HTML("&nbsp;"), icon =icon("question")),
+                  actionLink(
+                    "about",
+                    HTML("About&nbsp;&nbsp;")#,
+                    #icon = icon("question")
+                    ),
                   id = "top-row"
                 )
               )

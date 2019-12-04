@@ -30,6 +30,61 @@ output$varBox <- renderUI({
   )
 })
 
+createVarFunc <- function(searchString = searchString) {
+  print('createVarFunc started!')
+  print(paste('searchString is', searchString))
+  chrom <- gsub("^(\\d{1,2}):\\d+:.*$", "\\1", searchString)
+  print(paste('chromosome is', chrom))
+  # print(chrom)
+  # variantFolder <- ifelse(isDemo, "demodata/varTab/", "data/varTab/")
+  load(paste0(variantFolder, "chr", chrom, ".RData"))
+  var <- eval(as.name(paste0("varDat.chr", chrom)))
+  var[var$`HG19_ID` == searchString][, c("HG19_ID",
+                                         #"HG38_ID",
+                                         "Func.refGene",
+                                         "ExonicFunc.refGene",
+                                         "AAChange.refGene",
+                                         "Gene.refGene",
+                                         "avsnp150",
+                                         "CLNDBN",
+                                         "CLINSIG",
+                                         # IPDGC Genomes (hg38) Columns:
+                                         # "genomes_cases",
+                                         # "genomes_controls",
+                                         # "MAF_genomes_case",
+                                         # "genomes_cases_N",
+                                         # "MAF_genomes_control",
+                                         # "genomes_controls_N",
+                                         # IPDGC Exomes + ReSeq (hg19) Columns:
+                                         "exome_cases",
+                                         "exome_controls",
+                                         "MAF_exome_case",
+                                         "exome_cases_N",
+                                         "MAF_exome_control",
+                                         "exome_controls_N",
+                                         # "reseq_cases",
+                                         # "reseq_controls",
+                                         # "MAF_reseq_case",
+                                         # "reseq_cases_N",
+                                         # "MAF_reseq_control",
+                                         # "reseq_controls_N",
+                                         # gnomad (hg19) + UKBB (hg38) Columns:
+                                         "AF",
+                                         "AF_popmax",
+                                         "controls_AF_popmax",
+                                         "AF_male",
+                                         "AF_female",
+                                         "AF_afr",
+                                         "AF_sas",
+                                         "AF_amr",
+                                         "AF_eas",
+                                         "AF_nfe",
+                                         "AF_fin",
+                                         "AF_asj",
+                                         "AF_oth"
+  )]
+}
+
 varPageFunc <- function(var = var) {
   colnames(var) <- c("Exome name (hg19)",
                      # "Exome name (hg38)",
@@ -355,16 +410,14 @@ varPageFunc <- function(var = var) {
 })
     
     '
-    
-    
   )
+  print('varPageFunc totally ran!')
 }
 
 observeEvent(input$hide.draggable.top, {
   hide(id = "draggable-top")
 })
 
-# ===== TO DO: make separate observeEvent for a new input: "varClickSearch", which imports its own variantTable.global
 observeEvent(input$varClick, {
   if (runfromPlotly) {
     var <- plotlyVariantTable
@@ -381,59 +434,12 @@ observeEvent(input$varResClick, {
   # switch to see if running from URL or not
   if (runFromURL) {
     searchString <- query[['variant']]
+    runFromURL <<- F
   } else {
     searchString <- input$varResPageId
   }
-  chrom <- gsub("^(\\d{1,2}):\\d+:.*$", "\\1", searchString)
-  # print(chrom)
-  load(paste0("varTab/", "chr", chrom, ".RData"))
-  var <- eval(as.name(paste0("varDat.chr", chrom)))
-  var <- var[var$`HG19_ID` == searchString][, c("HG19_ID",
-                                                #"HG38_ID",
-                                                "Func.refGene",
-                                                "ExonicFunc.refGene",
-                                                "AAChange.refGene",
-                                                "Gene.refGene",
-                                                "avsnp150",
-                                                "CLNDBN",
-                                                "CLINSIG",
-                                                # IPDGC Genomes (hg38) Columns:
-                                                # "genomes_cases",
-                                                # "genomes_controls",
-                                                # "MAF_genomes_case",
-                                                # "genomes_cases_N",
-                                                # "MAF_genomes_control",
-                                                # "genomes_controls_N",
-                                                # IPDGC Exomes + ReSeq (hg19) Columns:
-                                                "exome_cases",
-                                                "exome_controls",
-                                                "MAF_exome_case",
-                                                "exome_cases_N",
-                                                "MAF_exome_control",
-                                                "exome_controls_N",
-                                                # "reseq_cases",
-                                                # "reseq_controls",
-                                                # "MAF_reseq_case",
-                                                # "reseq_cases_N",
-                                                # "MAF_reseq_control",
-                                                # "reseq_controls_N",
-                                                # gnomad (hg19) + UKBB (hg38) Columns:
-                                                "AF",
-                                                "AF_popmax",
-                                                "controls_AF_popmax",
-                                                "AF_male",
-                                                "AF_female",
-                                                "AF_afr",
-                                                "AF_sas",
-                                                "AF_amr",
-                                                "AF_eas",
-                                                "AF_nfe",
-                                                "AF_fin",
-                                                "AF_asj",
-                                                "AF_oth"
-  )]
+  var <- createVarFunc(searchString)
   varPageFunc(var)
   # var <- variantTable.global[variantTable.global$`HG19_ID` == input$varPageId]
   #shinyjs::show("varBox")
-  runFromURL <<- F
 })

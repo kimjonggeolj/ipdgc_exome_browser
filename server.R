@@ -36,7 +36,7 @@ shinyServer(function(input, output, session) {
         }
   )
   
-  geneBoxHidden <<- T
+  # geneBoxHidden <<- T
   resultHidden <<- T
   
   #====Dark theme/light theme events and reactives
@@ -86,28 +86,9 @@ shinyServer(function(input, output, session) {
       }
     })
   
-  # Update depending on search
-  # e.g. add ?gene=LRRK2
-  observe({
-    query <<- parseQueryString(session$clientData$url_search)
-    if (!is.null(query[['gene']])) {
-      runFromURL <<- T
-      updateTextInput(session, "minisearchBar", value = query[['gene']])
-      updateTextInput(session, "minisearchBar_text", value = query[['gene']])
-      runSearchPage()
-      runjs("Shiny.setInputValue('geneClick', Math.random())")
-    } else if (!is.null(query[['variant']])) {
-      runFromURL <<- T
-      updateTextInput(session, "minisearchBar", value = query[['variant']])
-      updateTextInput(session, "minisearchBar_text", value = query[['variant']])
-      runSearchPage()
-      runjs("Shiny.setInputValue('varResClick', Math.random())")
-    }
-  })
+  source('url.search.R', local = T)
   
-  if (!exists("runFromURL")) {
-    runFromURL <<- F
-  }
+  # Javascript that allows search by hitting enter
   runjs(
     'var searchBar = document.getElementById("minisearchBar_text");
     

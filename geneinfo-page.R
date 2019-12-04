@@ -45,7 +45,7 @@ observeEvent(input$geneClick, {
     
     # ========== STEP 1 ==========
     
-    load(paste0("varTab/", "chr", chrom, ".RData"))
+    load(paste0(variantFolder, "chr", chrom, ".RData"))
     initDat <- eval(as.name(paste0("varDat.chr", chrom)))
     # === Debug scripts ===
     # print(head(initDat))
@@ -591,11 +591,11 @@ observeEvent(input$geneClick, {
     # Show the hidden gene boxes
     show(id = "geneBoxes")
     # Animation (only the first time)
-    if (geneBoxHidden) {
-      startAnim(session,
-                id = "geneBoxes",
-                type = "slideInDown")
-      geneBoxHidden <<- F
-    }
+    # if (geneBoxHidden) {
+    #   startAnim(session,
+    #             id = "geneBoxes",
+    #             type = "slideInDown")
+    #   geneBoxHidden <<- F
+    # }
     }
 })
