@@ -12,7 +12,14 @@ observe({
     runFromURL <<- T
     updateTextInput(session, "minisearchBar", value = query[['variant']])
     updateTextInput(session, "minisearchBar_text", value = query[['variant']])
-    # runSearchPage()
+    runSearchPage()
+    show(id = "searchResults")
+    if (resultHidden) {
+      startAnim(session,
+                id = "searchResults",
+                type = "slideInDown")
+      resultHidden <<- F
+    }
     print(paste("Query is", query[['variant']]))
     runjs("Shiny.setInputValue('varResClick', Math.random())")
     # searchString <- query[['variant']]

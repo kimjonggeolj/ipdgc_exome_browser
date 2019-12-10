@@ -4,31 +4,31 @@ simpleCap <- function(x) {
          collapse = " ")
 }
 
-output$varBox <- renderUI({
-  hidden(
-    absolutePanel(
-      boxPlus(
-        title = actionBttn(
-          "hide.draggable.top",
-          icon = icon('times'),
-          style = 'simple',
-          color = 'default',
-          size = 'sm'
-        ),#"Variant",
-        uiOutput("panel3"),
-        width = 12,
-        closable = F,
-        status = "primary",
-        solidHeader = T
-      ),
-      class = "draggable",
-      # draggable = T,
-      # fixed = T,
-      width = '65%',
-      id = "draggable-top"
-    )
-  )
-})
+# output$varBox <- renderUI({
+#   hidden(
+#     absolutePanel(
+#       boxPlus(
+#         title = actionBttn(
+#           "hide.draggable.top",
+#           icon = icon('times'),
+#           style = 'simple',
+#           color = 'default',
+#           size = 'sm'
+#         ),#"Variant",
+#         uiOutput("panel3"),
+#         width = 12,
+#         closable = F,
+#         status = "primary",
+#         solidHeader = T
+#       ),
+#       class = "draggable",
+#       # draggable = T,
+#       # fixed = T,
+#       width = '65%',
+#       id = "draggable-top"
+#     )
+#   )
+# })
 
 createVarFunc <- function(searchString = searchString) {
   print('createVarFunc started!')
@@ -86,6 +86,7 @@ createVarFunc <- function(searchString = searchString) {
 }
 
 varPageFunc <- function(var = var) {
+  print(head(var))
   colnames(var) <- c("Exome name (hg19)",
                      # "Exome name (hg38)",
                      "Region",
@@ -388,27 +389,16 @@ varPageFunc <- function(var = var) {
   )
   show(id = "draggable-top")
   runjs(
-    'containmentTop = $(".content-wrapper").position().top;
-  //mydiv = document.getElementById("draggable-top");
-//var moveHeight = ((parseInt(document.body.clientHeight) / 2) - (parseInt(mydiv.offsetHeight) / 2)) +"px";
-//var moveWidth = ((parseInt(document.body.clientWidth) / 2) - (parseInt(mydiv.offsetWidth) / 2)) +"px";
-
-  $(".draggable").draggable({ 
-		cursor: "move",
-		handle: ".box-header",
-        cancel: ".box-body",
-        containment: [,containmentTop,,]
-  });
-    
-    $(".draggable").parent().position({
-    my: "center",
+    '
+  $(".draggable").position({
+    my: "center center+25%",
     at: "center",
     of: window,
     using: function (pos, ext) {
-        $(this).animate({ top: pos.top }, 600);
+        $(this).animate({ top: pos.top }, 400);
     }
 })
-    
+
     '
   )
   print('varPageFunc totally ran!')

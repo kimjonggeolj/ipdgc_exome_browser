@@ -53,7 +53,7 @@ observeEvent(input$geneClick, {
     # =====================
     
     # ========== STEP 2 ==========
-    initDat <- initDat[grepl(toupper(searchString), initDat$`Gene.refGene`)][, c("HG19_ID",
+    initDat <- initDat[grepl(searchString, initDat$`Gene.refGene`, ignore.case = T)][, c("HG19_ID",
                                                                                  "Start",
                                                                                  #"HG38_ID",
                                                                                  "Func.refGene",
@@ -137,7 +137,7 @@ observeEvent(input$geneClick, {
       )
     })
     
-    # variantTable.global <<- initDat[grepl(toupper(searchString), initDat$`Gene.refGene`)][, c("HG19_ID",
+    # variantTable.global <<- initDat[grepl(searchString, initDat$`Gene.refGene`, ignore.case = T)][, c("HG19_ID",
     #                                                                                              #"HG38_ID",
     #                                                                                              "Func.refGene",
     #                                                                                              "ExonicFunc.refGene",
@@ -253,7 +253,7 @@ observeEvent(input$geneClick, {
                                                   length(which(variantTable$`Functional consequence` == "synonymous SNV")),
                                                   length(which(variantTable$`Functional consequence` == "unknown")) + length(which(variantTable$`Functional consequence` == "."))
                                         ),
-                                        `Functional consequence` = c("All SNVs",
+                                        `Functional consequence` = c("All variants",
                                                                      "frameshift insertion",
                                                                      "frameshift deletion",
                                                                      "frameshift block substitution",
@@ -267,11 +267,18 @@ observeEvent(input$geneClick, {
                                                                      "synonymous SNV",
                                                                      "NA/unknown")
                                         )
+    # aggregateVariantTable.test <<- aggregateVariantTable
+    nonframeshift <- c('nonsynonymous SNV', 'synonymous SNV', 'nonframeshift', 'nonframeshift insertion', 'nonframeshift deletion', 'nonframeshift block substitution')
+    aggregateVariantTable.frameshift <- aggregateVariantTable[grepl("^frameshift", aggregateVariantTable$`Functional consequence`)]
+    
+    aggregateVariantTable.nonframeshift <- aggregateVariantTable[which(`Functional consequence` %in% nonframeshift)]
+    aggregateVariantTable.other <- aggregateVariantTable[which(`Functional consequence` %in% c('stopgain', 'stoploss', 'All variants', 'NA/unknown'))]
     # ========== STEP 5 ==========
     # Colorscale for needlePlot + waffle plot
     colorList <- list()
     colorList[[1]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift mutation" = "#7fc97f", "frameshift mutation" = "#fdc086", "stopgain" = "#ffff99", "stoploss" = "#f0027f",  "NA/unknown" = "#e8e6e4")
     colorList[[2]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift" = "#7fc97f", "nonframeshift insertion" = "#7fc9c9", "nonframeshift deletion" = "#a4c97f", "nonframeshift block substitution" = "#5e915d",  "frameshift insertion" = "#fdc086", "frameshift deletion" = "#fddd86", "frameshift block substitution" = "#fda286", "stopgain" = "#ffff99", "stoploss" = "#f0027f", "NA/unknown" = "#e8e6e4")
+    colorList[[3]] <- c(`synonymous SNV` = "#beaed4", `nonsynonymous SNV` = "#386cb0", nonframeshift = "#7fc97f", `nonframeshift insertion` = "#7fc9c9", `nonframeshift deletion` = "#a4c97f", `nonframeshift block substitution` = "#5e915d",  `frameshift insertion` = "#fdc086", `frameshift deletion` = "#fddd86", `frameshift block substitution` = "#fda286", stopgain = "#ffff99", stoploss = "#f0027f", `NA/unknown` = "#e8e6e4")
     
     # needle plot, ggplot version
     output$needlePlot <- renderPlotly({
@@ -392,73 +399,233 @@ observeEvent(input$geneClick, {
     }
     )
     
-    # Waffle plot
+    # ====Waffle plot=====
     
-    output$aggregateDonut <- renderPlot({
-      # Waffles
-      # How many rows do you want the y axis to have?
-      donutDat <- aggregateVariantTable[`Functional consequence` != "All SNVs"]
-      ndeep <- 10
-      # I need to convert my data into a data.frame with uniquely-specified x
-      # and y coordinates for each case
-      # Note - it's actually important to specify y first for a
-      # horizontally-accumulating waffle
-      # One y for each row; then divide the total number of cases by the number of
-      # rows and round up to get the appropriate number of x increments
-      dat <- expand.grid(y = 1:ndeep,
-                         x = seq_len(ceiling(sum(donutDat$Count) / ndeep)))
+    # output$aggregateWaffle <- renderPlot({
+    #   # Waffles
+    #   # How many rows do you want the y axis to have?
+    #   donutDat <- aggregateVariantTable[`Functional consequence` != "All variants"]
+    #   ndeep <- 10
+    #   # I need to convert my data into a data.frame with uniquely-specified x
+    #   # and y coordinates for each case
+    #   # Note - it's actually important to specify y first for a
+    #   # horizontally-accumulating waffle
+    #   # One y for each row; then divide the total number of cases by the number of
+    #   # rows and round up to get the appropriate number of x increments
+    #   dat <- expand.grid(y = 1:ndeep,
+    #                      x = seq_len(ceiling(sum(donutDat$Count) / ndeep)))
+    #   
+    #   # Expand the counts into a full vector of region labels - i.e., de-aggregate
+    #   regionvec <- rep(donutDat$`Functional consequence`, donutDat$Count)
+    #   
+    #   # Depending on the value of ndeep, there might be more spots on the x-y grid
+    #   # than there are cases - so fill those with NA
+    #   dat$region <- c(regionvec, rep(NA, nrow(dat) - length(regionvec)))
+    #   ggplot(dat, aes(x = x, y = y, fill = region)) + 
+    #     geom_tile(
+    #       color = tablebgcolor(),
+    #       size = 2
+    #     ) +
+    #     # The color of the lines between tiles
+    #     scale_fill_manual("Changes",
+    #                       values = colorList[[2]],
+    #                       guide = guide_legend(
+    #                         ncol = 1
+    #                       )
+    #                       # breaks = colorList[[3]]0
+    #     ) +
+    #     labs(title = "SNV Type Distribution") +
+    #     theme(
+    #       axis.line=element_blank(),
+    #       axis.text.x=element_blank(),
+    #       axis.text.y=element_blank(),
+    #       axis.ticks=element_blank(),
+    #       axis.title.x=element_blank(),
+    #       axis.title.y=element_blank(),
+    #       panel.background=element_rect(
+    #         fill = tablebgcolor(),
+    #         colour = tablebgcolor()
+    #       ),
+    #       panel.border=element_blank(),
+    #       panel.grid.major=element_blank(),
+    #       panel.grid.minor=element_blank(),
+    #       plot.background=element_rect(
+    #         fill = tablebgcolor(),
+    #         color = tablebgcolor()
+    #       ),
+    #       plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()),
+    #       legend.position = 'none'#'bottom',
+    #       # legend.key = element_rect(
+    #       #   fill = tablebgcolor(),
+    #       #   color = tablebgcolor()
+    #       # ),
+    #       # legend.background = element_rect(fill = tablebgcolor()),
+    #       # legend.title = element_blank(),
+    #       # legend.text = element_text(color = tablecolor()),
+    #       
+    #       #,
+    #       #plot.margin=grid::unit(c(0,0,0,0), "mm")
+    #     )
+    # })
+    #========
+    output$aggregateDonut <- renderPlotly({
+      # DONUT
+      # donutDat <- aggregateVariantTable[`Functional consequence` != "All variants"]
+      #   #group_by(`Functional consequence`) %>%
+      #   #summarise(count = n()) %>%
+      #   plot_ly(
+      #     donutDat,
+      #     labels = ~`Functional consequence`,
+      #     values = ~Count,
+      #     type = "pie",
+      #     hole = 0.6,
+      #     marker = list(
+      #       colors = colorList[[3]]
+      #     )) %>%
+      #   # add_pie(hole = 0.6
+      #   #         ) %>%
+      #   layout(title = "SNV Type Distribution",  showlegend = F,
+      #          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+      #          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE)) %>%
+      #   config(displayModeBar = F) 
       
-      # Expand the counts into a full vector of region labels - i.e., de-aggregate
-      regionvec <- rep(donutDat$`Functional consequence`, donutDat$Count)
+      # SUNBURST
+      sunburst.elements <- list()
+      # Element generation
+      # 1. All variants
+      sunburst.elements[[1]] <- list("All variants")
+      sunburst.elements[[2]] <- list("")
+      sunburst.elements[[3]]<- list(aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "All variants"])
       
-      # Depending on the value of ndeep, there might be more spots on the x-y grid
-      # than there are cases - so fill those with NA
-      dat$region <- c(regionvec, rep(NA, nrow(dat) - length(regionvec)))
-      ggplot(dat, aes(x = x, y = y, fill = region)) + 
-        geom_tile(
-          color = tablebgcolor(),
-          size = 2
-        ) +
-        # The color of the lines between tiles
-        scale_fill_manual("Changes",
-                          values = colorList[[2]],
-                          guide = guide_legend(
-                            ncol = 1
-                          )
-                          # breaks = colorList[[3]]0
-        ) +
-        labs(title = "SNV Type Distribution") +
-        theme(
-          axis.line=element_blank(),
-          axis.text.x=element_blank(),
-          axis.text.y=element_blank(),
-          axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank(),
-          panel.background=element_rect(
-            fill = tablebgcolor(),
-            colour = tablebgcolor()
-          ),
-          panel.border=element_blank(),
-          panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank(),
-          plot.background=element_rect(
-            fill = tablebgcolor(),
-            color = tablebgcolor()
-          ),
-          plot.title = element_text(face = "bold", hjust = 0.5, color = tablecolor()),
-          legend.position = 'none'#'bottom',
-          # legend.key = element_rect(
-          #   fill = tablebgcolor(),
-          #   color = tablebgcolor()
-          # ),
-          # legend.background = element_rect(fill = tablebgcolor()),
-          # legend.title = element_blank(),
-          # legend.text = element_text(color = tablecolor()),
-          
-          #,
-          #plot.margin=grid::unit(c(0,0,0,0), "mm")
-        )
+      frameshift.count <- 0
+      nonframeshift.count <- 0
+      
+      # 2a. frameshift insertion
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift insertion"]) {
+        frameshift.count <- aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift insertion"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "insertion ")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "frameshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift insertion"])
+      }
+      # 2b. frameshift deletion
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift deletion"]) {
+        frameshift.count <- frameshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift deletion"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "deletion ")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "frameshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift deletion"])
+      }
+      # 2c. frameshift block substitution
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift block substitution"]) {
+        frameshift.count <- frameshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift block substitution"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "block substitution ")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "frameshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "frameshift block substitution"])
+      }
+      # 2d. frameshift
+      if (0 < frameshift.count) {
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "frameshift")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "All variants")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], frameshift.count)
+      }
+      # 3a. nonframeshift insertion
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift insertion"]) {
+        nonframeshift.count <- aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift insertion"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "insertion")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "nonframeshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift insertion"])
+      }
+      # 3b. nonframeshift deletion
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift deletion"]) {
+        nonframeshift.count <- nonframeshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift deletion"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "deletion")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "nonframeshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift deletion"])
+      }
+      # 3c. nonframeshift block substitution
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift block substitution"]) {
+        nonframeshift.count <- nonframeshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift block substitution"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "block substitution")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "nonframeshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift block substitution"])
+      }
+      # 3d. nonsynonymous SNV
+      # check if any exist
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonsynonymous SNV"]) {
+        nonframeshift.count <- nonframeshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonsynonymous SNV"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "nonsynonymous SNV (missense)")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "nonframeshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonsynonymous SNV"])
+      }
+      # 3e. synonymous SNV
+      # check if any exist
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonsynonymous SNV"]) {
+        nonframeshift.count <- nonframeshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "synonymous SNV"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "synonymous SNV")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "nonframeshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "synonymous SNV"])
+      }
+      # 3e. nonframeshift
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift"]) {
+        nonframeshift.count <- nonframeshift.count + aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift"]
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "unknown")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "nonframeshift")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "nonframeshift"])
+      }
+      # 3f. nonframeshift (whole category)
+      if (0 < nonframeshift.count) {
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "nonframeshift")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "All variants")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], nonframeshift.count)
+      }
+      # 4. NA/Unknown
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "NA/unknown"]) {
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "NA/unknown")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "All variants")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "NA/unknown"])
+      }
+      # 5. stop gain
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "stopgain"]) {
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "stopgain")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "All variants")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "stopgain"])
+      }
+      # 6. stop loss
+      if (0 < aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "stoploss"]) {
+        sunburst.elements[[1]] <- append(sunburst.elements[[1]], "stoploss")
+        sunburst.elements[[2]] <- append(sunburst.elements[[2]], "All variants")
+        sunburst.elements[[3]] <- append(sunburst.elements[[3]], aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "stoploss"])
+      }
+      # 7. colors
+      sunburst.elements[[4]] <- sunburst.elements[[1]]
+      sunburst.elements[[4]] <- gsub("All variants", "", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("NA/unknown", tablebgcolor(), sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("insertion ", "#5eb75c", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("deletion ", "#70bf6e", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("block substitution ", "#82c780", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("insertion", "#4b8abf", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("deletion", "#73a4cd", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("block substitution", "#73a4cd", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("nonsynonymous SNV", "#87b1d4", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("synonymous SNV", "#9bbedb", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("unknown", "#afcbe2", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("nonframeshift", "#377eb8", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("frameshift", "#4daf4a", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("stopgain", "#e41a1c", sunburst.elements[[4]])
+      sunburst.elements[[4]] <- gsub("stoploss", "#984ea3", sunburst.elements[[4]])
+      
+      plot_ly(
+        labels = as.character(sunburst.elements[[1]]),
+        parents = as.character(sunburst.elements[[2]]),
+        values = as.numeric(sunburst.elements[[3]]),
+        type = 'sunburst',
+        branchvalues = 'total',
+        marker = list(colors = sunburst.elements[[4]])
+      ) %>% 
+        layout(
+          title = "Variant Distribution by Functional Consequence",
+          font = list(color=tablecolor()),
+          plot_bgcolor=tablebgcolor(),
+          paper_bgcolor=tablebgcolor())
     })
     
     # ========== STEP 6 ==========
@@ -506,11 +673,16 @@ observeEvent(input$geneClick, {
     ))
     
     output$geneWaffle <- renderUI(tagList(
-             plotOutput(
-               #width = "30%",
-               "aggregateDonut",
-               height = "550px"
-             )
+      plotlyOutput(
+        "aggregateDonut",
+        height = "550px",
+        width = "95%"
+      )#,
+      # plotOutput(
+      #   #width = "30%",
+      #   "aggregateWaffle",
+      #   height = "550px"
+      # )
     ))
     
     output$geneWaffleTable <- renderUI(tagList(
@@ -530,7 +702,9 @@ observeEvent(input$geneClick, {
             target = 'cell',
             color = "black",
             backgroundColor = styleEqual(
-              unique(c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown")), c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4")
+              c("synonymous SNV", "nonsynonymous SNV", "nonframeshift", "nonframeshift insertion", "nonframeshift deletion", "nonframeshift block substitution",  "frameshift insertion", "frameshift deletion", "frameshift block substitution", "stopgain", "stoploss", "NA/unknown"),
+              c("#beaed4", "#386cb0", "#7fc97f", "#7fc9c9", "#a4c97f", "#5e915d", "#fdc086", "#fddd86", "#fda286", "#ffff99", "#f0027f", "#e8e6e4"
+                                                                                                                                                                                                                                                                                              )
             )
           ) %>% formatStyle(columns="Functional consequence", backgroundColor = tablebgcolor(), color = tablecolor())
         }),
@@ -542,7 +716,8 @@ observeEvent(input$geneClick, {
       fluidRow(
         plotlyOutput(
           "needlePlot",
-          height = "400px"
+          height = "400px",
+          width = "95%"
         )
       )
     ))

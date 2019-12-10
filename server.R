@@ -72,17 +72,19 @@ shinyServer(function(input, output, session) {
         NULL
       } else {
         #eventdatDebug <<- event_data("plotly_click")
-        eventdat <<- as.data.table(event_data("plotly_click")[3])
-        #print(eventdat[1,1])
-        #print(eventdat$x[1])
-        runfromPlotly <<- T
-        #plotlyID.integer <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
-        #plotlyID <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
-        #print(plotlyID)
-        #print(plotlyID.integer)
-        plotlyVariantTable <<- variantTable.global[grepl(eventdat$x[1], HG19_ID)]#[grepl(paste0("^.*", plotlyID, ".*$"), HG19_ID)]
-        #plotlyVariantTable <<- variantTable.global[eventdat$x[1],]
-        runjs("Shiny.setInputValue('varClick', Math.random());")
+        eventdat <<- try(as.data.table(event_data("plotly_click")[3])) #this will error out if donut plot is clicked
+        if (class(eventdat) != "try-error") { # if not donut plot
+          #print(eventdat[1,1])
+          #print(eventdat$x[1])
+          runfromPlotly <<- T
+          #plotlyID.integer <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
+          #plotlyID <- gsub("^\\s*(\\d+).*$", "\\1", eventdat[1,1])
+          #print(plotlyID)
+          #print(plotlyID.integer)
+          plotlyVariantTable <<- variantTable.global[grepl(eventdat$x[1], HG19_ID)]#[grepl(paste0("^.*", plotlyID, ".*$"), HG19_ID)]
+          #plotlyVariantTable <<- variantTable.global[eventdat$x[1],]
+          runjs("Shiny.setInputValue('varClick', Math.random());")
+        }
       }
     })
   
@@ -101,6 +103,21 @@ shinyServer(function(input, output, session) {
     document.getElementById("minisearchBar_search").click();
   }
 });'
+  )
+  delay(2000,
+        runjs(
+    'containmentTop = $(".content-wrapper").position().top;
+  //mydiv = document.getElementById("draggable-top");
+//var moveHeight = ((parseInt(document.body.clientHeight) / 2) - (parseInt(mydiv.offsetHeight) / 2)) +"px";
+//var moveWidth = ((parseInt(document.body.clientWidth) / 2) - (parseInt(mydiv.offsetWidth) / 2)) +"px";
+//NOTE THAT CONTAINMENT DOES NOT WORK ON START UP. May need to force javascript to re-run after content-wrapper loads.
+  $(".draggable").draggable({ 
+		cursor: "move",
+		handle: ".box-header",
+        cancel: ".box-body",
+        containment: [,containmentTop,,]
+  });'
+  )
   )
 }
 )

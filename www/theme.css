@@ -1,3 +1,14 @@
+/*Plotly graph*/
+.plot-container.plotly {
+   padding-left:20px;
+   padding-right:20px;
+}
+
+/* Draggable variant box*/
+#draggable-top {
+   z-index:1500;
+}
+
 /*Text on hover*/
 #variantName {
    width:100%;

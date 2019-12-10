@@ -195,8 +195,32 @@ tagList(
             ),
             style = "padding-top: 15px;"
               ),
-          uiOutput("varBox")
+          hidden(
+            absolutePanel(
+              boxPlus(
+                title = actionLink( #actionBttn(
+                  "hide.draggable.top",
+                  label = "",
+                  icon = icon('times')#,
+                  #style = 'simple',
+                  #color = 'default',
+                  #size = 'sm'
+                ),#"Variant",
+                uiOutput("panel3"),
+                width = 12,
+                closable = F,
+                status = "primary",
+                solidHeader = T
+              ),
+              class = "draggable",
+              # draggable = T,
+              # fixed = T,
+              width = '65%',
+              id = "draggable-top"
+            )
+          )
         ),
+        
         title = "IPDGC Exome Browser",
         sidebar_fullCollapse = T,
         skin = "black"
