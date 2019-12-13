@@ -148,8 +148,8 @@ varPageFunc <- function(var = var) {
     session$clientData$url_protocol,
     "//",
     session$clientData$url_hostname,
-    ":",
     session$clientData$url_port,
+    session$clientData$url_pathname,
     "?variant=",
     #"https://pdgenetics.shinyapps.io/LRRK2Browser/?gene=",
     var$`Exome name (hg19)`)})
@@ -161,8 +161,11 @@ varPageFunc <- function(var = var) {
       column(width = 12,
              h1(
                tags$b(
-                 "Variant"
+                 "Variant:"
                ),
+               span(
+                 var$`Exome name (hg19)`, id = "variantName"
+                 ),
                tags$sup(
                  actionLink(
                    "varShareButton",
@@ -176,8 +179,8 @@ varPageFunc <- function(var = var) {
                    verbatimTextOutput("varShareLink")
                  )
                ),
-               span(var$`Exome name (hg19)`, id = "variantName"),
-               "(hg19)")#,
+               #"(hg19)"
+               )#,
              # h1(HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
              #    var$`Exome name (hg38)`,
              #    "(hg38)"

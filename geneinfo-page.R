@@ -655,8 +655,8 @@ observeEvent(input$geneClick, {
         session$clientData$url_protocol,
         "//",
         session$clientData$url_hostname,
-        ":",
         session$clientData$url_port,
+        session$clientData$url_pathname,
         "?gene=",
       #"https://pdgenetics.shinyapps.io/LRRK2Browser/?gene=",
       searchString)})
@@ -719,7 +719,37 @@ observeEvent(input$geneClick, {
     ))
     
     output$geneLinks <- renderUI(tagList(
-      ifelse(grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357", "", tagList(div(a("NCBI Genetics Home Reference", href = paste0("https://ghr.nlm.nih.gov/gene/", searchString), target = "_blank"))))
+      ifelse(
+        grepl("^LOC", searchString) | searchString == "TBC1D7-LOC100130357",
+        "",
+        tagList(
+          div(
+            a(
+              "NCBI Genetics Home Reference",
+              href = paste0("https://ghr.nlm.nih.gov/gene/", searchString),
+              target = "_blank"
+              ),
+            "|",
+            a(
+              "gnomAD",
+              href = paste0("https://gnomad.broadinstitute.org/gene/", searchString),
+              target = "_blank"
+            ),
+            "|",
+            a(
+              "GeneCards",
+              href = paste0("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", searchString),
+              target = "_blank"
+            ),
+            "|",
+            a(
+              "GTEx",
+              href = paste0("https://www.gtexportal.org/home/gene/", searchString),
+              target = "_blank"
+            )
+            )
+          )
+        )
     ))
     
     output$geneWaffle <- renderUI(tagList(

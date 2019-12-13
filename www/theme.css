@@ -9,19 +9,18 @@
    z-index:1500;
 }
 
-/*Text on hover*/
+/*Variant name overflow*/
 #variantName {
    width:100%;
-   display:inline-block;
+   overflow-wrap: break-word;
+  /*display:inline-block;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis;*/
 }
-
-#variantName:hover {
-  overflow: visible;
+#varSharePanel {
+   z-index:1501;
 }
-
 /* Rest */
 #fixedDLButton{
   right:25px;
