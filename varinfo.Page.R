@@ -4,32 +4,6 @@ simpleCap <- function(x) {
          collapse = " ")
 }
 
-# output$varBox <- renderUI({
-#   hidden(
-#     absolutePanel(
-#       boxPlus(
-#         title = actionBttn(
-#           "hide.draggable.top",
-#           icon = icon('times'),
-#           style = 'simple',
-#           color = 'default',
-#           size = 'sm'
-#         ),#"Variant",
-#         uiOutput("panel3"),
-#         width = 12,
-#         closable = F,
-#         status = "primary",
-#         solidHeader = T
-#       ),
-#       class = "draggable",
-#       # draggable = T,
-#       # fixed = T,
-#       width = '65%',
-#       id = "draggable-top"
-#     )
-#   )
-# })
-
 createVarFunc <- function(searchString = searchString) {
   print('createVarFunc started!')
   print(paste('searchString is', searchString))
@@ -170,12 +144,38 @@ varPageFunc <- function(var = var) {
     digits = -2
   )
   
+  output$varShareLink <- renderText({paste0(
+    session$clientData$url_protocol,
+    "//",
+    session$clientData$url_hostname,
+    ":",
+    session$clientData$url_port,
+    "?variant=",
+    #"https://pdgenetics.shinyapps.io/LRRK2Browser/?gene=",
+    var$`Exome name (hg19)`)})
+  
   var$rsID <- ifelse(var$rsID == ".", "", var$rsID)
+  
   output$panel3 <- renderUI(tagList(
     fluidRow(
       column(width = 12,
              h1(
-               tags$b("Variant:"),
+               tags$b(
+                 "Variant"
+               ),
+               tags$sup(
+                 actionLink(
+                   "varShareButton",
+                   icon = icon("share-alt"),
+                   label = ""
+                 )
+               ),
+               hidden(
+                 absolutePanel(
+                   id = "varSharePanel",
+                   verbatimTextOutput("varShareLink")
+                 )
+               ),
                span(var$`Exome name (hg19)`, id = "variantName"),
                "(hg19)")#,
              # h1(HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
@@ -254,7 +254,7 @@ varPageFunc <- function(var = var) {
         width = 4,
         descriptionBlock(
           header = "AMINO ACID CHANGE",
-          text = gsub(".*(p\\..*)", "\\1", var$`Amino acid change`),
+          text = gsub(".*p\\.(.*)", "\\1", var$`Amino acid change`),
           right_border = T,
           margin_bottom = F
         )
@@ -401,8 +401,13 @@ varPageFunc <- function(var = var) {
 
     '
   )
-  print('varPageFunc totally ran!')
+  # print('varPageFunc totally ran!')
 }
+
+observeEvent(input$varShareButton,
+             {
+               toggle(id = "varSharePanel")
+             })
 
 observeEvent(input$hide.draggable.top, {
   hide(id = "draggable-top")

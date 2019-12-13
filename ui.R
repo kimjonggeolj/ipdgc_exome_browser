@@ -147,9 +147,10 @@ tagList(
             hidden(
               div(id = "geneBoxes",
                   column(
-                    width = 4,
+                    width = 7,
                     boxPlus(
                       uiOutput("geneInfo"),
+                      uiOutput('geneLinks'),
                       width = 12,
                       closable = F,
                       status = "warning"
@@ -160,22 +161,22 @@ tagList(
                       closable = F,
                       status = "danger"
                     ),
+                    # boxPlus(
+                    #   uiOutput('geneLinks'),
+                    #   width = 12,
+                    #   closable = F,
+                    #   status = "success"
+                    # ),
                     boxPlus(
-                      uiOutput('geneLinks'),
+                      uiOutput("geneWaffleTable"),
                       width = 12,
                       closable = F,
                       status = "success"
-                    )
+                    ),
                   ),
                   boxPlus(
                     uiOutput("geneWaffle"),
                     width = 5,
-                    closable = F,
-                    status = "success"
-                  ),
-                  boxPlus(
-                    uiOutput("geneWaffleTable"),
-                    width = 3,
                     closable = F,
                     status = "success"
                   ),
@@ -201,7 +202,8 @@ tagList(
                 title = actionLink( #actionBttn(
                   "hide.draggable.top",
                   label = "",
-                  icon = icon('times')#,
+                  icon = icon('times'),
+                  class = "btn btn-box-tool"#,
                   #style = 'simple',
                   #color = 'default',
                   #size = 'sm'
