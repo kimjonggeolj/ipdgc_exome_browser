@@ -1,3 +1,15 @@
+output$resultArrowUI <- renderUI({
+  actionLink(
+    "resultArrow",
+    HTML("&nbsp;"),
+    icon = if (resultHidden) {
+      icon("chevron-down")
+    } else {
+      icon("chevron-up")
+    }
+  )
+})
+
 #====MAIN function for search
 # currently accepted input formats:
 # 1. Gene ID (default)
@@ -252,9 +264,62 @@ observeEvent(
                   id = "searchResults",
                   type = "slideInDown")
         resultHidden <<- F
+        output$resultArrowUI <- renderUI({
+          actionLink(
+            "resultArrow",
+            "",
+            style = "display:inline-block;padding-top:30%",
+            icon = 
+              icon("chevron-up")
+          )
+        })
       }
     }
   )
+
+observeEvent(
+  input$resultArrow,
+  {
+    if (resultHidden) {
+      show(id = "searchResults")
+      startAnim(session,
+                id = "searchResults",
+                type = "slideInDown")
+      resultHidden <<- F
+      output$resultArrowUI <- renderUI({
+        actionLink(
+          "resultArrow",
+          "",
+      
+          icon = 
+            icon("chevron-up")
+        )
+      })
+    } else {
+      startAnim(session,
+                id = "searchResults",
+                type = "slideOutUp")
+      delay(900, {
+        hide(id = "searchResults")
+        removeClass(
+          id = "searchResults",
+          class = "animated slideOutUp"
+        )
+        })
+      resultHidden <<- T
+      output$resultArrowUI <- renderUI({
+        actionLink(
+          "resultArrow",
+          "",
+      
+          icon = 
+            icon("chevron-down")
+        )
+      })
+    }
+    
+  }
+)
 
 #==DISABLED==refreshes search function on hitting the buildSwitch
 # observeEvent(

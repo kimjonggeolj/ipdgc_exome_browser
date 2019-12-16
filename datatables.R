@@ -1,4 +1,4 @@
-if (isDemo == T) {
+if (isDemo) {
   load("demodata/searchLists/geneList.RData")
   
   load("demodata/searchLists/varList.RData")

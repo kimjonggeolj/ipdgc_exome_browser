@@ -76,10 +76,10 @@ observeEvent(input$geneClick, {
                                                                                  # "MAF_genomes_control",
                                                                                  # "genomes_controls_N",
                                                                                  # IPDGC Exomes + ReSeq (hg19) Columns:
-                                                                                 "exome_cases",
+                                                                                 "exome_cases",#<
                                                                                  "exome_controls",
                                                                                  "MAF_exome_case",
-                                                                                 "exome_cases_N",
+                                                                                 "exome_cases_N",#<
                                                                                  "MAF_exome_control",
                                                                                  "exome_controls_N",
                                                                                  # "reseq_cases",
@@ -92,7 +92,7 @@ observeEvent(input$geneClick, {
                                                                                  "AF",
                                                                                  "AF_popmax",
                                                                                  "controls_AF_popmax",
-                                                                                 "AF_male",
+                                                                                 "AF_male",#<
                                                                                  "AF_female",
                                                                                  "AF_afr",
                                                                                  "AF_sas",
@@ -852,42 +852,47 @@ observeEvent(input$geneClick, {
     ))
     
     output$geneVartable <- renderUI(tagList(
-      fluidRow(div(renderDT({
-        dat <- variantTable[, c(1:8,11,17)]
-        # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
-        datatable(
-          dat,
-          # plugins = "ellipsis",
-          options = list(
-            paging = F,
-            scrollX = T,
-            # scrollY = "500px",
-            lengthChange = FALSE,
-            # columnDefs = list(list(
-            #   targets = c(3,5,6),
-            #   render = JS("$.fn.dataTable.render.ellipsis( 14, false )")
-            # ))
-            columnDefs = list(
-              #list(width = '10px', targets = 0),
-              list(
-                targets = c(3,5,6),
-                render = JS(
-                  "function(data, type, row, meta) {",
-                  "return type === 'display' && data.length > 19 ?",
-                  "'<span title=\"' + data + '\">' + data.substr(0, 19) + '...</span>' : data;",
-                  "}")
-              )
-              # Maybe ask Cornelis if we can shorten Amino acid change to just the amino acid change, e.g. p.Y136Y
+      fluidRow(
+        div(
+          renderDT({
+            dat <- variantTable[, c(1,5,3,4,6:9)]#c(1:8,11,17)]
+            # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
+            datatable(
+              dat,
+              # plugins = "ellipsis",
+              options = list(
+                paging = F,
+                scrollX = T,
+                # scrollY = "500px",
+                lengthChange = FALSE,
+                # columnDefs = list(list(
+                #   targets = c(3,5,6),
+                #   render = JS("$.fn.dataTable.render.ellipsis( 14, false )")
+                # ))
+                columnDefs = list(
+                  #list(width = '10px', targets = 0),
+                  list(
+                    targets = c(3:6),
+                    render = JS(
+                      "function(data, type, row, meta) {",
+                      "return type === 'display' && data.length > 19 ?",
+                      "'<span title=\"' + data + '\">' + data.substr(0, 19) + '...</span>' : data;",
+                      "}"
+                    )
+                  )
+                )
+              ),
+              rownames= FALSE,
+              escape = FALSE
+            ) %>% formatStyle(
+              columns=colnames(variantTable[, c(1,5,3,4,6:9)]),#variantTable[, c(1:8,11,17)]),
+              backgroundColor = tablebgcolor(),
+              color = tablecolor()
             )
-          ),
-          rownames= FALSE,
-          escape = FALSE
-        ) %>% formatStyle(
-          columns=colnames(variantTable[, c(1:8,11,17)]),
-          backgroundColor = tablebgcolor(),
-          color = tablecolor()
-          )
-      }), style = "margin: 12px 50px 50px 12px;"))
+          }),
+          style = "margin: 12px 50px 50px 12px;"
+        )
+      )
     ))
     
     # ========== STEP 7 ==========
