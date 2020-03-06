@@ -28,7 +28,7 @@ library(stringr)
 
 runfromPlotly <- F
 
-isDemo <- T
+isDemo <- F
 
 variantFolder <- ifelse(isDemo, "demodata/varTab/", "data/varTab/")
 

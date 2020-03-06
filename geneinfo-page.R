@@ -50,62 +50,18 @@ observeEvent(input$geneClick, {
     
     # ========== STEP 1 ==========
     
-    load(paste0(variantFolder, "chr", chrom, ".RData"))
-    initDat <- eval(as.name(paste0("varDat.chr", chrom)))
+    #load(paste0(variantFolder, "chr", chrom, ".RData"))
+    initDat <- fread(paste0(variantFolder, "chr", chrom, ".tsv")) #eval(as.name(paste0("varDat.chr", chrom)))
     # === Debug scripts ===
     # print(head(initDat))
     # print("initDat loaded")
     # =====================
     
     # ========== STEP 2 ==========
-    initDat <- initDat[grepl(searchString, initDat$`Gene.refGene`, ignore.case = T)][, c("HG19_ID",
-                                                                                 "Start",
-                                                                                 #"HG38_ID",
-                                                                                 "Func.refGene",
-                                                                                 "ExonicFunc.refGene",
-                                                                                 "AAChange.refGene",
-                                                                                 "Gene.refGene",
-                                                                                 "avsnp150",
-                                                                                 "CLNDBN",
-                                                                                 "CLINSIG",
-                                                                                 # IPDGC Genomes (hg38) Columns:
-                                                                                 # "genomes_cases",
-                                                                                 # "genomes_controls",
-                                                                                 # "MAF_genomes_case",
-                                                                                 # "genomes_cases_N",
-                                                                                 # "MAF_genomes_control",
-                                                                                 # "genomes_controls_N",
-                                                                                 # IPDGC Exomes + ReSeq (hg19) Columns:
-                                                                                 "exome_cases",#<
-                                                                                 "exome_controls",
-                                                                                 "MAF_exome_case",
-                                                                                 "exome_cases_N",#<
-                                                                                 "MAF_exome_control",
-                                                                                 "exome_controls_N",
-                                                                                 # "reseq_cases",
-                                                                                 # "reseq_controls",
-                                                                                 # "MAF_reseq_case",
-                                                                                 # "reseq_cases_N",
-                                                                                 # "MAF_reseq_control",
-                                                                                 # "reseq_controls_N",
-                                                                                 # gnomad (hg19) + UKBB (hg38) Columns:
-                                                                                 "AF",
-                                                                                 "AF_popmax",
-                                                                                 "controls_AF_popmax",
-                                                                                 "AF_male",#<
-                                                                                 "AF_female",
-                                                                                 "AF_afr",
-                                                                                 "AF_sas",
-                                                                                 "AF_amr",
-                                                                                 "AF_eas",
-                                                                                 "AF_nfe",
-                                                                                 "AF_fin",
-                                                                                 "AF_asj",
-                                                                                 "AF_oth"
-    )]
-    
+    initDat <- initDat[grepl(searchString, initDat$`Gene.refGene`, ignore.case = T)]
+
     # ========== STEP 3 ==========
-    variantTable.global <<- initDat[, -"Start"]
+    variantTable.global <<- initDat
     # debugTable <<- initDat
     
     # ========== STEP 4 ==========
@@ -192,39 +148,25 @@ observeEvent(input$geneClick, {
     
     variantTable <- variantTable.global[, -c("Gene.refGene")]
     colnames(variantTable) <- c("Exome name (hg19)",
+                                "Distribution (cases)",
+                                "Distribution (control)",
+                                "Distribution (proxy)",
+                                "A1-frequency (cases)",
+                                "A1-frequency (control)",
+                                "A1-frequency (proxy)",
                                 # "Exome name (hg38)",
                                 "Region",
+                                "Gene Detail",
                                 "Functional consequence",
                                 "Amino acid change",
                                 "rsID",
                                 "Conditions (ClinVar)",
                                 "Clinical significance (ClinVar)",
-                                # IPDGC Genomes (hg38) Columns:
-                                # "Genomes-Distribution (cases)",
-                                # "Genomes-Distribution (control)",
-                                # "Genomes-MAF (cases)",
-                                # "Genomes-number of participants (cases)",
-                                # "Genomes-MAF (control)",
-                                # "Genomes-number of participants (control)",
-                                # IPDGC Exomes + ReSeq (hg19) Columns:
-                                "Exome-Distribution (cases)",
-                                "Exome-Distribution (control)",
-                                "Exome-MAF (cases)",
-                                "Exome-number of participants (cases)",
-                                "Exome-MAF (control)",
-                                "Exome-number of participants (control)",
-                                # "Reseq-Distribution (cases)",
-                                # "Reseq-Distribution (controls)",
-                                # "Reseq-MAF (case)",
-                                # "Reseq-number of participants (cases)",
-                                # "Reseq-MAF (control)",
-                                # "Reseq-number of participants (controls)",
-                                # gnomad (hg19) + UKBB (hg38) Columns:
                                 "gnomAD Genome Allele Frequency (AF)",
                                 "gnomAD Popmax Filtering AF",
-                                "gnomAD Popmax Filtering AF-Controls",
                                 "gnomAD AF-male",
                                 "gnomAD AF-female",
+                                "gnomad AF_raw",
                                 "gnomAD AF-African",
                                 "gnomAD AF-South Asian",
                                 "gnomAD AF-Latino",
@@ -241,6 +183,8 @@ observeEvent(input$geneClick, {
         variantTable$`Exome name (hg19)`[i] <- paste0('<a id="', variantTable$`Exome name (hg19)`[i], '" href="javascript:;" onclick="varClick(this.id)">', variantTable$`Exome name (hg19)`[i], '</a>')
       }
     }
+    variantTable$`Exome-Distribution (cases)` <- paste0('<div title = "homozygous alternative / heterozygous / homozygous reference">', variantTable$`Exome-Distribution (cases)`, "</div>")
+    variantTable$`Exome-Distribution (control)` <- paste0('<div title = "homozygous alternative / heterozygous / homozygous reference">', variantTable$`Exome-Distribution (control)`, "</div>")
     
     # FOR FUNCTIONAL CONSEQUENCE SUMMARY TABLE
     #     aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
@@ -670,7 +614,7 @@ observeEvent(input$geneClick, {
         tags$sup(
           actionLink(
             "geneShareButton",
-            icon = icon("share-alt"),
+            icon = icon("link"),
             label = ""
           )
         ),
@@ -855,7 +799,7 @@ observeEvent(input$geneClick, {
       fluidRow(
         div(
           renderDT({
-            dat <- variantTable[, c(1,5,3,4,6:9)]#c(1:8,11,17)]
+            dat <- variantTable[, c(1,2,5,8,10,12,14,15)]#c(1:8,11,17)]
             # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
             datatable(
               dat,
@@ -872,7 +816,7 @@ observeEvent(input$geneClick, {
                 columnDefs = list(
                   #list(width = '10px', targets = 0),
                   list(
-                    targets = c(3:6),
+                    targets = c(4:7),
                     render = JS(
                       "function(data, type, row, meta) {",
                       "return type === 'display' && data.length > 19 ?",
@@ -885,7 +829,7 @@ observeEvent(input$geneClick, {
               rownames= FALSE,
               escape = FALSE
             ) %>% formatStyle(
-              columns=colnames(variantTable[, c(1,5,3,4,6:9)]),#variantTable[, c(1:8,11,17)]),
+              columns=colnames(variantTable[, c(1,2,5,8,10,12,14,15)]),#variantTable[, c(1:8,11,17)]),
               backgroundColor = tablebgcolor(),
               color = tablecolor()
             )

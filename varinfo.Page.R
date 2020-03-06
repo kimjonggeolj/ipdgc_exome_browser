@@ -11,114 +11,63 @@ createVarFunc <- function(searchString = searchString) {
   print(paste('chromosome is', chrom))
   # print(chrom)
   # variantFolder <- ifelse(isDemo, "demodata/varTab/", "data/varTab/")
-  load(paste0(variantFolder, "chr", chrom, ".RData"))
-  var <- eval(as.name(paste0("varDat.chr", chrom)))
-  var[var$`HG19_ID` == searchString][, c("HG19_ID",
-                                         #"HG38_ID",
-                                         "Func.refGene",
-                                         "ExonicFunc.refGene",
-                                         "AAChange.refGene",
-                                         "Gene.refGene",
-                                         "avsnp150",
-                                         "CLNDBN",
-                                         "CLINSIG",
-                                         # IPDGC Genomes (hg38) Columns:
-                                         # "genomes_cases",
-                                         # "genomes_controls",
-                                         # "MAF_genomes_case",
-                                         # "genomes_cases_N",
-                                         # "MAF_genomes_control",
-                                         # "genomes_controls_N",
-                                         # IPDGC Exomes + ReSeq (hg19) Columns:
-                                         "exome_cases",
-                                         "exome_controls",
-                                         "MAF_exome_case",
-                                         "exome_cases_N",
-                                         "MAF_exome_control",
-                                         "exome_controls_N",
-                                         # "reseq_cases",
-                                         # "reseq_controls",
-                                         # "MAF_reseq_case",
-                                         # "reseq_cases_N",
-                                         # "MAF_reseq_control",
-                                         # "reseq_controls_N",
-                                         # gnomad (hg19) + UKBB (hg38) Columns:
-                                         "AF",
-                                         "AF_popmax",
-                                         "controls_AF_popmax",
-                                         "AF_male",
-                                         "AF_female",
-                                         "AF_afr",
-                                         "AF_sas",
-                                         "AF_amr",
-                                         "AF_eas",
-                                         "AF_nfe",
-                                         "AF_fin",
-                                         "AF_asj",
-                                         "AF_oth"
-  )]
+  # load(paste0(variantFolder, "chr", chrom, ".RData"))
+  var <- fread(paste0(variantFolder, "chr", chrom, ".tsv"))# eval(as.name(paste0("varDat.chr", chrom)))
+  var[var$`HG19_ID` == searchString]
 }
 
 varPageFunc <- function(var = var) {
   print(head(var))
   colnames(var) <- c("Exome name (hg19)",
+                     "Distribution (cases)",
+                     "Distribution (control)",
+                     "Distribution (proxy)",
+                     "A1-frequency (cases)",
+                     "A1-frequency (control)",
+                     "A1-frequency (proxy)",
                      # "Exome name (hg38)",
                      "Region",
+                     "Nearest Gene",
+                     "Gene Detail",
                      "Functional consequence",
                      "Amino acid change",
-                     "Nearest Gene",
                      "rsID",
                      "Conditions (ClinVar)",
                      "Clinical significance (ClinVar)",
-                     # IPDGC Genomes (hg38) Columns:
-                     # "Genomes-Distribution (cases)",
-                     # "Genomes-Distribution (control)",
-                     # "Genomes-MAF (cases)",
-                     # "Genomes-number of participants (cases)",
-                     # "Genomes-MAF (control)",
-                     # "Genomes-number of participants (control)",
-                     # IPDGC Exomes + ReSeq (hg19) Columns:
-                     "Exome-Distribution (cases)",
-                     "Exome-Distribution (control)",
-                     "Exome-MAF (cases)",
-                     "Exome-number of participants (cases)",
-                     "Exome-MAF (control)",
-                     "Exome-number of participants (control)",
-                     # "Reseq-Distribution (cases)",
-                     # "Reseq-Distribution (controls)",
-                     # "Reseq-MAF (case)",
-                     # "Reseq-number of participants (cases)",
-                     # "Reseq-MAF (control)",
-                     # "Reseq-number of participants (controls)",
-                     # gnomad (hg19) + UKBB (hg38) Columns:
-                     "Genome Allele Frequency (AF)", #gnomAD====================
-                     "Popmax Filtering AF",
-                     "Popmax Filtering AF-Controls",
-                     "AF-male",
-                     "AF-female",
-                     "AF-African",
-                     "AF-South Asian",
-                     "AF-Latino",
-                     "AF-East Asian",
-                     "AF-European (non-Finnish)",
-                     "AF-Finnish",
-                     "AF-Ashkenazi Jewish",
-                     "AF-Other"                     #gnomAD ends here===========
-  )
+                     "gnomAD Genome Allele Frequency (AF)",
+                     "gnomAD Popmax Filtering AF",
+                     "gnomAD AF-male",
+                     "gnomAD AF-female",
+                     "gnomad AF_raw",
+                     "gnomAD AF-African",
+                     "gnomAD AF-South Asian",
+                     "gnomAD AF-Latino",
+                     "gnomAD AF-East Asian",
+                     "gnomAD AF-European (non-Finnish)",
+                     "gnomAD AF-Finnish",
+                     "gnomAD AF-Ashkenazi Jewish",
+                     "gnomAD AF-Other")
   # output$genome.freq.Table <- renderTable(
   #   var[, c(9:14)],
   #   digits = -2
   # )
   
+  
+  
+  
   output$exome.freq.Table <- renderTable(
     {
-      table.case <- dcast(melt(var[,c(8,9,11,12)], id.vars = "Clinical significance (ClinVar)"), variable ~ `Clinical significance (ClinVar)`)
+      table.case <- dcast(melt(var[,c(1,2,5)], id.vars = "Exome name (hg19)"), variable ~ `Exome name (hg19)`)
       colnames(table.case) <- c("Population", "Case")
       table.case$Population <- gsub(' \\(\\w+\\)', '', table.case$Population)
-      table.control <- dcast(melt(var[,c(8,10,13,14)], id.vars = "Clinical significance (ClinVar)"), variable ~ `Clinical significance (ClinVar)`)
+      table.control <- dcast(melt(var[,c(1,3,6)], id.vars = "Exome name (hg19)"), variable ~ `Exome name (hg19)`)
       colnames(table.control) <- c("Population", "Control")
       table.control$Population <- gsub(' \\(\\w+\\)', '', table.control$Population)
+      table.proxy <- dcast(melt(var[,c(1,4,7)], id.vars = "Exome name (hg19)"), variable ~ `Exome name (hg19)`)
+      colnames(table.proxy) <- c("Population", "Proxy")
+      table.proxy$Population <- gsub(' \\(\\w+\\)', '', table.proxy$Population)
       table <- merge(table.case, table.control, by = 'Population')
+      table <- merge(table, table.proxy, by = 'Population')
       colnames(table)[1] <- ""
       table
     },
@@ -132,7 +81,7 @@ varPageFunc <- function(var = var) {
   
   output$others.freq.Table <- renderTable(
     {
-      table <- dcast(melt(var[, c(14:27)], id.vars = "Exome-number of participants (control)"), variable ~ `Exome-number of participants (control)`)
+      table <- dcast(melt(var[, c(15:28)], id.vars = "Clinical significance (ClinVar)"), variable ~ `Clinical significance (ClinVar)`)
       colnames(table) <- c("Population", "Frequency")
       table$Population <- gsub('gnomAD ', '', table$Population)
       table$Population <- gsub(' Allele Frequency \\(AF\\)', '', table$Population)
@@ -161,7 +110,7 @@ varPageFunc <- function(var = var) {
       column(width = 12,
              h1(
                tags$b(
-                 "Variant:"
+                 "Variant: "
                ),
                span(
                  var$`Exome name (hg19)`, id = "variantName"
@@ -169,7 +118,7 @@ varPageFunc <- function(var = var) {
                tags$sup(
                  actionLink(
                    "varShareButton",
-                   icon = icon("share-alt"),
+                   icon = icon("link"),
                    label = ""
                  )
                ),

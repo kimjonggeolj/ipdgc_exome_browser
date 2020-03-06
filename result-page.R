@@ -131,12 +131,12 @@ runSearchPage <- function() {
     #   searchSwitch <- "chrbp38"
     # }
   } else if (grepl("^rs\\d*", searchSelect, ignore.case = T)) {
-    if (grepl("^rs\\d{1,3}$", searchSelect, ignore.case = T)) {
+    if (grepl("^rs\\d{1,2}$", searchSelect, ignore.case = T)) {
       # throw error if rsID is < 4 digits long
       sendSweetAlert(
         session,
         title = "Search field error!",
-        text = 'Please provide at least four digits in the rsID.',
+        text = 'Please provide at least three digits in the rsID.',
         type =  "error"
       )
       searchSwitch <- "STOP"
@@ -177,7 +177,7 @@ runSearchPage <- function() {
   # }
   
   #varRes <- searchFunctionVar(searchString = searchSelect,  type = searchSwitch)
-  colnames(res[[2]]) <- c("Position (Ref/Alt)", "Chromosome", "BP-Start", "BP-End", "Nearest Gene ID", "rsID")
+  colnames(res[[2]]) <- c("Position (Ref/Alt)", "Chromosome", "BP", "Nearest Gene ID", "rsID")
   # for (i in 1:nrow(res[[2]])) {
   #   res[[2]]$`Position (Ref/Alt)`[i] <- paste0('<a id="', res[[2]]$`Position (Ref/Alt)`[i], '" href="#" onclick="varResClick(this.id)">', res[[2]]$`Position (Ref/Alt)`[i], '</a>')
   # }

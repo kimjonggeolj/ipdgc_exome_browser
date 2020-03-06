@@ -1,0 +1,474 @@
+---
+title: "Data Processing for New Exome Data"
+output: html_notebook
+---
+
+This notebook is for generating reference tables for the new data. This is in R as it was previously done in R.
+
+# Gene list
+
+## Import relevant data
+
+```{r}
+library(data.table)
+library(biomaRt)
+library(tidyverse)
+
+gene.Names.raw <- data.table(Gene.refGene = character())
+
+for (i in 1:22) {
+  dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"), select = "Gene.refGene")
+  gene.Names.raw = rbind(gene.Names.raw, dat)
+  gene.Names.raw = unique(gene.Names.raw)
+}
+rm(dat)
+```
+
+## Remove semicolon and separate genes
+
+### Separate out semicolon and no-semicolon data
+
+```{r}
+semicolon = gene.Names.raw[grep(';', gene.Names.raw$Gene.refGene)]
+nosemicolon = gene.Names.raw[!grep(";", gene.Names.raw$Gene.refGene)]
+```
+
+```{r}
+dir.create('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/temp')
+fwrite(semicolon, '/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/temp/semicolon.tsv', sep = "\t", quote = F)
+```
+
+### Semicolon replace with newline with bash
+
+```{bash}
+tr ';' '\n' < temp/semicolon.tsv > temp/semicolon-removed.tsv
+
+head temp/semicolon-removed.tsv
+```
+
+### Merge the two no-semicolon data
+
+```{r}
+semicolon.removed <- fread('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/temp/semicolon-removed.tsv')
+gene.Names <- unique(rbind(semicolon.removed, nosemicolon))
+```
+
+## Bring in reference
+
+### Refflat
+```{r}
+ref <- fread("refFlat.txt", header = F)
+
+# schema from: https://genome.ucsc.edu/goldenpath/gbdDescriptions.html
+colnames(ref) <- c("geneName", "name", "chrom", "strand", "txStart", "txEnd", "cdsStart", "cdsEnd", "exonCount", "exonStarts", "exonEnds")
+colnames(gene.Names) <- "geneName"
+
+ref$bpdif <- ref$txEnd - ref$txStart
+
+ref <- ref[order(geneName, -bpdif), ]
+
+gene.Names.Anno <- merge(ref, gene.Names, by = "geneName") # [, c("geneName", "name", "strand", "chrom", "txStart", "txEnd")]
+genes.to.remove <- gene.Names.Anno[duplicated(gene.Names.Anno$geneName)][,c("geneName", "name", "bpdif")]
+
+gene.Names.Anno.Filtered <- as.data.table(anti_join(gene.Names.Anno, genes.to.remove, by = "name")[, c("geneName", "chrom", "txStart", "txEnd")])
+
+unavailable <- anti_join(gene.Names, gene.Names.Anno.Filtered[, "geneName"])
+```
+
+### ensembl's MART
+```{r}
+# 
+human <- useMart("ENSEMBL_MART_ENSEMBL", host = "grch37.ensembl.org", dataset = "hsapiens_gene_ensembl")
+# 
+gene.Names.Anno2 <- as.data.table(getBM(attributes = c('hgnc_symbol', 'chromosome_name', 'start_position', 'end_position'), 
+                         filters = 'hgnc_symbol',
+                         values = unavailable,
+                         mart = human)
+)
+
+gene.Names.Anno2$bpdif <- gene.Names.Anno2$end_position - gene.Names.Anno2$start_position
+gene.Names.Anno2 <- gene.Names.Anno2[order(hgnc_symbol, bpdif), ]
+genes.to.remove <- gene.Names.Anno2[duplicated(gene.Names.Anno2$hgnc_symbol)]
+
+gene.Names.Anno2.Filtered <- as.data.table(anti_join(gene.Names.Anno2, genes.to.remove, by = "hgnc_symbol"))[, -c("bpdif")]
+
+# fixing a chromosome position
+gene.Names.Anno2.Filtered[13, 2] <- 6
+
+colnames(gene.Names.Anno2.Filtered) <- colnames(gene.Names.Anno.Filtered)
+
+unavailable2 <- anti_join(unavailable, gene.Names.Anno2.Filtered[, "geneName"])
+
+# gene.Names.Anno2 <- as.data.table(getBM(attributes = c('external_gene_name', 'chromosome_name', 'start_position', 'end_position'), 
+#                          filters = 'external_gene_name', 
+#                          values = gene.Names, 
+#                          mart = human)
+# )
+# 
+# colnames(gene.Names.Anno)[1] <- "Gene.refGene"
+# colnames(gene.Names.Anno2)[1] <- "Gene.refGene"
+# 
+# # colnames(gene.Names) <- "Gene.refGene"
+# 
+# unavailable <- anti_join(gene.Names, gene.Names.Anno[, "Gene.refGene"])
+# 
+# #colnames(gene.Names) <- "external_gene_name"
+# unavailable2 <- anti_join(gene.Names, gene.Names.Anno2[, "Gene.refGene"])
+# 
+# anti_join(unavailable, unavailable2, by = )
+# 
+# gene.Names.Anno.numChr <- gene.Names.Anno[grepl("\\d+", hgnc_symbol)]
+```
+
+### refGene file from UCSC
+
+```{r}
+refGene <- fread("hg19.refGene.txt.gz")[,c(2,3,5,6,13)]
+colnames(refGene) <- c("name", "chrom", "txStart", "txEnd", "geneName")
+
+refGene$bpdif <- refGene$txEnd - refGene$txStart
+
+refGene <- refGene[order(geneName, -bpdif), ]
+refGene$identifier <- paste0(refGene$geneName, refGene$txStart, refGene$txEnd, refGene$name)
+
+
+genes.to.remove <- refGene[duplicated(refGene$geneName)][,c("geneName", "name", "bpdif", "identifier")]
+
+
+refGene.Filtered <- as.data.table(anti_join(refGene, genes.to.remove, by = "identifier")[, c("geneName", "chrom", "txStart", "txEnd")])
+
+gene.Names.Anno3 <- merge(refGene.Filtered, unavailable2, by = "geneName") # [, c("geneName", "name", "strand", "chrom", "txStart", "txEnd")]
+# genes.to.remove <- gene.Names.Anno3[duplicated(gene.Names.Anno3$geneName)][,c("geneName", "name", "bpdif")]
+
+#gene.Names.Anno3.Filtered <- as.data.table(anti_join(gene.Names.Anno3, genes.to.remove, by = "name")[, c("geneName", "chrom", "txStart", "txEnd")])
+
+unavailable3 <- anti_join(unavailable2, gene.Names.Anno3[, "geneName"])
+
+
+
+gene.Names.Anno.Filtered$chrom <- gsub("chr(\\d+)", "\\1", gene.Names.Anno.Filtered$chrom)
+gene.Names.Anno3$chrom <- gsub("chr(\\d+).*", "\\1", gene.Names.Anno3$chrom)
+
+gene.Names.Anno.Aggregate <- rbind(gene.Names.Anno.Filtered, gene.Names.Anno2.Filtered, gene.Names.Anno3)
+# include 
+gene.Names.Anno.Aggregate$upstream <- NULL
+gene.Names.Anno.Aggregate$downstream <- NULL
+
+colnames(gene.Names.Anno.Aggregate) <- c("id", "chr", "37bp1", "37bp2")
+gene.Names.Anno.Aggregate$name <- NULL
+
+#gene.Names.Anno.Aggregate <- gene.Names.Anno.Aggregate[,c("id", "chr", "37bp1", "37bp2")]
+
+refname <- fread("hgnc_complete_set.txt")[, c(2,3)]
+colnames(refname)[1] <- "id"
+
+#refname2 <- refname %>% rename("refName" = "name")
+
+gene.Names.Anno.Aggregate.Name <- left_join(gene.Names.Anno.Aggregate, refname, by = "id")
+gene.Names.Anno.Aggregate.Name$`38bp1` <- ""
+gene.Names.Anno.Aggregate.Name$`38bp2` <- ""
+
+gene.Names.Anno.Aggregate.Name <- gene.Names.Anno.Aggregate.Name[ , c("id", "name", "chr", "38bp1", "38bp2", "37bp1", "37bp2")]
+
+# fwrite(gene.Names.Anno.Aggregate.Name, "../www/geneList.txt")
+# gene.Names.Anno.Aggregate$upstream <- gene.Names.Anno.Aggregate$txStart - 1000
+# gene.Names.Anno.Aggregate$downstream <- gene.Names.Anno.Aggregate$txEnd + 1000
+
+res <- gene.Names.Anno.Aggregate.Name
+
+for (i in 1:nrow(res)) {
+      res$id[i] <- paste0('<a id="', res$id[i], '" href="javascript:;" onclick="resClick(this.id)">', res$id[i], '</a>')
+}
+
+geneList <- as.data.table(res)
+
+#fwrite(res, "../www/geneList.txt")
+
+```
+
+## Save the genelist as .RData
+
+```{r}
+dir.create('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302')
+save(geneList, file = "newreftables-200302/geneList.RData")
+```
+
+### Missing genes
+
+```{r}
+fwrite(unavailable3, "newreftables-200302/unavailable_genes.tsv", sep = "\t", quote = F)
+```
+
+# varList processing
+```{r}
+library(data.table)
+library(tidyverse)
+varList.raw <- data.table(SNP = character(), Gene.refGene = character(), avsnp150 = character())
+# load("../data/varDat.hg19.RData")
+for (i in 1:22) {
+  dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"), select = c("SNP", "Gene.refGene", "avsnp150"))
+  varList.raw = rbind(varList.raw, dat)
+}
+```
+
+```{r}
+varList.raw$chr <- gsub('^(\\d+):\\d+:.*$', '\\1', varList.raw$SNP)
+varList.raw$`37bp1` <- gsub('^\\d+:(\\d+):.*$', '\\1', varList.raw$SNP)
+#prevarList <- dat[, c("HG19_ID", "Chr", "Start", "End", "Gene.refGene", "avsnp150")]
+colnames(varList.raw) <- c("id", "geneID", "rsID", "chr", "37bp1")
+
+# for (i in 1:nrow(prevarList)) {
+#   prevarList$id[i] <- paste0('<a id="',  prevarList$id[i], '" href="javascript:;" onclick="varClick(this.id)">', prevarList$id[i], '</a>')
+#   #restoreInput(id = paste0("res", i), default = NULL)
+# }
+varList.nested <- list()
+# for (i in 1:22) {
+#   varList.nested[i] <- prevarList[[grepl(i, prevarList$Chr)]]
+# }
+varList.nested <- split(varList.raw, varList.raw$chr)
+```
+
+```{r}
+varList.nested <- split(varList.raw, varList.raw$chr)
+# for (i in 1:22) {
+#   varList.nested[[i]]$chr <- NULL
+# }
+save(varList.nested, file = "newreftables-200302/varList.RData")
+```
+
+# Nested variant Info
+
+```{r}
+library(data.table)
+library(tidyverse)
+varInfo <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"), drop = c('non_topmed_AF_popmax',	'non_neuro_AF_popmax',	'non_cancer_AF_popmax'), nrows = 1)
+varInfo <- varInfo[0]
+
+for (i in 1:22) {
+  dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"), drop = c('non_topmed_AF_popmax',	'non_neuro_AF_popmax',	'non_cancer_AF_popmax'))
+  varInfo = rbind(varInfo, dat)
+}
+```
+
+```{r}
+dir.create('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab')
+varInfo$chr <- gsub('^(\\d+):\\d+:.*$', '\\1', varInfo$SNP)
+varDat.nested <- list()
+varDat.nested <- split(varInfo, varInfo$chr)
+varDat.chr1 <- varDat.nested[[1]]
+varDat.chr2 <- varDat.nested[[2]]
+varDat.chr3 <- varDat.nested[[3]]
+varDat.chr4 <- varDat.nested[[4]]
+varDat.chr5 <- varDat.nested[[5]]
+varDat.chr6 <- varDat.nested[[6]]
+varDat.chr7 <- varDat.nested[[7]]
+varDat.chr8 <- varDat.nested[[8]]
+varDat.chr9 <- varDat.nested[[9]]
+varDat.chr10 <- varDat.nested[[10]]
+varDat.chr11 <- varDat.nested[[11]]
+varDat.chr12 <- varDat.nested[[12]]
+varDat.chr13 <- varDat.nested[[13]]
+varDat.chr14 <- varDat.nested[[14]]
+varDat.chr15 <- varDat.nested[[15]]
+varDat.chr16 <- varDat.nested[[16]]
+varDat.chr17 <- varDat.nested[[17]]
+varDat.chr18 <- varDat.nested[[18]]
+varDat.chr19 <- varDat.nested[[19]]
+varDat.chr20 <- varDat.nested[[20]]
+varDat.chr21 <- varDat.nested[[21]]
+varDat.chr22 <- varDat.nested[[22]]
+
+save(varDat.chr1, file = "newreftables-200302/varTab/chr1.RData")
+save(varDat.chr2, file = "newreftables-200302/varTab/chr2.RData")
+save(varDat.chr3, file = "newreftables-200302/varTab/chr3.RData")
+save(varDat.chr4, file = "newreftables-200302/varTab/chr4.RData")
+save(varDat.chr5, file = "newreftables-200302/varTab/chr5.RData")
+save(varDat.chr6, file = "newreftables-200302/varTab/chr6.RData")
+save(varDat.chr7, file = "newreftables-200302/varTab/chr7.RData")
+save(varDat.chr8, file = "newreftables-200302/varTab/chr8.RData")
+save(varDat.chr9, file = "newreftables-200302/varTab/chr9.RData")
+save(varDat.chr10, file = "newreftables-200302/varTab/chr10.RData")
+save(varDat.chr11, file = "newreftables-200302/varTab/chr11.RData")
+save(varDat.chr12, file = "newreftables-200302/varTab/chr12.RData")
+save(varDat.chr13, file = "newreftables-200302/varTab/chr13.RData")
+save(varDat.chr14, file = "newreftables-200302/varTab/chr14.RData")
+save(varDat.chr15, file = "newreftables-200302/varTab/chr15.RData")
+save(varDat.chr16, file = "newreftables-200302/varTab/chr16.RData")
+save(varDat.chr17, file = "newreftables-200302/varTab/chr17.RData")
+save(varDat.chr18, file = "newreftables-200302/varTab/chr18.RData")
+save(varDat.chr19, file = "newreftables-200302/varTab/chr19.RData")
+save(varDat.chr20, file = "newreftables-200302/varTab/chr20.RData")
+save(varDat.chr21, file = "newreftables-200302/varTab/chr21.RData")
+save(varDat.chr22, file = "newreftables-200302/varTab/chr22.RData")
+```
+
+# rsID list
+```{r}
+library(data.table)
+library(tidyverse)
+#load("../data/varDat.hg19.RData")
+varList.rsID.raw <- data.table(SNP = character(), Gene.refGene = character(), avsnp150 = character())
+# load("../data/varDat.hg19.RData")
+for (i in 1:22) {
+  dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"), select = c("SNP", "Gene.refGene", "avsnp150"))
+  varList.rsID.raw = rbind(varList.rsID.raw, dat)
+}
+varList.rsID.raw$chr <- gsub('^(\\d+):\\d+:.*$', '\\1', varList.rsID.raw$SNP)
+varList.rsID.raw$`37bp1` <- gsub('^\\d+:(\\d+):.*$', '\\1', varList.rsID.raw$SNP)
+#prevarList <- dat[, c("HG19_ID", "Chr", "Start", "End", "Gene.refGene", "avsnp150")]
+colnames(varList.rsID.raw) <- c("id", "geneID", "rsID", "chr", "37bp1")
+#varList.rsID.raw <- varList.raw
+varList.rsID.raw$rsFirst <- gsub("^(\\w{1,4}).*", "\\1", varList.rsID.raw$rsID)
+
+#prevarList.rsID <- dat[, c("SNP", "chr", "Gene.refGene", "avsnp150", "rsFirst")]
+
+# colnames(prevarList.rsID) <- c("id", "chr", "37bp1", "37bp2", "geneID", "rsID", "rsFirst")
+```
+```{r}
+varList.rsID.raw$id <- paste0('<a id="', varList.rsID.raw$id, '" href="javascript:;"onclick="resClick(this.id)">', varList.rsID.raw$id, '</a>')
+```
+
+```{r}
+varList.rsID.nested <- split(varList.rsID.raw, varList.rsID.raw$rsFirst)
+varList.rsID.nested[1] <- NULL
+for (i in 1:length(varList.rsID.nested)) {
+  varList.rsID.nested[[i]]$rsFirst <- NULL
+}
+#dir.create('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab')
+save(varList.rsID.nested, file = "newreftables-200302/rsID.List.RData")
+```
+
+# Saving variant information to RData
+```{r}
+varDat.chr1.tsv <- fread("exomedata-200302/chr1.tsv")
+colnames(varDat.chr1.tsv)[1] <- "HG19_ID"
+varDat.chr1.tsv <- varDat.chr1.tsv[, -c("CLNALLELEID",
+                          "CLNDN",
+                          "CLNREVSTAT",
+                          "non_topmed_AF_popmax",
+                          "non_neuro_AF_popmax",
+                          "non_cancer_AF_popmax"
+                          )]
+save(varDat.chr1.tsv, file = 'exomedata-200302/chr1.RData')
+```
+
+```{r}
+for (i in 2:22) {
+  dat <- fread(paste0("exomedata-200302/chr", i, ".tsv"))
+  colnames(dat)[1] <- "HG19_ID"
+  dat <- dat[, -c("CLNALLELEID",
+                                          "CLNDN",
+                                          "CLNREVSTAT",
+                                          "non_topmed_AF_popmax",
+                                          "non_neuro_AF_popmax",
+                                          "non_cancer_AF_popmax"
+  )]
+  assign(paste0("varDat.chr", i, ".tsv"), dat)
+}
+save(varDat.chr2.tsv, file = paste0('exomedata-200302/chr2.RData'))
+save(varDat.chr3.tsv, file = paste0('exomedata-200302/chr3.RData'))
+save(varDat.chr4.tsv, file = paste0('exomedata-200302/chr4.RData'))
+save(varDat.chr5.tsv, file = paste0('exomedata-200302/chr5.RData'))
+save(varDat.chr6.tsv, file = paste0('exomedata-200302/chr6.RData'))
+save(varDat.chr7.tsv, file = paste0('exomedata-200302/chr7.RData'))
+save(varDat.chr8.tsv, file = paste0('exomedata-200302/chr8.RData'))
+save(varDat.chr9.tsv, file = paste0('exomedata-200302/chr9.RData'))
+save(varDat.chr10.tsv, file = paste0('exomedata-200302/chr10.RData'))
+save(varDat.chr11.tsv, file = paste0('exomedata-200302/chr11.RData'))
+save(varDat.chr12.tsv, file = paste0('exomedata-200302/chr12.RData'))
+save(varDat.chr13.tsv, file = paste0('exomedata-200302/chr13.RData'))
+save(varDat.chr14.tsv, file = paste0('exomedata-200302/chr14.RData'))
+save(varDat.chr15.tsv, file = paste0('exomedata-200302/chr15.RData'))
+save(varDat.chr16.tsv, file = paste0('exomedata-200302/chr16.RData'))
+save(varDat.chr17.tsv, file = paste0('exomedata-200302/chr17.RData'))
+save(varDat.chr18.tsv, file = paste0('exomedata-200302/chr18.RData'))
+save(varDat.chr19.tsv, file = paste0('exomedata-200302/chr19.RData'))
+save(varDat.chr20.tsv, file = paste0('exomedata-200302/chr20.RData'))
+save(varDat.chr21.tsv, file = paste0('exomedata-200302/chr21.RData'))
+save(varDat.chr22.tsv, file = paste0('exomedata-200302/chr22.RData'))
+```
+
+## Compression test
+
+The saved data are automatically compressed. Let's see if compression has a large negative impact on load.
+
+```{r}
+save(varDat.chr1.tsv, file = "/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1_uncompressed.RData", compress = F)
+```
+
+Compressed size: 31.2Mb
+Uncompressed size: 281.1Mb
+
+```{r}
+library(rbenchmark)
+benchmark(
+  "compressed" = load("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1.RData"),
+  "uncompressed" = load("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1_uncompressed.RData"),
+  replications = 5
+  )
+```
+
+There seems to be minimal speed difference. However, concerning that the load time is over 30 seconds...is fread any faster?
+
+```{r}
+library(data.table)
+fwrite(varDat.chr1.tsv, "/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1.test.tsv", sep = "\t")
+benchmark(
+  "fread" = fread('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1.test.tsv'),
+  replications = 5
+  )
+```
+
+is fread the fastest? let's test one more time with benchmark with replication of 15
+
+```{r}
+benchmark(
+  "fread" = fread('/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1.test.tsv'),
+  "compressed" = load("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1.RData"),
+  "uncompressed" = load("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr1_uncompressed.RData"),
+  replications = 15
+  )
+```
+
+Let's remove allele frequency for reference alleles to reduce the file size
+
+```{r}
+for (i in 1:22) {
+  dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"),
+               select = c("SNP", "ac_cases", "ac_controls", "ac_proxy", "af_alt_cases", "af_alt_controls", "af_alt_proxy", "Func.refGene", "Gene.refGene", "GeneDetail.refGene", "ExonicFunc.refGene", "AAChange.refGene", "avsnp150", "CLNDISDB", "CLNSIG", "AF", "AF_popmax", "AF_male", "AF_female", "AF_raw", "AF_afr", "AF_sas", "AF_amr", "AF_eas", "AF_nfe", "AF_fin", "AF_asj", "AF_oth")
+               )
+  colnames(dat)[1] <- "HG19_ID"
+  fwrite(dat, paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab/chr", i, ".tsv"), sep = "\t")
+}
+```
+
+# Clean ups
+
+## Remove `_` from `ExonicFunc.refGene` in `varTab` data
+### Test
+```{r}
+dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab/chr", 1, ".tsv"))
+dat$ExonicFunc.refGene <- gsub("_", " ", dat$ExonicFunc.refGene)
+dat[dat$ExonicFunc.refGene != "."]
+```
+
+Let's also remove the gene name from `AAChange.refGene` column
+
+## Remove gene name from `AAChange.refGene`
+### Test
+
+```{r}
+dat$AAChange.refGene <- gsub("^\\w+:(.+)$", "\\1", dat$AAChange.refGene)
+head(dat[dat$ExonicFunc.refGene != "."])
+```
+
+### Real
+```{r}
+for (i in 1:22) {
+  dat <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab/chr", i, ".tsv"))
+  dat$ExonicFunc.refGene <- gsub("_", " ", dat$ExonicFunc.refGene)
+  dat$AAChange.refGene <- gsub("^\\w+:(.+)$", "\\1", dat$AAChange.refGene)
+  fwrite(dat, paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab/chr", i, ".tsv"), sep = "\t")
+}
+```
+
