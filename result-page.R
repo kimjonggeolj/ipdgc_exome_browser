@@ -42,31 +42,47 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
   if (type %ni% c("rsID", "geneID", "STOP")) {
     chrom <- gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T)
     dat.nested[[1]] <- geneList[grepl(chrom, geneList$chr)]
-    dat.nested[[2]] <- varList.nested[[chrom]]
+    # vroom/tibble method
+    dat.nested[[2]] <- vroom(paste0("data/searchLists/varList/", chrom, ".tsv"))
+    # data.table method
+    #varList.nested[[chrom]]
   }
   switch(type,
          STOP = {
            # empty
            dat.nested[[1]] <- geneList[geneList$chr == "A"]
            # empty
-           dat.nested[[2]] <- varList.nested[[1]][0]
+           # vroom/tibble
+           dat.nested[[2]] <- data.table(id = character(), geneID = character(), rsID = character(), chr = character(), `37bp1` = character())
+           # data.table method
+           #dat.nested[[2]] <- varList.nested[[1]][0]
          },
          rsID = {
            rsFirst <- gsub("^(rs\\d\\d)\\d+$", "\\1", searchString, ignore.case = F)
-           dat.Var <- varList.rsID.nested[[rsFirst]]
-           dat.nested[[2]] <- dat.Var[grepl(searchString, dat.Var$rsID)]
+           # vroom/tibble version
+           dat.var <- vroom(paste0("data/searchLists/rsID/", rsFirst, ".tsv"))
+           dat.nested[[2]] <- as.data.table(filter(dat.var, grepl(searchString, rsID)))
+           # data.table with nested list
+           # dat.Var <- varList.rsID.nested[[rsFirst]]
+           # dat.nested[[2]] <- dat.Var[grepl(searchString, dat.Var$rsID)]
            # empty
            dat.nested[[1]] <- geneList[geneList$chr == "A"]
          },
          chr = {
            dat.nested[[1]] <- geneList[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), geneList$chr, ignore.case = T)]
            # empty
-           dat.nested[[2]] <- varList.nested[[1]][0]
+           # vroom/tibble
+           dat.nested[[2]] <- data.table(id = character(), geneID = character(), rsID = character(), chr = character(), `37bp1` = character())
+           # data.table
+           # dat.nested[[2]] <- varList.nested[[1]][0]
          },
          chrbp37 = {
            bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
            dat.nested[[1]] <- dat.nested[[1]][bp >= dat.nested[[1]]$`37bp1` & bp <= dat.nested[[1]]$`37bp2`] # then see if provided bp is in any bp range of the genes
-           dat.nested[[2]] <- dat.nested[[2]][bp >= dat.nested[[2]]$`37bp1` & bp <= dat.nested[[2]]$`37bp2`]
+           # vroom/tibble
+           dat.nested[[2]] <- as.data.table(dat.nested[[2]] %>% filter(`37bp1` == bp))
+           # data.table
+           # dat.nested[[2]] <- dat.nested[[2]][bp >= dat.nested[[2]]$`37bp1` & bp <= dat.nested[[2]]$`37bp2`]
          },
          chrbp38 = {
            bp <- as.numeric(gsub("^\\d+:(\\d+).*", "\\1", searchString, ignore.case = T))
@@ -77,13 +93,18 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
            dat.nested[[1]] <- foverlaps(dat.nested[[1]], ranges, nomatch = NULL)[,c(3:9)]
            # this is rearranged later; this formatting is to make it consistent with other results
            dat.nested[[1]] <- dat.nested[[1]][, c("id", "name", "chr", "38bp1", "38bp2", "i.37bp1", "i.37bp2")]
-           dat.nested[[2]] <- foverlaps(dat.nested[[2]], ranges, nomatch = NULL)[,c(3:8)]
-           
-           dat.nested[[2]] <- dat.nested[[2]][, c("id", "chr", "i.37bp1", "i.37bp2", "geneID", "rsID")]
+           # vroom/tibble
+           dat.nested[[2]] <- as.data.table(dat.nested[[2]] %>% filter(bp %in% gsub("^\\d+:(\\d+)-\\d+$", "\\1", searchString, ignore.case = T):gsub("^\\d+:\\d+-(\\d+)$", "\\1", searchString, ignore.case = T)))
+           # data.table
+           #dat.nested[[2]] <- foverlaps(dat.nested[[2]], ranges, nomatch = NULL)[,c(3:8)]
+           #dat.nested[[2]] <- dat.nested[[2]][, c("id", "chr", "i.37bp1", "i.37bp2", "geneID", "rsID")]
          },
          geneID = {
            dat.nested[[1]] <- geneList[grepl(searchString, geneList$id, ignore.case = T)]
-           dat.nested[[2]] <- varList.nested[[1]][0]
+           # vroom/tibble
+           dat.nested[[2]] <- data.table(id = character(), geneID = character(), rsID = character(), chr = character(), `37bp1` = character())
+           # data.table
+           # dat.nested[[2]] <- varList.nested[[1]][0]
          }
   )
   

@@ -183,11 +183,12 @@ observeEvent(input$geneClick, {
         variantTable$`Exome name (hg19)`[i] <- paste0('<a id="', variantTable$`Exome name (hg19)`[i], '" href="javascript:;" onclick="varClick(this.id)">', variantTable$`Exome name (hg19)`[i], '</a>')
       }
     }
-    variantTable$`Exome-Distribution (cases)` <- paste0('<div title = "homozygous alternative / heterozygous / homozygous reference">', variantTable$`Exome-Distribution (cases)`, "</div>")
-    variantTable$`Exome-Distribution (control)` <- paste0('<div title = "homozygous alternative / heterozygous / homozygous reference">', variantTable$`Exome-Distribution (control)`, "</div>")
+    # variantTable$`Distribution (cases)` <- paste0('<div title = "homozygous alternative / heterozygous / homozygous reference">', variantTable$`Distribution (cases)`, "</div>")
+    # variantTable$`Distribution (control)` <- paste0('<div title = "homozygous alternative / heterozygous / homozygous reference">', variantTable$`Distribution (control)`, "</div>")
     
     # FOR FUNCTIONAL CONSEQUENCE SUMMARY TABLE
     #     aggregate rows are currently taken from: http://annovar.openbioinformatics.org/en/latest/user-guide/gene/
+    variantTable.exonic <- variantTable[variantTable$Region == "exonic"]
     aggregateVariantTable <- data.table(`Functional consequence` = c("All variants",
                                                                      "frameshift insertion",
                                                                      "frameshift deletion",
@@ -201,19 +202,19 @@ observeEvent(input$geneClick, {
                                                                      "synonymous SNV",
                                                                      "nonframeshift (unknown)",
                                                                      "NA/unknown"),
-                                        Count = c(nrow(variantTable),
-                                                  length(which(variantTable$`Functional consequence` == "frameshift insertion")),
-                                                  length(which(variantTable$`Functional consequence` == "frameshift deletion")),
-                                                  length(which(variantTable$`Functional consequence` == "frameshift block substitution")),
-                                                  length(which(variantTable$`Functional consequence` == "stopgain")),
-                                                  length(which(variantTable$`Functional consequence` == "stoploss")),
-                                                  length(which(variantTable$`Functional consequence` == "nonframeshift insertion")),
-                                                  length(which(variantTable$`Functional consequence` == "nonframeshift deletion")),
-                                                  length(which(variantTable$`Functional consequence` == "nonframeshift block substitution")),
-                                                  length(which(variantTable$`Functional consequence` == "nonsynonymous SNV")),
-                                                  length(which(variantTable$`Functional consequence` == "synonymous SNV")),
-                                                  length(which(variantTable$`Functional consequence` == "nonframeshift")),
-                                                  length(which(variantTable$`Functional consequence` == "unknown")) + length(which(variantTable$`Functional consequence` == "."))
+                                        Count = c(nrow(variantTable.exonic),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "frameshift insertion")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "frameshift deletion")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "frameshift block substitution")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "stopgain")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "stoploss")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "nonframeshift insertion")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "nonframeshift deletion")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "nonframeshift block substitution")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "nonsynonymous SNV")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "synonymous SNV")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "nonframeshift")),
+                                                  length(which(variantTable.exonic$`Functional consequence` == "unknown")) + length(which(variantTable.exonic$`Functional consequence` == "."))
                                         )
                                         )
     totalvariants <- aggregateVariantTable$Count[aggregateVariantTable$`Functional consequence` == "All variants"]
@@ -587,7 +588,7 @@ observeEvent(input$geneClick, {
         marker = list(colors = sunburst.elements[[4]])
       ) %>% 
         layout(
-          title = "Variant Distribution by Functional Consequence",
+          title = "Exonic Variant Distribution by Functional Consequence",
           font = list(color=tablecolor()),
           plot_bgcolor=tablebgcolor(),
           paper_bgcolor=tablebgcolor())
@@ -711,7 +712,7 @@ observeEvent(input$geneClick, {
     
     output$geneWaffleTable <- renderUI(tagList(
       div(
-        h3("Number of all variants:", totalvariants),
+        h3("Number of all exonic variants:", totalvariants),
         column(
           width = 4,
           renderDT({
@@ -799,7 +800,7 @@ observeEvent(input$geneClick, {
       fluidRow(
         div(
           renderDT({
-            dat <- variantTable[, c(1,2,5,8,10,12,14,15)]#c(1:8,11,17)]
+            dat <- variantTable[, c(1,5:8,10,12,14,15)]#c(1:8,11,17)]
             # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
             datatable(
               dat,
@@ -829,7 +830,7 @@ observeEvent(input$geneClick, {
               rownames= FALSE,
               escape = FALSE
             ) %>% formatStyle(
-              columns=colnames(variantTable[, c(1,2,5,8,10,12,14,15)]),#variantTable[, c(1:8,11,17)]),
+              columns=colnames(variantTable[, c(1,5:8,10,12,14,15)]),#variantTable[, c(1:8,11,17)]),
               backgroundColor = tablebgcolor(),
               color = tablecolor()
             )

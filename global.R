@@ -18,6 +18,8 @@ library(shinyanimate)
 library(plotly)
 library(ggplot2)
 library(stringr)
+library(tidyverse)
+library(vroom)
 # library(httr) # add if uniprot domains added
 # library(drawProteins) # add if uniprot domains added
 # library(pander)

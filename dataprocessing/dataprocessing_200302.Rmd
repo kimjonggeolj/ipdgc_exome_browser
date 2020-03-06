@@ -324,13 +324,20 @@ varList.rsID.raw$rsFirst <- gsub("^(\\w{1,4}).*", "\\1", varList.rsID.raw$rsID)
 
 # colnames(prevarList.rsID) <- c("id", "chr", "37bp1", "37bp2", "geneID", "rsID", "rsFirst")
 ```
+
+```{r}
+varList.rsID.raw <- varList.rsID.raw[varList.rsID.raw$rsID != "."]
+```
+
+
+
 ```{r}
 varList.rsID.raw$id <- paste0('<a id="', varList.rsID.raw$id, '" href="javascript:;"onclick="resClick(this.id)">', varList.rsID.raw$id, '</a>')
 ```
 
 ```{r}
 varList.rsID.nested <- split(varList.rsID.raw, varList.rsID.raw$rsFirst)
-varList.rsID.nested[1] <- NULL
+#varList.rsID.nested[1] <- NULL
 for (i in 1:length(varList.rsID.nested)) {
   varList.rsID.nested[[i]]$rsFirst <- NULL
 }
@@ -469,6 +476,50 @@ for (i in 1:22) {
   dat$ExonicFunc.refGene <- gsub("_", " ", dat$ExonicFunc.refGene)
   dat$AAChange.refGene <- gsub("^\\w+:(.+)$", "\\1", dat$AAChange.refGene)
   fwrite(dat, paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/newreftables-200302/varTab/chr", i, ".tsv"), sep = "\t")
+}
+```
+
+# Try removing "." and replacing it with `NA`
+
+```{r}
+library(naniar)
+for (i in 1:length(varList.nested)) {
+  varList.nested[[i]] <- varList.nested[[i]] %>% replace_with_na(replace = list(rsID = "."))
+}
+
+save(varList.nested, file = "newreftables-200302/varList+NA.RData")
+
+```
+
+_slightly_ smaller...
+
+# Vroom?
+
+## rsID
+
+```{r}
+for (i in names(varList.rsID.nested)) {
+  varList.rsID.nested[[i]]$id <- gsub("^<a id=\"(\\d+:\\d+:[^\"]*).*$", "\\1", varList.rsID.nested[[i]]$id)
+  fwrite(varList.rsID.nested[[i]], paste0("newreftables-200302/rsID/", i, ".tsv"), sep = "\t")
+}
+```
+
+```{r}
+library(vroom)
+library(tidyverse)
+```
+
+
+```{r}
+test <- vroom("newreftables-200302/rsID/rs76.tsv")
+```
+
+## varList
+
+```{r}
+for (i in names(varList.nested)) {
+  #varList.rsID.nested[[i]]$id <- gsub("^<a id=\"(\\d+:\\d+:[^\"]*).*$", "\\1", varList.rsID.nested[[i]]$id)
+  fwrite(varList.nested[[i]], paste0("newreftables-200302/varList/", i, ".tsv"), sep = "\t")
 }
 ```
 
