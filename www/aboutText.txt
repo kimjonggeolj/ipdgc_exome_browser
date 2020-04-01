@@ -1,0 +1,3 @@
+IPDGC Exome Browser is a database of exome variants related to neurodegenerative diseases that can be used by researchers all over the world. As of April 2020, the browser contains over 6 million variants from summary-level UKBiobank data and various IPDGC whole genome sequencing, exome sequencing, and imputed array data.
+
+Data was cleaned and merged using Python and PLINK 1.9/2.0 alpha. Detailed pipeline can be found here: [link to github with jupyter notebook].

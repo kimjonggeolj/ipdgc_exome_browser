@@ -276,8 +276,10 @@ observeEvent(input$geneClick, {
         ) +
         theme(
           axis.title.y = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
+          axis.text.y = element_text(color = tablecolor()
+          ),
+          #axis.text.y = element_blank(),
+          #axis.ticks.y = element_blank(),
           axis.text.x = element_text(face="bold",
                                      # size=14,
                                      angle=45,
@@ -297,7 +299,11 @@ observeEvent(input$geneClick, {
           #legend.position = c(1.2, 0.2),
           legend.background = element_rect(fill = tablebgcolor()),
           legend.title = element_blank(),# element_text(color = tablecolor()),
-          legend.text = element_text(color = tablecolor()))
+          legend.text = element_text(color = tablecolor())) +
+        scale_y_continuous(
+          breaks = c(0, 1, 2, 3, 4),
+          labels = c("Synonymous/\nUnknown/\nNA", "Nonsynonymous", "Nonframeshift", "Frameshift", "Stopgain/loss")
+        )
       event_register(p, 'plotly_click')
       ggplotly(p, tooltip = c("Position", "Functional Consequence"), height = 400, width = NULL
       )
@@ -799,13 +805,20 @@ observeEvent(input$geneClick, {
     output$geneVartable <- renderUI(tagList(
       fluidRow(
         div(
+          # downloadButton(
+          #   "globalVarTable_DL",
+          #   label = "Download Table (TSV)"
+          # ),
           renderDT({
             dat <- variantTable[, c(1,5:8,10,12,14,15)]#c(1:8,11,17)]
             # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
             datatable(
               dat,
+              extensions = 'Buttons',
               # plugins = "ellipsis",
               options = list(
+                dom = 'Bfrtip',
+                buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                 paging = F,
                 scrollX = T,
                 # scrollY = "500px",

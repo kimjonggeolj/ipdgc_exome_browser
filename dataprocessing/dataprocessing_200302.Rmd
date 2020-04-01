@@ -91,10 +91,10 @@ gene.Names.Anno2 <- gene.Names.Anno2[order(hgnc_symbol, bpdif), ]
 genes.to.remove <- gene.Names.Anno2[duplicated(gene.Names.Anno2$hgnc_symbol)]
 
 gene.Names.Anno2.Filtered <- as.data.table(anti_join(gene.Names.Anno2, genes.to.remove, by = "hgnc_symbol"))[, -c("bpdif")]
+```
 
-# fixing a chromosome position
-gene.Names.Anno2.Filtered[13, 2] <- 6
 
+```{r}
 colnames(gene.Names.Anno2.Filtered) <- colnames(gene.Names.Anno.Filtered)
 
 unavailable2 <- anti_join(unavailable, gene.Names.Anno2.Filtered[, "geneName"])
@@ -119,6 +119,7 @@ unavailable2 <- anti_join(unavailable, gene.Names.Anno2.Filtered[, "geneName"])
 # 
 # gene.Names.Anno.numChr <- gene.Names.Anno[grepl("\\d+", hgnc_symbol)]
 ```
+
 
 ### refGene file from UCSC
 
@@ -199,6 +200,71 @@ save(geneList, file = "newreftables-200302/geneList.RData")
 fwrite(unavailable3, "newreftables-200302/unavailable_genes.tsv", sep = "\t", quote = F)
 ```
 
+## Check mart with hg38
+
+```{r}
+# 
+human38 <- useMart("ENSEMBL_MART_ENSEMBL", host = "ensembl.org", dataset = "hsapiens_gene_ensembl")
+# 
+gene.Names.Anno4 <- as.data.table(getBM(attributes = c('hgnc_symbol', 'chromosome_name', 'start_position', 'end_position'), 
+                         filters = 'hgnc_symbol',
+                         values = unavailable3,
+                         mart = human38)
+)
+```
+
+
+```{r}
+gene.Names.Anno4$bpdif <- gene.Names.Anno4$end_position - gene.Names.Anno4$start_position
+gene.Names.Anno4 <- gene.Names.Anno4[order(hgnc_symbol, bpdif), ]
+genes.to.remove <- gene.Names.Anno4[duplicated(gene.Names.Anno4$hgnc_symbol)]
+
+gene.Names.Anno4.Filtered <- as.data.table(anti_join(gene.Names.Anno4, genes.to.remove, by = "hgnc_symbol"))[, -c("bpdif")]
+
+colnames(gene.Names.Anno4.Filtered) <- colnames(gene.Names.Anno.Filtered)
+
+unavailable4 <- anti_join(unavailable3, gene.Names.Anno4.Filtered[, "geneName"])
+```
+
+Narrows unavailable to 24. Much more doable.
+
+### convert `gene.Names.Anno4.Filtered` to hg19
+```{r}
+library(liftOver)
+```
+
+#### import chain for liftOver
+
+```{r}
+library(rtracklayer)
+path = system.file(package="liftOver", "extdata", "hg38ToHg19.over.chain")
+ch = import.chain(path)
+
+# seqlevelsStyle(cur) = "UCSC"  # necessary
+# cur19 = liftOver(cur, ch)
+# class(cur19)
+```
+
+#### convert data table to grange (necessary for liftOver)
+
+```{r}
+library(GenomicRanges)
+grange.anno4.hg38 <- gene.Names.Anno4.Filtered %>% makeGRangesFromDataFrame(
+  ignore.strand = T,
+  keep.extra.columns = T,
+  seqnames.field = "chrom",
+  start.field = "txStart",
+  end.field = "txEnd"
+)
+```
+
+
+```{r}
+gene.Names.Anno4.Filtered.hg19 <- liftOver(grange.anno4.hg38, ch)
+```
+
+
+
 # varList processing
 ```{r}
 library(data.table)
@@ -241,7 +307,7 @@ save(varList.nested, file = "newreftables-200302/varList.RData")
 ```{r}
 library(data.table)
 library(tidyverse)
-varInfo <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", i, ".tsv"), drop = c('non_topmed_AF_popmax',	'non_neuro_AF_popmax',	'non_cancer_AF_popmax'), nrows = 1)
+varInfo <- fread(paste0("/Users/kimjoj/Documents/shiny_apps/variant_browser/dataprocessing/exomedata-200302/chr", 1, ".tsv"), drop = c('non_topmed_AF_popmax',	'non_neuro_AF_popmax',	'non_cancer_AF_popmax'), nrows = 1)
 varInfo <- varInfo[0]
 
 for (i in 1:22) {
@@ -520,6 +586,54 @@ test <- vroom("newreftables-200302/rsID/rs76.tsv")
 for (i in names(varList.nested)) {
   #varList.rsID.nested[[i]]$id <- gsub("^<a id=\"(\\d+:\\d+:[^\"]*).*$", "\\1", varList.rsID.nested[[i]]$id)
   fwrite(varList.nested[[i]], paste0("newreftables-200302/varList/", i, ".tsv"), sep = "\t")
+}
+```
+
+# Remove all MAF == 0
+
+```{r}
+nrow(varInfo)
+varInfo.zero <- varInfo[varInfo$af_alt_cases == 0 & varInfo$af_alt_controls == 0]
+varInfo.zero <- varInfo.zero[varInfo.zero$af_alt_proxy == 0 | is.na(varInfo.zero$af_alt_proxy)]
+```
+
+```{r}
+varInfo.nozero <- anti_join(varInfo, varInfo.zero[,"SNP"], by = "SNP")
+```
+
+```{r}
+varInfo.nozero.snp <- as.data.table(varInfo.nozero$SNP)
+colnames(varInfo.nozero.snp) <- "HG19_ID"
+```
+
+```{r}
+dir.create('newreftables-maf00removed/')
+dir.create("newreftables-maf00removed/vartab/")
+for (i in 1:22) {
+  dat <- fread(paste0("newreftables-200302/varTab/chr", i, ".tsv"))
+  final <- merge(varInfo.nozero.snp, dat, by = "HG19_ID")
+  fwrite(final, paste0("newreftables-maf00removed/vartab/chr", i, ".tsv" ))
+}
+
+```
+
+```{r}
+dir.create("newreftables-maf00removed/rsID/")
+rsID.file.list <- list.files("newreftables-200302/rsID/")
+colnames(varInfo.nozero.snp) <- "id"
+for (i in rsID.file.list) {
+  dat <- fread(paste0("newreftables-200302/rsID/", i))
+  final <- merge(varInfo.nozero.snp, dat, by = "id")
+  fwrite(final, paste0("newreftables-maf00removed/rsID/", i))
+}
+```
+
+```{r}
+dir.create("newreftables-maf00removed/varList/")
+for (i in 1:22) {
+  dat <- fread(paste0("newreftables-200302/varList/", i, ".tsv"))
+  final <- merge(varInfo.nozero.snp, dat, by = "id")
+  fwrite(final, paste0("newreftables-maf00removed/varList/", i, ".tsv"))
 }
 ```
 

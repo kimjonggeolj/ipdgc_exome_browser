@@ -123,3 +123,15 @@ hr {
    padding-bottom: 25px;
    width:100%;
 }
+
+/*DT buttons*/
+button.dt-button.buttons-html5 {
+   background-color: #f4f4f4;
+   color: #444;
+   border-color: #ddd;
+}
+button.dt-button.buttons-print {
+   background-color: #f4f4f4;
+   color: #444;
+   border-color: #ddd;
+}

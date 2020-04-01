@@ -11,6 +11,8 @@ observeEvent(input$darktheme, {
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb_dark.png", class = "mainlogo")))
     output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small_dark.png", id = "wrapperlogo")))
     
+    output$modallogo <- renderUI(tagList(a(img(src = "ipdgcDark.png", style = "height:100px;"), href = "https://pdgenetics.org/", target = "_blank")))
+    
   # === Light mode ===
     
   } else {
@@ -21,7 +23,8 @@ observeEvent(input$darktheme, {
     })
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))
     output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small.png", id = "wrapperlogo")))
-
+    
+    output$modallogo <- renderUI(tagList(a(img(src = "ipdgc.png", style = "height:100px;"), href = "https://pdgenetics.org/", target = "_blank")))
   }
 })
 #=============================

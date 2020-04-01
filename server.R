@@ -64,7 +64,12 @@ shinyServer(function(input, output, session) {
   #                  boxWidth <<- 12
   #                }
   #              })
-  
+  # output$globalVarTable_DL <- downloadHandler(
+  #   filename = "varTable.tsv",
+  #   content = function(file) {
+  #     fwrite(variantTable.global, file, sep = "\t")
+  #   }
+  # )
   observeEvent(
     event_data("plotly_click"),
     {

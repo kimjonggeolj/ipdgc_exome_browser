@@ -17,5 +17,5 @@ www/ipdgc_eb.png
 www/ipdgc_eb_small.png
 www/ipdgc_eb_small_dark.png
 www/ipdgc.png
-www/nia-logo.png
+www/ipdgcDark.png
 www/jquery-ui.min-draggable+position.js
