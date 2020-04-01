@@ -40,11 +40,16 @@
 }
 
  #wrapperlogo {
-   display:inline-block;
+   /*display:inline-block;
    padding-top:3px;
   height:63px;
-  width:162px;
-  margin:4px 5px 10px 0px;
+  width:162px;*/
+  width:200px;
+  /*margin:4px 5px 10px 0px;*/
+ }
+
+ .logo {
+   max-height: 50px;
  }
  
  /div#wrapperlogo.shiny-html-output.shiny-bound-output{
@@ -125,13 +130,21 @@ hr {
 }
 
 /*DT buttons*/
-button.dt-button.buttons-html5 {
+button.dt-button.buttons-html5, button.dt-button.buttons-print {
    background-color: #f4f4f4;
    color: #444;
    border-color: #ddd;
 }
-button.dt-button.buttons-print {
-   background-color: #f4f4f4;
-   color: #444;
-   border-color: #ddd;
+
+/*Navbar elements*/
+.main-header .navbar-custom-menu, .main-header .navbar-right {
+   width: 90%;
 }
+.navbar.navbar-static-top {
+  max-height: 50px;
+}
+
+/*.sidebar-toggle {
+   padding-top: 35px;
+   padding-bottom: 32px;
+}*/

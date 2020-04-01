@@ -9,7 +9,7 @@ observeEvent(input$darktheme, {
     })
     
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb_dark.png", class = "mainlogo")))
-    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small_dark.png", id = "wrapperlogo")))
+    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small2_dark.png", id = "wrapperlogo")))
     
     output$modallogo <- renderUI(tagList(a(img(src = "ipdgcDark.png", style = "height:100px;"), href = "https://pdgenetics.org/", target = "_blank")))
     
@@ -22,7 +22,7 @@ observeEvent(input$darktheme, {
                           ))
     })
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))
-    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small.png", id = "wrapperlogo")))
+    output$wrapperlogo <- renderUI(tagList(img(src = "ipdgc_eb_small2.png", id = "wrapperlogo")))
     
     output$modallogo <- renderUI(tagList(a(img(src = "ipdgc.png", style = "height:100px;"), href = "https://pdgenetics.org/", target = "_blank")))
   }

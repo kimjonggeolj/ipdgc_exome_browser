@@ -3,7 +3,7 @@ miniSearchBar <- div(
   div(
     searchInput(
       inputId = "minisearchBar", 
-      label = "Enter your search terms:", 
+      # label = "Enter your search terms:", 
       placeholder = "e.g. LRRK2, chr12, 12:40196744, 12:40000000-50000000, rs1422910994", 
       btnSearch = icon("search"), 
       btnReset = icon("remove"), 
@@ -54,50 +54,50 @@ tagList(
   ),
   hidden(
 # fixed option button
-    div(
-      id = "fixedDLButton",
-      dropdown(
-# hg19 vs hg38 switch
-        # prettyToggle(
-        #   status_off = "primary",
-        #   status_on = "danger",
-        #   # icon_on = icon("cog"),
-        #   # icon_off = icon("cog"),
-        #   animation = "pulse",
-        #   inputId = "buildSwitch",
-        #   label_on = "hg38",
-        #   label_off = "hg19",
-        #   inline = T,
-        #   bigger = T
-        # ),
-# dark theme switch
-        prettyToggle(
-          inputId = "darktheme",
-          animation = "pulse",
-          status_off = "primary",
-          status_on = "warning",
-          label_on = "Dark Theme",
-          label_off = "Light Theme",
-          inline = T,
-          bigger = T
-        ),
-# layout switch (stacked vs pyramid)
-        # switchInput(
-        #   inputId = "layout",
-        #   label = "Layout",
-        #   onLabel = icon("boxes"),
-        #   offLabel = icon("stream"),
-        #   size = "default"
-        # ),
-        style = "jelly",
-        # circle = T,
-        status = "primary",
-        icon = icon("cogs"),
-        width = "150px",
-        up = T,
-        right = T
-      )
-    ),
+#     div(
+#       id = "fixedDLButton",
+#       dropdown(
+# # hg19 vs hg38 switch
+#         # prettyToggle(
+#         #   status_off = "primary",
+#         #   status_on = "danger",
+#         #   # icon_on = icon("cog"),
+#         #   # icon_off = icon("cog"),
+#         #   animation = "pulse",
+#         #   inputId = "buildSwitch",
+#         #   label_on = "hg38",
+#         #   label_off = "hg19",
+#         #   inline = T,
+#         #   bigger = T
+#         # ),
+# # dark theme switch
+#         prettyToggle(
+#           inputId = "darktheme",
+#           animation = "pulse",
+#           status_off = "primary",
+#           status_on = "warning",
+#           label_on = "Dark Theme",
+#           label_off = "Light Theme",
+#           inline = T,
+#           bigger = T
+#         ),
+# # layout switch (stacked vs pyramid)
+#         # switchInput(
+#         #   inputId = "layout",
+#         #   label = "Layout",
+#         #   onLabel = icon("boxes"),
+#         #   offLabel = icon("stream"),
+#         #   size = "default"
+#         # ),
+#         style = "jelly",
+#         # circle = T,
+#         status = "primary",
+#         icon = icon("cogs"),
+#         width = "150px",
+#         up = T,
+#         right = T
+#       )
+#     ),
 # main UI
     div(
       id = "uiPage",
@@ -113,16 +113,16 @@ tagList(
               ),
               column(
                 width = 4,
-                h3(
+                h4(
                   ifelse(isDemo, "DEMO - LRRK2 ONLY", "ALPHA VERSION")
                   )
               ),
               column(
                 width = 1,
                 style = "text-align:right",
-                div(
-                  div(HTML("&nbsp;"),
-                      style = "font-size:14px;"),
+                h4(
+                  # div(HTML("&nbsp;"),
+                  #     style = "font-size:14px;"),
                   actionLink(
                     "about",
                     HTML("About&nbsp;&nbsp;")#,
@@ -135,7 +135,17 @@ tagList(
           )
         ),
         sidebar = dashboardSidebar(
-          disable = T
+          prettyToggle(
+            inputId = "darktheme",
+            animation = "pulse",
+            status_off = "primary",
+            status_on = "warning",
+            label_on = "Dark Theme",
+            label_off = "Light Theme",
+            inline = T,
+            bigger = T
+          ),
+          collapsed = T
         ),
         body = dashboardBody(
           hidden(

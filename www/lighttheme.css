@@ -11,16 +11,23 @@
 }
 
 /* Shiny-Dashboard Overrides*/
-.skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
+.skin-black .left-side, .skin-black .wrapper {
   background-color:#ecf0f5;
 }
 
-.skin-black .main-header .logo {
-    background-color: #fff;
+.skin-black .main-header .navbar .sidebar-toggle:hover {
+  background: #fff;
+  color: #999;
 }
 
-.skin-black .main-header .navbar {
+.skin-black .main-header .navbar>.sidebar-toggle {
+  color: #333;
+  border-right: 1px solid #eee;
+}
+
+.skin-black .main-header .logo, .skin-black .main-sidebar, .skin-black .main-header .navbar {
     background-color: #fff;
+    border-right: 1px solid #eee;
 }
 
 .box {
@@ -44,7 +51,8 @@ a {
   color:#333;
 }
 .wrapper .main-header .logo {
-  height: 87.5px;
+  /*height: 87.5px;*/
+  height:100%;
   background-color:#fff
 }
 
