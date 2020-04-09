@@ -25,12 +25,16 @@
   border-right: 1px solid #666;
 }
 
-.skin-black .main-header>.logo, .skin-black .main-sidebar, .skin-black .main-header .navbar, .box  {
+.skin-black .main-header>.logo, .skin-black .main-sidebar, .skin-black .main-header .navbar {
     background-color: rgba(56, 56, 56);
     border-right: 1px solid #666;
 }
+.skin-black .main-header>.logo {
+    border-bottom: 1px solid #666;
+}
 
 .box {
+    background-color: rgba(56, 56, 56);
     color: white;
 }
 

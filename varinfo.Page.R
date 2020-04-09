@@ -339,7 +339,7 @@ varPageFunc <- function(var = var) {
     )
   )
   )
-  show(id = "draggable-top")
+  show(id = "draggable-top-var")
   runjs(
     '
   $(".draggable").position({
@@ -361,8 +361,8 @@ observeEvent(input$varShareButton,
                toggle(id = "varSharePanel")
              })
 
-observeEvent(input$hide.draggable.top, {
-  hide(id = "draggable-top")
+observeEvent(input$hide.draggable.top.var, {
+  hide(id = "draggable-top-var")
 })
 
 observeEvent(input$varClick, {

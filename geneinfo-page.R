@@ -864,6 +864,13 @@ observeEvent(input$geneClick, {
     #             type = "slideInDown")
     #   geneBoxHidden <<- F
     # }
+    
+    # ========== Tutorial =============
+    # Tutorial
+    tutorial <<- "gene"
+    if (input$tutorial.mode == T) {
+      output$tutorial <- tutorial.gene
+    }
     }
 })
 

@@ -99,6 +99,7 @@ tagList(
 #       )
 #     ),
 # main UI
+    div("Tutorial Mode", id = "tutorial_bar"),
     div(
       id = "uiPage",
       dashboardPagePlus(
@@ -114,7 +115,7 @@ tagList(
               column(
                 width = 4,
                 h4(
-                  ifelse(isDemo, "DEMO - LRRK2 ONLY", "ALPHA VERSION")
+                  ifelse(isDemo, "DEMO - LRRK2 ONLY", "BETA VERSION")
                   )
               ),
               column(
@@ -137,11 +138,29 @@ tagList(
         sidebar = dashboardSidebar(
           prettyToggle(
             inputId = "darktheme",
+            icon_on = icon("sun"),
+            icon_off = icon("moon"),
             animation = "pulse",
             status_off = "primary",
             status_on = "warning",
-            label_on = "Dark Theme",
-            label_off = "Light Theme",
+            label_on = "Set to Light Theme",
+            label_off = "Set to Dark Theme",
+            outline = TRUE,
+            plain = TRUE,
+            inline = T,
+            bigger = T
+          ),
+          prettyToggle(
+            inputId = "tutorial.mode",
+            icon_on = icon("question"),
+            icon_off = icon("question"),
+            animation = "pulse",
+            status_off = "primary",
+            status_on = "success",
+            label_on = "Turn off tutorial",
+            label_off = "Turn on tutorial",
+            outline = TRUE,
+            plain = TRUE,
             inline = T,
             bigger = T
           ),
@@ -163,7 +182,33 @@ tagList(
               id = 'searchResults'
             )
           ),
-
+          hidden(
+            absolutePanel(
+              boxPlus(
+                title = "Hold me to move me around!",
+                # title = actionLink( #actionBttn(
+                #   "hide.draggable.top.tutorial",
+                #   label = "",
+                #   icon = icon('times'),
+                #   class = "btn btn-box-tool"#,
+                #   #style = 'simple',
+                #   #color = 'default',
+                #   #size = 'sm'
+                # ),#"Variant",
+                uiOutput("tutorial"),
+                width = 12,
+                closable = F,
+                status = "success",
+                solidHeader = T
+              ),
+              class = "draggable",
+              # draggable = T,
+              # fixed = T,
+              width = '30%',
+              id = "draggable-top-tutorial",
+              class = "draggable-tutorial"
+            )
+          ),
           div(
             hidden(
               div(id = "geneBoxes",
@@ -221,7 +266,7 @@ tagList(
             absolutePanel(
               boxPlus(
                 title = actionLink( #actionBttn(
-                  "hide.draggable.top",
+                  "hide.draggable.top.var",
                   label = "",
                   icon = icon('times'),
                   class = "btn btn-box-tool"#,
@@ -239,13 +284,13 @@ tagList(
               # draggable = T,
               # fixed = T,
               width = '65%',
-              id = "draggable-top"
+              id = "draggable-top-var"
             )
           )
         ),
         
         title = "IPDGC Exome Browser",
-        sidebar_fullCollapse = T,
+        sidebar_fullCollapse = F,
         skin = "black"
       )
     )

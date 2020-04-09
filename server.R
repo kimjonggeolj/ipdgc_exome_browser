@@ -42,6 +42,9 @@ shinyServer(function(input, output, session) {
   #====Dark theme/light theme events and reactives
   source("darktheme.R", local = T)
   
+  #====Tutorial mode
+  source('tutorial.R', local = T)
+  
   #====search results
   source("result-page.R", local = T)
   

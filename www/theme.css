@@ -6,7 +6,10 @@
 
 /* Draggable variant box*/
 #draggable-top {
-   z-index:1500;
+   z-index:1400;
+}
+#draggable-top-tutorial {
+   z-index:1401;
 }
 
 /*Variant name overflow*/
@@ -21,6 +24,12 @@
 #varSharePanel {
    z-index:1501;
 }
+
+/* Reducing Padding for double columns */
+#geneBoxes>.col-sm-7>.col-sm-12 {
+   padding-left:0px;
+}
+
 /* Rest */
 #fixedDLButton{
   right:25px;
@@ -43,9 +52,14 @@
    /*display:inline-block;
    padding-top:3px;
   height:63px;
-  width:162px;*/
-  width:200px;
+  width:162px;
+  width:200px;*/
+  width:100%;
   /*margin:4px 5px 10px 0px;*/
+ }
+ 
+ #minilogo {
+    width:80%;
  }
 
  .logo {
@@ -144,7 +158,26 @@ button.dt-button.buttons-html5, button.dt-button.buttons-print {
   max-height: 50px;
 }
 
+#tutorial_bar {
+   width:100%;
+   height:10%;
+   text-align:center;
+   background-color:green;
+   color:#fff;
+}
+
 /*.sidebar-toggle {
    padding-top: 35px;
    padding-bottom: 32px;
 }*/
+
+/* Sidebar collapse*/
+
+.sidebar-mini.sidebar-collapse .main-header .logo #wrapperlogo>.logo-expanded, .sidebar-mini.sidebar-collapse .main-sidebar .state label span {
+  display: none;
+}
+
+.sidebar-mini .main-sidebar .state label span {
+   overflow:hidden;
+   white-space:nowrap;
+}

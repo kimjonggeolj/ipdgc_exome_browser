@@ -43,7 +43,14 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
     chrom <- gsub("^(\\d+):.*$", "\\1", searchString, ignore.case = T)
     dat.nested[[1]] <- geneList[grepl(chrom, geneList$chr)]
     # vroom/tibble method
-    dat.nested[[2]] <- vroom(paste0("data/searchLists/varList/", chrom, ".tsv"))
+    if (type == "chr") {
+      #=== note the following line was added here to fix a bug. When the function took in type as `chr`,
+      #    it would set variable `chrom` as the whole search string. This would crash the app since the
+      #    vroom function would not be able to find the `chrom`.tsv.
+      dat.nested[[2]] <- data.table(id = character(), geneID = character(), rsID = character(), chr = character(), `37bp1` = character())
+    } else {
+      dat.nested[[2]] <- vroom(paste0("data/searchLists/varList/", chrom, ".tsv"))
+    }
     # data.table method
     #varList.nested[[chrom]]
   }
@@ -72,7 +79,8 @@ searchFunction <- function (searchGene, searchString = input$searchBar, type) {
            dat.nested[[1]] <- geneList[grepl(gsub("^chr(\\d+)", "\\1", searchString, ignore.case = T), geneList$chr, ignore.case = T)]
            # empty
            # vroom/tibble
-           dat.nested[[2]] <- data.table(id = character(), geneID = character(), rsID = character(), chr = character(), `37bp1` = character())
+           #=== Note: the next line is commented out because it was copied up in `type == "chr" line above (line 50 as of 2020/04/09)`
+           # dat.nested[[2]] <- data.table(id = character(), geneID = character(), rsID = character(), chr = character(), `37bp1` = character())
            # data.table
            # dat.nested[[2]] <- varList.nested[[1]][0]
          },
@@ -198,7 +206,7 @@ runSearchPage <- function() {
   # }
   
   #varRes <- searchFunctionVar(searchString = searchSelect,  type = searchSwitch)
-  colnames(res[[2]]) <- c("Position (Ref/Alt)", "Chromosome", "BP", "Nearest Gene ID", "rsID")
+  colnames(res[[2]]) <- c("Position (Ref/Alt)", "Nearest Gene ID", "rsID", "Chromosome", "BP")
   # for (i in 1:nrow(res[[2]])) {
   #   res[[2]]$`Position (Ref/Alt)`[i] <- paste0('<a id="', res[[2]]$`Position (Ref/Alt)`[i], '" href="#" onclick="varResClick(this.id)">', res[[2]]$`Position (Ref/Alt)`[i], '</a>')
   # }
@@ -294,6 +302,11 @@ observeEvent(
               icon("chevron-up")
           )
         })
+      }
+      # Tutorial
+      tutorial <<- "result"
+      if (input$tutorial.mode == T) {
+        output$tutorial <- tutorial.gene
       }
     }
   )

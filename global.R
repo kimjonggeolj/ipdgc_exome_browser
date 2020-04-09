@@ -34,5 +34,7 @@ isDemo <- F
 
 variantFolder <- ifelse(isDemo, "demodata/varTab/", "data/varTab/")
 
+tutorial <- "search"
+
 #====initial data loading file
 source("datatables.R", local = T)
