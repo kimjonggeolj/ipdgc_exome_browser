@@ -8,6 +8,7 @@ geneinfo-page.R
 result-page.R
 varinfo.Page.R
 url.search.R
+tutorial.R
 data/
 www/theme.css
 www/darktheme.css
