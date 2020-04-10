@@ -306,7 +306,7 @@ observeEvent(
       # Tutorial
       tutorial <<- "result"
       if (input$tutorial.mode == T) {
-        output$tutorial <- tutorial.gene
+        output$tutorial <- tutorial.result
       }
     }
   )
