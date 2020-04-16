@@ -1,2 +1,0 @@
-Alleles (rsIDs),Position,Consequence,CADD,N Alleles,HomAlt,Frequency
-A/C (rsXXXXXXXXXX),YYYYYYYYY,missense,"",ZZZZZZ,0,1%

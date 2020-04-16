@@ -1,3 +1,0 @@
-Variant Type,Count
-SAMPLE,1234
-SAMPLE,1234
