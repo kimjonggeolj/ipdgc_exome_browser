@@ -1,6 +1,6 @@
 "Study"	"Cases"	"Controls"	"All"
 "<strong>PD Genome Project</strong>"	"2,745"	"4,071"	"6,816"
-"<strong><a href = "https://github.com/ipdgc/pdgsc" target = "_blank">PDGSC Exome Project</a></strong>"	"2,110"	"2,978"	"5,088"
+"<strong>IPDGC Exome Sequencing Project (part of <a href = "https://github.com/ipdgc/pdgsc" target = "_blank">PDGSC</a>)</strong>"	"2,110"	"2,978"	"5,088"
 "<strong>IPDGC Resequencing  Project</strong>"	"2,072"	"2,818"	"4,890"
 "<strong>IPDGC array datasets (imputed)</strong>"	"21,412"	"23,894"	"45,306"
 "<strong>UK Biobank</strong>"	"114"	"38,263"	"40,027"

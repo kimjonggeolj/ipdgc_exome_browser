@@ -120,6 +120,16 @@ observeEvent(input$about, {
         )
       )
     ),
+    hr(),
+    h4("License/Permissions/Acknowledgements"),
+    fluidRow(
+      column(
+        width = 12,
+        p(a("This Shiny application is under GNU General Public License 3.", href = "https://github.com/kimjonggeolj/ipdgc_exome_browser/blob/master/LICENSE", target = "_blank")),
+        p("All genetic data available are aggregate summary-level data and free to use for research purposes ONLY."),
+        p("We thank our IPDGC collaborators, UK Biobank, and their participants for making their data available for use in the research community.")
+      )
+    ),
     # h4("Debug data"),
     # p("pixelratio",session$clientData$pixelratio),
     # p("wrapperlogowidth", session$clientData$output_wrapperlogo_width),

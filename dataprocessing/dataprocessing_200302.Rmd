@@ -559,7 +559,7 @@ save(varList.nested, file = "newreftables-200302/varList+NA.RData")
 
 _slightly_ smaller...
 
-# Vroom?
+# Testing vroom performance
 
 ## rsID
 
@@ -574,7 +574,6 @@ for (i in names(varList.rsID.nested)) {
 library(vroom)
 library(tidyverse)
 ```
-
 
 ```{r}
 test <- vroom("newreftables-200302/rsID/rs76.tsv")
