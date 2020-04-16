@@ -57,16 +57,39 @@ observeEvent(input$about, {
     # )
     #   ),
       column(
-        width = 12,
+        width = 4,
         span("Cornelis Blauwendraat", style = "font-weight:bold; font-size:110%; margin-top:12px"),
-        div(a(href="mailto:cornelis.blauwendraat@nih.gov", "cornelis.blauwendraat@nih.gov")),
-        div("Molecular Genetics Section"),
-        div("Laboratory of Neurogenetics"),
-        div("National Institute on Aging"),
-        div("National Institutes of Health"),
-        div("Bethesda, Maryland 20892"),
-        div("United States")
-      )
+        div("cornelis.blauwendraat(@)nih.gov")#,
+        # div("Molecular Genetics Section"),
+        # div("Laboratory of Neurogenetics"),
+        # div("National Institute on Aging"),
+        # div("National Institutes of Health"),
+        # div("Bethesda, Maryland 20892"),
+        # div("United States")
+      ),
+      column(
+        width = 4,
+        span("Andrew Singleton", style = "font-weight:bold; font-size:110%; margin-top:12px"),
+        div("singleta(@)mail.nih.gov")#,
+        # div("Molecular Genetics Section"),
+        # div("Laboratory of Neurogenetics"),
+        # div("National Institute on Aging"),
+        # div("National Institutes of Health"),
+        # div("Bethesda, Maryland 20892"),
+        # div("United States")
+      ),
+      column(
+        width = 4,
+        span("Mike Nalls", style = "font-weight:bold; font-size:110%; margin-top:12px"),
+        div("mike(@)datatecnica.com")#,
+        # div("Statistcal Genetics Section"),
+        # div("Data Tecnica International"),
+        # div("Laboratory of Neurogenetics"),
+        # div("National Institute on Aging"),
+        # div("National Institutes of Health"),
+        # div("Bethesda, Maryland 20892"),
+        # div("United States")
+      ),
     ),
     h4("For feedback/bug reports/questions regarding the app:"),
     fluidRow(
@@ -74,26 +97,26 @@ observeEvent(input$about, {
         width = 6,
         div(#style = "margin-top:12px;",
           span("Jonggeol Jeffrey Kim", style = "font-weight:bold; font-size:110%; margin-top:12px"),
-          div(a(href="mailto:kimjoj@nih.gov", "kimjoj@nih.gov")),
-          div("Molecular Genetics Section"),
-          div("Laboratory of Neurogenetics"),
-          div("National Institute on Aging"),
-          div("National Institutes of Health"),
-          div("Bethesda, Maryland 20892"),
-          div("United States")
+          div("kimjoj(@)nih.gov")#,
+          # div("Molecular Genetics Section"),
+          # div("Laboratory of Neurogenetics"),
+          # div("National Institute on Aging"),
+          # div("National Institutes of Health"),
+          # div("Bethesda, Maryland 20892"),
+          # div("United States")
         )
       ),
       column(
         width = 6,
         div(#style = "margin-top:12px;",
           span("Mary Makarious", style = "font-weight:bold; font-size:110%; margin-top:12px"),
-          div(a(href="mailto:makariousmb@nih.gov", "makariousmb@nih.gov")),
-          div("Statistical Genetics Section"),
-          div("Laboratory of Neurogenetics"),
-          div("National Institute on Aging"),
-          div("National Institutes of Health"),
-          div("Bethesda, Maryland 20892"),
-          div("United States")
+          div("makariousmb(@)nih.gov")#,
+          # div("Statistical Genetics Section"),
+          # div("Laboratory of Neurogenetics"),
+          # div("National Institute on Aging"),
+          # div("National Institutes of Health"),
+          # div("Bethesda, Maryland 20892"),
+          # div("United States")
         )
       )
     ),

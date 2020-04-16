@@ -269,7 +269,7 @@ varPageFunc <- function(var = var) {
     fluidRow(
       column(
         width = 6,
-        h3("IPDGC"),
+        h3("IPDGC + UKB"),
         # h5("Genome"),
         # div(
         #   tableOutput("genome.freq.Table")
@@ -353,6 +353,10 @@ varPageFunc <- function(var = var) {
 
     '
   )
+  tutorial <<- "variant"
+  if (input$tutorial.mode == T) {
+    output$tutorial <- tutorial.variant
+  }
   # print('varPageFunc totally ran!')
 }
 

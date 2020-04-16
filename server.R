@@ -1,7 +1,7 @@
 # Server.R is where most of the heavy lifting happens.
 
 shinyServer(function(input, output, session) {
-  tutorial <<- search
+  tutorial <<- "search"
   # Colorscale for needlePlot + waffle plot
   # colorList <- list()
   # colorList[[1]] <- c("synonymous SNV" = "#beaed4", "nonsynonymous SNV" = "#386cb0", "nonframeshift mutation" = "#7fc97f", "frameshift mutation" = "#fdc086", "stopgain" = "#ffff99", "stoploss" = "#f0027f",  "NA/unknown" = "#e8e6e4")
