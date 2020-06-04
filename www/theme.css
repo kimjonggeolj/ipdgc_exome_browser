@@ -181,3 +181,7 @@ button.dt-button.buttons-html5, button.dt-button.buttons-print {
    overflow:hidden;
    white-space:nowrap;
 }
+
+.description-text {
+   overflow-wrap:anywhere;
+}

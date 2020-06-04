@@ -810,7 +810,8 @@ observeEvent(input$geneClick, {
           #   label = "Download Table (TSV)"
           # ),
           renderDT({
-            dat <- variantTable[, c(1,5:8,10,12,14,15)]#c(1:8,11,17)]
+            dat <- variantTable[, c(1,5:8,10:12,14,15)] #c(1:8,11,17)]
+            dat$`Amino acid change` <- gsub(".*(p\\..*)", "\\1", dat$`Amino acid change`)
             # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
             datatable(
               dat,
@@ -830,7 +831,7 @@ observeEvent(input$geneClick, {
                 columnDefs = list(
                   #list(width = '10px', targets = 0),
                   list(
-                    targets = c(4:7),
+                    targets = c(4:8),
                     render = JS(
                       "function(data, type, row, meta) {",
                       "return type === 'display' && data.length > 19 ?",
@@ -843,7 +844,7 @@ observeEvent(input$geneClick, {
               rownames= FALSE,
               escape = FALSE
             ) %>% formatStyle(
-              columns=colnames(variantTable[, c(1,5:8,10,12,14,15)]),#variantTable[, c(1:8,11,17)]),
+              columns=colnames(variantTable[, c(1,5:8,10:12,14,15)]),#variantTable[, c(1:8,11,17)]),
               backgroundColor = tablebgcolor(),
               color = tablecolor()
             )

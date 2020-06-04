@@ -113,6 +113,7 @@ shinyServer(function(input, output, session) {
   }
 });'
   )
+  # jquery for draggable window
   delay(2000,
         runjs(
     'containmentTop = $(".content-wrapper").position().top;
@@ -128,5 +129,24 @@ shinyServer(function(input, output, session) {
   });'
   )
   )
+  
+  sendSweetAlert(
+    session = session,
+    title = "Terms of Use",
+    text = div("By proceeding, you are agreeing to:",
+               style = "text-align:left",
+               tags$ul(
+                 tags$li("Use the data for", a("health, medical, and biomedical research ONLY", href = "https://osp.od.nih.gov/wp-content/uploads/standard_data_use_limitations.pdf", target = "_blank")),
+                 tags$li("NOT Attempt to identify, disclose, or contact research participants unless required by federal, state, or local laws"),
+                 tags$li("Report any data management incidents including, but not limited to inadvertent data release"),
+                 tags$li("Abide by all relevant laws and regulations regarding genomic data and their use"),
+                 tags$li("Not bulk download data without explicit consent from the IPDGC Exome Browser team")
+               )
+               ),
+    html = T,
+    closeOnClickOutside = F,
+    type = "info"
+  )
+  
 }
 )

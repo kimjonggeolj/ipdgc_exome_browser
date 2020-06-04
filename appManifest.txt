@@ -23,3 +23,4 @@ www/ipdgc.png
 www/ipdgcDark.png
 www/jquery-ui.min-draggable+position.js
 www/aboutTable.tsv
+www/gtag.js

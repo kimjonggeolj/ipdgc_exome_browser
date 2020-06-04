@@ -44,6 +44,10 @@ tagList(
   includeCSS("www/theme.css"),
   tags$script(src = "clickdetect.js"),
   tags$script(src = "boxsize.js"),
+tags$head(
+  tags$script(async=NULL, src="https://www.googletagmanager.com/gtag/js?id=UA-163927872-1"),
+  tags$script(src = 'gtag.js')
+  ),
   # tags$script(src = "draggable.js"),
 # dark theme
   uiOutput("darktheme"),

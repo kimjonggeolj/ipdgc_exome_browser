@@ -10,7 +10,10 @@ observeEvent(input$about, {
   showModal(modalDialog(
     size = "l",
     easyClose = T,
-    h1('IPDGC Exome Browser'),
+    h1('IPDGC Exome Browser',socialButton(
+      url = "https://github.com/kimjonggeolj/ipdgc_exome_browser",
+      type = "github"
+    )),
     p("IPDGC Exome Browser is a database of exome variants related to neurodegenerative diseases that can be used by researchers all over the world. As of April 2020, the browser contains over 6 million variants from summary-level UK Biobank exome data and various IPDGC whole genome sequencing, exome sequencing, and imputed genotyping array data."),
     p(
       "All data is in hg19. All data in hg38 was converted to hg19 using ",
@@ -19,7 +22,7 @@ observeEvent(input$about, {
       a("PLINK 1.9/2.0 alpha", href = "https://www.cog-genomics.org/plink/", target = "_blank"),
       ". Variants were annotated with ",
       a("ANNOVAR", href = "http://annovar.openbioinformatics.org/", target = "_blank"),
-      ". Detailed pipeline can be found in the manuscript or here: [link to github with jupyter notebook]."),
+      ". Detailed pipeline can be found in the manuscript or here: [coming soon]."),
     #aboutText,
     hr(),
     h4("Current database statistics"),

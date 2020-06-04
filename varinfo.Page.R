@@ -205,8 +205,8 @@ varPageFunc <- function(var = var) {
       column(
         width = 4,
         descriptionBlock(
-          header = "AMINO ACID CHANGE",
-          text = gsub(".*p\\.(.*)", "\\1", var$`Amino acid change`),
+          header = "EXON + AMINO ACID CHANGE",
+          text = var$`Amino acid change`,#str_wrap(var$`Amino acid change`, width = 20),#gsub(".*p\\.(.*)", "\\1", var$`Amino acid change`),
           right_border = T,
           margin_bottom = F
         )
