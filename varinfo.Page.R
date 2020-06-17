@@ -17,7 +17,7 @@ createVarFunc <- function(searchString = searchString) {
 }
 
 varPageFunc <- function(var = var) {
-  print(head(var))
+  #print(head(var))
   colnames(var) <- c("Exome name (hg19)",
                      "Distribution (cases)",
                      "Distribution (control)",
@@ -55,7 +55,7 @@ varPageFunc <- function(var = var) {
   
   
   
-  output$exome.freq.Table <- renderTable(
+  output$overall.freq.Table <- renderTable(
     {
       table.case <- dcast(melt(var[,c(1,2,5)], id.vars = "Exome name (hg19)"), variable ~ `Exome name (hg19)`)
       colnames(table.case) <- c("Population", "Case")
@@ -74,6 +74,82 @@ varPageFunc <- function(var = var) {
     digits = -2
   )
   
+  varMini <- var[,"Exome name (hg19)"]
+  
+  cohort_dist <- paste0("data/cohort_specific/chr", gsub("^(\\d+):.*$", "\\1", varMini[1,1]), ".tsv.gz") %>% vroom()
+  print(varMini)
+  print(head(cohort_dist))
+  cohort_dist <- as.data.table(filter(cohort_dist, grepl(varMini[1,1], `SNP`) ))
+  print(cohort_dist)
+  output$genome.freq.Table <- renderTable(
+    {
+      table.freq <- cohort_dist[1,c(1,4,5)]
+      table.count <- cohort_dist[1,c(1:3)]
+      colnames(table.freq) <- c('', 'Case', 'Control')
+      colnames(table.count) <- c('', 'Case', 'Control')
+      table <- rbind(table.freq, table.count)
+      table[1,1] <- 'A1-frequency'
+      table[2,1] <- 'Distribution'
+      colnames(table)[1] <- ""
+      table
+    }
+  )
+  
+  output$exome.freq.Table <- renderTable(
+    {
+      table.freq <- cohort_dist[,c(1,8,9)]
+      table.count <- cohort_dist[,c(1,6,7)]
+      colnames(table.freq) <- c('', 'Case', 'Control')
+      colnames(table.count) <- c('', 'Case', 'Control')
+      table <- rbind(table.freq, table.count)
+      table[1,1] <- 'A1-frequency'
+      table[2,1] <- 'Distribution'
+      colnames(table)[1] <- ""
+      table
+    }
+  )
+  
+  output$reseq.freq.Table <- renderTable(
+    {
+      table.freq <- cohort_dist[,c(1,12,13)]
+      table.count <- cohort_dist[,c(1,10,11)]
+      colnames(table.freq) <- c('', 'Case', 'Control')
+      colnames(table.count) <- c('', 'Case', 'Control')
+      table <- rbind(table.freq, table.count)
+      table[1,1] <- 'A1-frequency'
+      table[2,1] <- 'Distribution'
+      colnames(table)[1] <- ""
+      table
+    }
+  )
+  
+  output$imputed.freq.Table <- renderTable(
+    {
+      table.freq <- cohort_dist[,c(1,16,17)]
+      table.count <- cohort_dist[,c(1,14,15)]
+      colnames(table.freq) <- c('', 'Case', 'Control')
+      colnames(table.count) <- c('', 'Case', 'Control')
+      table <- rbind(table.freq, table.count)
+      table[1,1] <- 'A1-frequency'
+      table[2,1] <- 'Distribution'
+      colnames(table)[1] <- ""
+      table
+    }
+  )
+  
+  output$UKB.freq.Table <- renderTable(
+    {
+      table.freq <- cohort_dist[,c(1,21:23)]
+      table.count <- cohort_dist[,c(1,18:20)]
+      colnames(table.freq) <- c('', 'Case', 'Control', 'Proxy')
+      colnames(table.count) <- c('', 'Case', 'Control', 'Proxy')
+      table <- rbind(table.freq, table.count)
+      table[1,1] <- 'A1-frequency'
+      table[2,1] <- 'Distribution'
+      colnames(table)[1] <- ""
+      table
+    }
+  )
   # output$reseq.freq.Table <- renderTable(
   #   var[,c(21:26)],
   #   digits = -2
@@ -274,9 +350,29 @@ varPageFunc <- function(var = var) {
         # div(
         #   tableOutput("genome.freq.Table")
         # ),
-        h4("Exome"),
+        h4("Overall"),
+        div(
+          tableOutput("overall.freq.Table")
+        ),
+        h4("PD Genome"),
+        div(
+          tableOutput("genome.freq.Table")
+        ),
+        h4("PDGSC"),
         div(
           tableOutput("exome.freq.Table")
+        ),
+        h4("Resequencing project"),
+        div(
+          tableOutput("reseq.freq.Table")
+        ),
+        h4("Imputed array"),
+        div(
+          tableOutput("imputed.freq.Table")
+        ),
+        h4("UKB"),
+        div(
+          tableOutput("UKB.freq.Table")
         ),
       ),
       column(
