@@ -14,9 +14,9 @@ www/theme.css
 www/darktheme.css
 www/lighttheme.css
 www/clickdetect.js
-www/ipdgc_eb.png
-www/ipdgc_eb_small2.png
-www/ipdgc_eb_small2_dark.png
+www/ipdgc_vb.png
+www/ipdgc_vb_small2.png
+www/ipdgc_vb_small2_dark.png
 www/ipdgc_eb_mini.png
 www/ipdgc_eb_mini_dark.png
 www/ipdgc.png

@@ -11,7 +11,7 @@ observeEvent(input$darktheme, {
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb_dark.png", class = "mainlogo")))
     output$wrapperlogo <- renderUI(
       tagList(
-        img(src = "ipdgc_eb_small2_dark.png", id = "wrapperlogo", class = "logo-expanded"),
+        img(src = "ipdgc_vb_small2_dark.png", id = "wrapperlogo", class = "logo-expanded"),
         img(src = "ipdgc_eb_mini_dark.png", id = "minilogo")
         )
       )
@@ -29,7 +29,7 @@ observeEvent(input$darktheme, {
     #output$mainlogo <- renderUI(tagList(img(src = "ipdgc_gb.png", class = "mainlogo")))
     output$wrapperlogo <- renderUI(
       tagList(
-        img(src = "ipdgc_eb_small2.png", id = "wrapperlogo", class = "logo-expanded"),
+        img(src = "ipdgc_vb_small2.png", id = "wrapperlogo", class = "logo-expanded"),
         img(src = "ipdgc_eb_mini.png", id = "minilogo")
         )
       )

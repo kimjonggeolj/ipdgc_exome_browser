@@ -133,16 +133,35 @@ shinyServer(function(input, output, session) {
   sendSweetAlert(
     session = session,
     title = "Terms of Use",
-    text = div("By proceeding, you are agreeing to:",
-               style = "text-align:left",
-               tags$ul(
-                 tags$li("Use the data for", a("health, medical, and biomedical research ONLY", href = "https://osp.od.nih.gov/wp-content/uploads/standard_data_use_limitations.pdf", target = "_blank")),
-                 tags$li("NOT Attempt to identify, disclose, or contact research participants unless required by federal, state, or local laws"),
-                 tags$li("Report any data management incidents including, but not limited to inadvertent data release"),
-                 tags$li("Abide by all relevant laws and regulations regarding genomic data and their use"),
-                 tags$li("Not bulk download data without explicit consent from the IPDGC Exome Browser team")
-               )
-               ),
+    text = tags$ol(
+      tags$li(
+        "By proceeding, you are agreeing to:",
+        tags$ul(
+          tags$li("Use the data for", a("health, medical, and biomedical research ONLY", href = "https://osp.od.nih.gov/wp-content/uploads/standard_data_use_limitations.pdf", target = "_blank")),
+          tags$li("NOT Attempt to identify, disclose, or contact research participants unless required by federal, state, or local laws"),
+          tags$li("Report any data management incidents including, but not limited to inadvertent data release"),
+          tags$li("Abide by all relevant laws and regulations regarding genomic data and their use"),
+          tags$li("Not bulk download data without explicit consent from the PD Variant Browser team")
+        ),
+        style = "text-align:left"
+      ),
+      tags$li(
+        "While the data presented in the Variant Browser has undergone quality control, genomic data processing pipelines are inherently imperfect and rely on probabilistic processes such as variant calling, imputation, and short-read sequencing reads. As such there may be errors within the data presented. I agree that the PD Variant Browser team is not responsible for any incorrect data that may be present in the browser.",
+        style = "text-align:left"
+      )
+    ),
+      # div("By proceeding, you are agreeing to:",
+      #          style = "text-align:left",
+      #          tags$ul(
+      #            tags$li("Use the data for", a("health, medical, and biomedical research ONLY", href = "https://osp.od.nih.gov/wp-content/uploads/standard_data_use_limitations.pdf", target = "_blank")),
+      #            tags$li("NOT Attempt to identify, disclose, or contact research participants unless required by federal, state, or local laws"),
+      #            tags$li("Report any data management incidents including, but not limited to inadvertent data release"),
+      #            tags$li("Abide by all relevant laws and regulations regarding genomic data and their use"),
+      #            tags$li("Not bulk download data without explicit consent from the PD Variant Browser team")
+      #          ),
+      #          hr(),
+      #          "While the data presented in the Variant Browser has undergone quality control, genomic data processing pipelines are inherently imperfect and rely on probabilistic processes such as variant calling, imputation, and short-read sequencing reads. As such there may be errors within the data presented. I agree that the PD Variant Browser team is not responsible for any incorrect data that may be present in the browser."
+      #          ),
     html = T,
     closeOnClickOutside = F,
     type = "info"

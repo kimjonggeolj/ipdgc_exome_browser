@@ -4,7 +4,7 @@ miniSearchBar <- div(
     searchInput(
       inputId = "minisearchBar", 
       # label = "Enter your search terms:", 
-      placeholder = "e.g. LRRK2, chr12, 12:40196744, 12:40000000-50000000, rs1422910994", 
+      placeholder = "e.g. LRRK2, chr12, 12:40734202, 12:40000000-50000000, rs34637584", 
       btnSearch = icon("search"), 
       btnReset = icon("remove"), 
       width = "100%"), style = "display:inline-block;width:80%;"
@@ -54,7 +54,7 @@ tags$head(
 # Start logo
   div(
     id = "loadingPage",
-    hidden(img(src = "ipdgc_eb.png", id = "startLogo"))
+    hidden(img(src = "ipdgc_vb.png", id = "startLogo"))
   ),
   hidden(
 # fixed option button
@@ -293,7 +293,7 @@ tags$head(
           )
         ),
         
-        title = "IPDGC Exome Browser",
+        title = "PD Variant Browser",
         sidebar_fullCollapse = F,
         skin = "black"
       )

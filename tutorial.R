@@ -1,13 +1,16 @@
 tutorial.search <- renderUI(
   tagList(
-    h1('Welcome to the IPDGC Exome Browser!'),
-    p("You have turned on the tutorial mode.", tags$strong("As you use the app, you can click on \"What is this?\" to learn more in detail about a specific feature of the app."), "To deactivate tutorial mode, you can click the tutorial button (\"?\") to return to normal operations."),
-    p("You can begin by using the search bar on the top of the browser. You can search by gene ID, rsID, chromosome number, variant location, or base pair range."),
+    h1("Welcome to the Parkinsons's Disease Variant Browser!"),
+    p("You have turned on the tutorial mode.",
+      "This mode will teach you the basics of the app while in use.",
+      #tags$strong("As you use the app, you can click on \"What is this?\" to learn more in detail about a specific feature of the app."),
+      "To deactivate tutorial mode, you can click the tutorial button (\"?\") to return to normal operations."),
+    p(tags$strong("You can begin by using the search bar on the top of the browser."), "You can search by gene ID, rsID, chromosome number, variant location, or base pair range."),
     actionLink("tutorial.search.detail", label = h3("Can you go into more detail about searching?")),
     conditionalPanel(
       condition = 'input["tutorial.search.detail"]%2 == 1',
-      p("Searching for gene ID and rsID is straight forward. However, chromosome and base pair positions require specific syntax."),
-      p("To search for all genes in a specific chromosome, write `chr` in front of the chromosome number (e.g.", tags$code("chr1"), ")."),
+      p("To sear h for gene ID and rsID, just type them in.", tags$code("rs34637584"), "However, chromosome and base pair positions require specific syntax."),
+      p("To search for", tags$strong("all genes in a specific chromosome,"), "write `chr` in front of the chromosome number (e.g.", tags$code("chr1"), ")."),
       p("To search for a", tags$strong("specific chromosome and base-pair position,"),"please write it in this format: [chr#]:[bp#]. For example, chromosome 1 base-pair position 155205634 should be entered as", tags$code("1:155205634"), "."),
       p("To search for a", tags$strong("chromosome and base-pair range,"),"please write it in this format: [chr#]:[bp1#]-[bp2#]. For example, chromosome 1 base-pair range 155205000 to 155210000 should be entered as", tags$code("1:155205000-155210000"), ".")
     )

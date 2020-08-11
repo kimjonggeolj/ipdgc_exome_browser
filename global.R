@@ -1,6 +1,6 @@
 ## UPLOAD COMMAND:
 # library(rsconnect)
-# deployApp(appFileManifest = "appManifest.txt", appName = "ExomeBrowser", account = 'pdgenetics')
+# deployApp(appFileManifest = "appManifest.txt", appName = "VariantBrowser", account = 'pdgenetics')
 
 ## FOR DEMO, change 'isDemo' variable to T then
 # library(rsconnect)
