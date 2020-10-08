@@ -76,7 +76,7 @@ varPageFunc <- function(var = var) {
   
   varMini <- var[,"Exome name (hg19)"]
   
-  cohort_dist <- paste0("data/cohort_specific/chr", gsub("^(\\d+):.*$", "\\1", varMini[1,1]), ".tsv.gz") %>% vroom()
+  cohort_dist <- paste0("data/cohort_specific/chr", gsub("^(\\d+):.*$", "\\1", varMini[1,1]), ".tsv.gz") %>% vroom(delim = "\t", col_types = "cccnnccnnccnnccnncccnnn")
   print(varMini)
   print(head(cohort_dist))
   cohort_dist <- as.data.table(filter(cohort_dist, grepl(varMini[1,1], `SNP`) ))
