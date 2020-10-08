@@ -805,13 +805,34 @@ observeEvent(input$geneClick, {
     output$geneVartable <- renderUI(tagList(
       fluidRow(
         div(
-          # downloadButton(
-          #   "globalVarTable_DL",
-          #   label = "Download Table (TSV)"
-          # ),
+          radioGroupButtons(
+            inputId = "vartable.filter",
+            label = div("Filter variants:",
+                        title = "For more options, please use the \"Search\" box on the right!"),
+            choices = c("No filter",
+                        "Nonsynonymous",
+                        "Frameshift",
+                        "Stop gain/loss"),
+            selected = "No filter",
+            status = "primary",
+            checkIcon = list(
+              yes = icon("ok", 
+                         lib = "glyphicon"),
+              no = icon("remove",
+                        lib = "glyphicon"))
+          ),
           renderDT({
             dat <- variantTable[, c(1,5:8,10:12,14,15)] #c(1:8,11,17)]
             dat$`Amino acid change` <- gsub(".*(p\\..*)", "\\1", dat$`Amino acid change`)
+            # vartable filter
+            if (!is.na(input$vartable.filter)) {
+              dat <- switch(input$vartable.filter,
+                            "No filter" = dat,
+                            "Nonsynonymous" = dat[dat$`Functional consequence` %ni% c(".", "synonymous SNV")],
+                            "Frameshift" = dat[dat$`Functional consequence` %ni% c("frameshift deletion", "frameshift insertion", "frameshift block substitution")],
+                            "Stop gain/loss" = dat[dat$`Functional consequence` %in% c("stopgain", "stoploss")]
+              )
+            }
             # dat$`Exome name (hg19)` <- str_wrap(dat$`Exome name (hg19)`, width = 10)
             datatable(
               dat,

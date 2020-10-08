@@ -11,7 +11,9 @@
 #draggable-top-tutorial {
    z-index:1401;
 }
-
+#draggable-top-var {
+   z-index:3;
+}
 /*Variant name overflow*/
 #variantName {
    width:100%;

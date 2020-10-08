@@ -14,6 +14,7 @@ observeEvent(input$about, {
       url = "https://github.com/kimjonggeolj/ipdgc_exome_browser",
       type = "github"
     )),
+    p("version 0.2.3"),
     p("Parkinson's Disease Variant Browser is a database of exome variants related to neurodegenerative diseases that can be used by researchers all over the world. As of April 2020, the browser contains over 6 million variants from summary-level UK Biobank exome data and various IPDGC whole genome sequencing, exome sequencing, and imputed genotyping array data."),
     p(
       "All data is in hg19. All data in hg38 was converted to hg19 using ",
