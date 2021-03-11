@@ -58,7 +58,7 @@ observeEvent(input$geneClick, {
     # =====================
     
     # ========== STEP 2 ==========
-    initDat <- initDat[grepl(searchString, initDat$`Gene.refGene`, ignore.case = T)]
+    initDat <- initDat[grepl(paste0("^", searchString, "$"), initDat$`Gene.refGene`, ignore.case = T)]
 
     # ========== STEP 3 ==========
     variantTable.global <<- initDat
@@ -644,8 +644,8 @@ observeEvent(input$geneClick, {
           descriptionBlock(
             header = "CHR",
             text = gene$chr,
-            right_border = T,
-            margin_bottom = F
+            rightBorder = T,
+            marginBottom = F
           )
         ),
         column(
@@ -653,8 +653,8 @@ observeEvent(input$geneClick, {
           descriptionBlock(
             header = "BP-START",
             text = gene$`37bp1`,
-            right_border = T,
-            margin_bottom = F
+            rightBorder = T,
+            marginBottom = F
           )
         ),
         column(
@@ -662,10 +662,10 @@ observeEvent(input$geneClick, {
           descriptionBlock(
             header = "BP-END",
             text = gene$`37bp2`,
-            right_border = FALSE,
-            margin_bottom = F
+            rightBorder = FALSE,
+            marginBottom = F
           )
-        ),
+        )
       )
     ))
     
@@ -829,7 +829,7 @@ observeEvent(input$geneClick, {
               dat <- switch(input$vartable.filter,
                             "No filter" = dat,
                             "Nonsynonymous" = dat[dat$`Functional consequence` %ni% c(".", "synonymous SNV")],
-                            "Frameshift" = dat[dat$`Functional consequence` %ni% c("frameshift deletion", "frameshift insertion", "frameshift block substitution")],
+                            "Frameshift" = dat[dat$`Functional consequence` %in% c("frameshift deletion", "frameshift insertion", "frameshift block substitution")],
                             "Stop gain/loss" = dat[dat$`Functional consequence` %in% c("stopgain", "stoploss")]
               )
             }

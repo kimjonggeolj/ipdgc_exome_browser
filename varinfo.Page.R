@@ -81,73 +81,68 @@ varPageFunc <- function(var = var) {
   print(head(cohort_dist))
   cohort_dist <- as.data.table(filter(cohort_dist, grepl(varMini[1,1], `SNP`) ))
   print(cohort_dist)
-  output$genome.freq.Table <- renderTable(
-    {
+  
+  generate_freq_table <- function(cohort){
+    if (cohort == "genome" ) {
       table.freq <- cohort_dist[1,c(1,4,5)]
       table.count <- cohort_dist[1,c(1:3)]
-      colnames(table.freq) <- c('', 'Case', 'Control')
-      colnames(table.count) <- c('', 'Case', 'Control')
-      table <- rbind(table.freq, table.count)
-      table[1,1] <- 'A1-frequency'
-      table[2,1] <- 'Distribution'
-      colnames(table)[1] <- ""
-      table
+    } else if (cohort == "exome") {
+      table.freq <- cohort_dist[,c(1,8,9)]
+      table.count <- cohort_dist[,c(1,6,7)]
+    } else if (cohort == "reseq") {
+      table.freq <- cohort_dist[,c(1,12,13)]
+      table.count <- cohort_dist[,c(1,10,11)]
+    } else if (cohort == "imputed") {
+      table.freq <- cohort_dist[,c(1,16,17)]
+      table.count <- cohort_dist[,c(1,14,15)]
+    } else if (cohort == "UKB") {
+      table.freq <- cohort_dist[,c(1,21:23)]
+      table.count <- cohort_dist[,c(1,18:20)]
+    }
+    column_name <- if (cohort == "UKB") { c('', 'Case', 'Control', 'Proxy') } else { c('', 'Case', 'Control') }
+    colnames(table.freq) <- column_name
+    colnames(table.count) <- column_name
+    table <- rbind(table.freq, table.count)
+    table[1,1] <- 'A1-frequency'
+    table[2,1] <- 'Distribution'
+    colnames(table)[1] <- ""
+    return(table)
+  }
+  
+  genome.table <- generate_freq_table("genome")
+  exome.table <- generate_freq_table("exome")
+  reseq.table <- generate_freq_table("reseq")
+  imputed.table <- generate_freq_table("imputed")
+  UKB.table <- generate_freq_table("UKB")
+  
+  
+  output$genome.freq.Table <- renderTable(
+    {
+      genome.table
     }
   )
   
   output$exome.freq.Table <- renderTable(
     {
-      table.freq <- cohort_dist[,c(1,8,9)]
-      table.count <- cohort_dist[,c(1,6,7)]
-      colnames(table.freq) <- c('', 'Case', 'Control')
-      colnames(table.count) <- c('', 'Case', 'Control')
-      table <- rbind(table.freq, table.count)
-      table[1,1] <- 'A1-frequency'
-      table[2,1] <- 'Distribution'
-      colnames(table)[1] <- ""
-      table
+      exome.table
     }
   )
   
   output$reseq.freq.Table <- renderTable(
     {
-      table.freq <- cohort_dist[,c(1,12,13)]
-      table.count <- cohort_dist[,c(1,10,11)]
-      colnames(table.freq) <- c('', 'Case', 'Control')
-      colnames(table.count) <- c('', 'Case', 'Control')
-      table <- rbind(table.freq, table.count)
-      table[1,1] <- 'A1-frequency'
-      table[2,1] <- 'Distribution'
-      colnames(table)[1] <- ""
-      table
+      reseq.table
     }
   )
   
   output$imputed.freq.Table <- renderTable(
     {
-      table.freq <- cohort_dist[,c(1,16,17)]
-      table.count <- cohort_dist[,c(1,14,15)]
-      colnames(table.freq) <- c('', 'Case', 'Control')
-      colnames(table.count) <- c('', 'Case', 'Control')
-      table <- rbind(table.freq, table.count)
-      table[1,1] <- 'A1-frequency'
-      table[2,1] <- 'Distribution'
-      colnames(table)[1] <- ""
-      table
+      imputed.table
     }
   )
   
   output$UKB.freq.Table <- renderTable(
     {
-      table.freq <- cohort_dist[,c(1,21:23)]
-      table.count <- cohort_dist[,c(1,18:20)]
-      colnames(table.freq) <- c('', 'Case', 'Control', 'Proxy')
-      colnames(table.count) <- c('', 'Case', 'Control', 'Proxy')
-      table <- rbind(table.freq, table.count)
-      table[1,1] <- 'A1-frequency'
-      table[2,1] <- 'Distribution'
-      colnames(table)[1] <- ""
-      table
+      UKB.table
     }
   )
   # output$reseq.freq.Table <- renderTable(
@@ -167,6 +162,13 @@ varPageFunc <- function(var = var) {
       table
     },
     digits = -2
+  )
+  
+  output$freq.table.DL <- downloadHandler(
+    filename = "PD_var_freq_table.csv",
+    content = function(file) {
+      fwrite(cohort_dist, file)
+    }
   )
   
   output$varShareLink <- renderText({paste0(
@@ -274,8 +276,8 @@ varPageFunc <- function(var = var) {
         descriptionBlock(
           header = "REGION",
           text = simpleCap(var$Region[1]),
-          right_border = T,
-          margin_bottom = F
+          rightBorder = T,
+          marginBottom = F
         )
       ),
       column(
@@ -283,8 +285,8 @@ varPageFunc <- function(var = var) {
         descriptionBlock(
           header = "EXON + AMINO ACID CHANGE",
           text = var$`Amino acid change`,#str_wrap(var$`Amino acid change`, width = 20),#gsub(".*p\\.(.*)", "\\1", var$`Amino acid change`),
-          right_border = T,
-          margin_bottom = F
+          rightBorder = T,
+          marginBottom = F
         )
       ),
       column(
@@ -292,8 +294,8 @@ varPageFunc <- function(var = var) {
         descriptionBlock(
           header = "FUNCTIONAL CONSEQUENCE",
           text = gsub("_", " ", var$`Functional consequence`),
-          right_border = FALSE,
-          margin_bottom = F
+          rightBorder = FALSE,
+          marginBottom = F
         )
       ),
     ),
@@ -315,8 +317,8 @@ varPageFunc <- function(var = var) {
               )
             )
           ),
-          right_border = T,
-          margin_bottom = F
+          rightBorder = T,
+          marginBottom = F
         )
       ),
       column(
@@ -336,8 +338,8 @@ varPageFunc <- function(var = var) {
               )
             )
           ),
-          right_border = FALSE,
-          margin_bottom = F
+          rightBorder = FALSE,
+          marginBottom = F
         )
       )
     ),
@@ -345,7 +347,14 @@ varPageFunc <- function(var = var) {
     fluidRow(
       column(
         width = 6,
-        h3("IPDGC + UKB"),
+        h3("IPDGC + UKB frequencies and allele counts",
+           tags$sup(downloadBttn(
+             outputId = "freq.table.DL",
+             size = "xs",
+             label = "CSV",
+             style = "simple"
+           ))
+        ),
         # h5("Genome"),
         # div(
         #   tableOutput("genome.freq.Table")
@@ -373,7 +382,7 @@ varPageFunc <- function(var = var) {
         h4("UKB"),
         div(
           tableOutput("UKB.freq.Table")
-        ),
+        )
       ),
       column(
         width = 6,
@@ -390,20 +399,20 @@ varPageFunc <- function(var = var) {
       #     descriptionBlock(
       #       header = "REGION", 
       #       text = simpleCap(var$Region[1]), 
-      #       right_border = FALSE,
-      #       margin_bottom = TRUE
+      #       rightBorder = FALSE,
+      #       marginBottom = TRUE
       #     ),
       #     descriptionBlock(
       #       header = "AMINO ACID CHANGE", 
       #       text = gsub(".*(p\\..*)", "\\1", var$`Amino acid change`), 
-      #       right_border = FALSE,
-      #       margin_bottom = TRUE
+      #       rightBorder = FALSE,
+      #       marginBottom = TRUE
       #     ),
       #     descriptionBlock(
       #       header = "FUNCTIONAL CONSEQUENCE", 
       #       text = gsub("_", " ", var$`Functional consequence`), 
-      #       right_border = FALSE,
-      #       margin_bottom = FALSE
+      #       rightBorder = FALSE,
+      #       marginBottom = FALSE
       #     )
       #   ),
       #   boxPad(
@@ -411,14 +420,14 @@ varPageFunc <- function(var = var) {
       #     descriptionBlock(
       #       header = "ClinVar (Conditions)", 
       #       text = ifelse(var$`Conditions (ClinVar)` == ".", "N/A", var$`Conditions (ClinVar)`), 
-      #       right_border = FALSE,
-      #       margin_bottom = TRUE
+      #       rightBorder = FALSE,
+      #       marginBottom = TRUE
       #     ),
       #     descriptionBlock(
       #       header = "ClinVar (Clinical Significance)", 
       #       text = ifelse(var$`Clinical significance (ClinVar)` == ".", "N/A", var$`Clinical significance (ClinVar)`), 
-      #       right_border = FALSE,
-      #       margin_bottom = TRUE
+      #       rightBorder = FALSE,
+      #       marginBottom = TRUE
       #     ),
       #   )
       # )#,
